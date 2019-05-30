@@ -11,3 +11,5 @@ coverage
 yarn.lock
 
 *.png
+
+config.json
