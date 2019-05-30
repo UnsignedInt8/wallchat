@@ -1,6 +1,8 @@
 import Telegraph, { ContextMessageUpdate, } from 'telegraf';
-import Session from 'telegraf/session';
 import SocksAgent from 'socks5-https-client/lib/Agent';
+import { Wechaty } from "wechaty";
+import qr from 'qr-image';
+import StreamToBuffer from './lib/StreamToBuffer';
 
 interface BotOptions {
     token: string;
@@ -9,7 +11,8 @@ interface BotOptions {
 
 export default class Bot {
 
-    private bot: Telegraph<ContextMessageUpdate>;
+    protected bot: Telegraph<ContextMessageUpdate>;
+    protected clients: Map<number, Wechaty> = new Map();
 
     constructor({ token, socks5Proxy }: BotOptions) {
 
@@ -28,26 +31,45 @@ export default class Bot {
             telegram: { agent }
         });
 
-        this.bot.use(new Session());
         this.bot.start(this.handleStart);
         this.bot.command('login', this.handleLogin);
+        this.bot.on('message', this.handleMessage);
         this.bot.catch((err) => {
             console.log('Ooops', err)
         });
-        this.bot.launch();
 
-        console.log(this.bot);
+        this.bot.launch();
 
     }
 
     handleStart = (ctx: ContextMessageUpdate) => {
-        console.log(ctx);
         ctx.reply(`Hello`);
     }
 
-    handleLogin = (ctx: ContextMessageUpdate) => {
-        console.log(ctx);
+    handleLogin = async (ctx: ContextMessageUpdate) => {
+        let id = ctx.chat.id;
+        let qrcodeCache = '';
+        if (this.clients.has(id) && this.clients.get(id).logonoff()) return;
 
+        ctx.reply('Requesting Wechat QRCode...');
+
+        let client = new Wechaty();
+        this.clients.set(ctx.chat.id, client);
+
+        client.on('scan', async (qrcode: string) => {
+            if (qrcode === qrcodeCache) return;
+            qrcodeCache = qrcode;
+            let image = await StreamToBuffer(qr.image(qrcode));
+            ctx.replyWithPhoto({ source: image });
+        });
+
+        await client.start();
     }
+
+    handleMessage = (ctx: ContextMessageUpdate) => {
+        let msg = ctx.message;
+    }
+
+
 
 }

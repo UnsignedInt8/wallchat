@@ -7,6 +7,6 @@ let program = commander
     .parse(process.argv);
 
 let json = fs.readFileSync(program.config, { encoding: 'utf8' });
-let { token } = JSON.parse(json) as { token: string };
+let { token, socks5Proxy } = JSON.parse(json);
 
-new Bot({ token });
+new Bot({ token, socks5Proxy });
