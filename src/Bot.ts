@@ -3,10 +3,11 @@ import SocksAgent from 'socks5-https-client/lib/Agent';
 import { Wechaty } from "wechaty";
 import qr from 'qr-image';
 import StreamToBuffer from './lib/StreamToBuffer';
+import lang from './strings';
 
 interface BotOptions {
     token: string;
-    socks5Proxy?: { host: string, port: number, username?: string, password?: string }
+    socks5Proxy?: { host: string, port: number, username?: string, password?: string };
 }
 
 export default class Bot {
@@ -49,9 +50,9 @@ export default class Bot {
     handleLogin = async (ctx: ContextMessageUpdate) => {
         let id = ctx.chat.id;
         let qrcodeCache = '';
-        if (this.clients.has(id) && this.clients.get(id).logonoff()) return;
+        if (this.clients.has(id)) return;
 
-        ctx.reply('Requesting Wechat QRCode...');
+        ctx.reply(lang.login.request);
 
         let client = new Wechaty();
         this.clients.set(ctx.chat.id, client);
@@ -59,8 +60,8 @@ export default class Bot {
         client.on('scan', async (qrcode: string) => {
             if (qrcode === qrcodeCache) return;
             qrcodeCache = qrcode;
-            let image = await StreamToBuffer(qr.image(qrcode));
-            ctx.replyWithPhoto({ source: image });
+
+            ctx.replyWithPhoto({ source: await StreamToBuffer(qr.image(qrcode)) });
         });
 
         await client.start();
