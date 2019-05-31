@@ -11,4 +11,4 @@ let config = JSON.parse(json);
 
 let bot = new Bot(config);
 
-process.once('exit', async () => await bot.exit());
+process.on('SIGINT', async () => { await bot.exit(); process.exit() });

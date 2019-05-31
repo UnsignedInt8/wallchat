@@ -8,6 +8,8 @@ import { ContactType, MessageType } from 'wechaty-puppet';
 import * as TT from 'telegraf/typings/telegram-types';
 import takeScreenshot from './lib/TakeScreenshot';
 import { createHash } from 'crypto';
+import fs from 'fs';
+import MiscHelper from './lib/MiscHelper';
 
 interface MessageUI {
     url: string;
@@ -134,7 +136,10 @@ export default class Bot {
         let avatar = room ? await room.avatar() : await from.avatar();
         let avatarName = createHash('md5').update(room ? signature : nickname).digest().toString('hex') + '.jpg';
         let avatarPath = `${this.msgui.avatarDir}/${avatarName}`;
-        await avatar.toFile(avatarPath);
+
+        if (!await MiscHelper.fileExists(avatarPath)) {
+            await avatar.toFile(avatarPath).catch(reason => console.error(reason));
+        }
 
         console.log(avatarPath);
 
@@ -165,7 +170,7 @@ export default class Bot {
 
             case MessageType.Image:
                 let image = await msg.toFileBox();
-                sent = await ctx.replyWithPhoto({ source: await image.toStream() });
+                sent = await ctx.replyWithPhoto({ source: await image.toStream() }, { caption: nickname });
                 break;
 
             case MessageType.Video:
