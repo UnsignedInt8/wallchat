@@ -7,6 +7,7 @@ import lang from './strings';
 import { ContactType, MessageType } from 'wechaty-puppet';
 import * as TT from 'telegraf/typings/telegram-types';
 import takeScreenshot from './lib/TakeScreenshot';
+import { createHash } from 'crypto';
 
 interface MessageUI {
     url: string;
@@ -124,22 +125,26 @@ export default class Bot {
 
         // if (user.wechat.id === from.id) return;
 
-        let avatar = room ? await room.avatar() : await from.avatar();
         let alias = await from.alias();
         let nickname = from.name() + (alias ? ` (${alias})` : '');
         let signature = room ? await room.topic() : from['payload'].signature;
         let city = from.city() || '';
         let provice = from.province() || '';
         let sent: TT.Message;
+        let avatar = room ? await room.avatar() : await from.avatar();
+        let avatarName = createHash('md5').update(room ? signature : nickname).digest().toString('hex') + '.jpg';
+        let avatarPath = `${this.msgui.avatarDir}/${avatarName}`;
+        await avatar.toFile(avatarPath);
 
-        console.log(msg);
+        console.log(avatarPath);
 
         switch (type) {
             case MessageType.Text:
-                const url = `${this.msgui.url}/?n=${nickname}&s=${signature}&m=${text}&p=${provice}&c=${city}`;
-                let screen = await takeScreenshot({ url });
+                let data = `n=${nickname}&s=${signature}&m=${text}&p=${provice}&c=${city}&a=${avatarName}`;
+                data = Buffer.from(data, 'utf-8').toString('base64');
 
-                console.log('taking screen', url, screen);
+                const url = `${this.msgui.url}/?${data}`;
+                let screen = await takeScreenshot({ url });
 
                 try {
                     sent = await this.bot.telegram.sendPhoto(ctx.chat.id, { source: screen });
