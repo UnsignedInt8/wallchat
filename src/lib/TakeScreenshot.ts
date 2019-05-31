@@ -6,7 +6,7 @@ export default async function takeScreenshot({ url, savePath }: { url: string, s
     if (!browser) browser = await puppeteer.launch({ args: ['--no-sandbox'] });
 
     const page = await browser.newPage();
-    await page.setViewport({ width: 500, height: 1200, deviceScaleFactor: 3 });
+    await page.setViewport({ width: 450, height: 1200, deviceScaleFactor: 3 });
     await page.goto(url);
 
     const result = await screenshotDOMElement(page, { selector: '#container', path: savePath });

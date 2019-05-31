@@ -18,7 +18,7 @@ interface MessageUI {
 }
 interface BotOptions {
     token: string;
-    socks5Proxy?: { host: string, port: number, username?: string, password?: string };
+    socks5Proxy?: { host: string, port: number, username?: string, password?: string, };
     msgui: MessageUI;
 }
 
@@ -26,8 +26,10 @@ interface Client {
     wechat: Wechaty;
     receiveGroups?: boolean;
     receiveOfficialAccount?: boolean;
+    receiveSelf?: boolean;
     msgs: Map<number, Contact | Room>;
     lastContact?: Room | Contact;
+    id?: string;
 }
 
 export default class Bot {
@@ -61,6 +63,9 @@ export default class Bot {
         this.bot.command('turnOffGroups', this.checkUser, ctx => ctx['user'].receiveGroups = false);
         this.bot.command('turnOnOfficial', this.checkUser, ctx => ctx['user'].receiveOfficialAccount = true);
         this.bot.command('turnOffOfficial', this.checkUser, ctx => ctx['user'].receiveOfficialAccount = false);
+        this.bot.command('turnOnSelf', this.checkUser, ctx => ctx['user'].receiveSelf = true);
+        this.bot.command('turnOffSelf', this.checkUser, ctx => ctx['user'].receiveSelf = false);
+
         this.bot.command('logout', this.checkUser, this.handleLogout);
         this.bot.on('message', this.checkUser, this.handleTelegramMessage);
 
@@ -92,30 +97,31 @@ export default class Bot {
 
         ctx.reply(lang.login.request);
 
-        let client = new Wechaty();
-        this.clients.set(ctx.chat.id, { wechat: client, msgs: new Map(), receiveGroups: true, receiveOfficialAccount: false });
+        let wechat = new Wechaty();
+        this.clients.set(ctx.chat.id, { wechat, msgs: new Map(), receiveGroups: true, receiveOfficialAccount: false });
 
-        client.on('scan', async (qrcode: string) => {
+        wechat.on('scan', async (qrcode: string) => {
             if (qrcode === qrcodeCache) return;
             qrcodeCache = qrcode;
             ctx.replyWithPhoto({ source: qr.image(qrcode) });
         });
 
-        client.on('login', user => {
+        wechat.once('login', user => {
+            this.clients.get(ctx.chat.id).id = user.id;
             ctx.reply(lang.login.logined(user.name()));
         });
 
-        client.on('logout', user => {
+        wechat.on('logout', user => {
             ctx.reply(lang.login.logouted(user.name()));
-            client.stop();
-            client.removeAllListeners();
+            wechat.stop();
+            wechat.removeAllListeners();
 
             this.clients.delete(id);
         });
 
-        client.on('message', msg => this.handleWechatMessage(msg, ctx));
+        wechat.on('message', msg => this.handleWechatMessage(msg, ctx));
 
-        await client.start();
+        await wechat.start();
     }
 
     checkUser = (ctx: ContextMessageUpdate, next: Function) => {
@@ -183,7 +189,8 @@ export default class Bot {
         let type = msg.type();
         let text = msg.text().replace(/<[^>]*>?/gm, '');
 
-        if (user.wechat.id === from.id) return;
+        console.log(user.id, from.id);
+        if (user.id === from.id && !user.receiveSelf) return;
 
         if (!user.receiveOfficialAccount && from.type() === ContactType.Official) return;
         if (!user.receiveGroups && room) return;
@@ -194,7 +201,7 @@ export default class Bot {
         let city = from.city() || '';
         let provice = from.province() || '';
         let sent: TT.Message;
-        let avatar = room ? await room.avatar() : await from.avatar();
+        let avatar = room ? await room.avatar() || await from.avatar() : await from.avatar();
         let avatarName = createHash('md5').update(room ? signature : nickname).digest().toString('hex') + '.jpg';
         let avatarPath = `${this.msgui.avatarDir}/${avatarName}`;
 
