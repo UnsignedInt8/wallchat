@@ -58,6 +58,7 @@ export default class Bot {
         });
 
         this.bot.start(this.handleStart);
+        (this.bot['stop'] as any)(this.checkUser, this.handleLogout);
         this.bot.command('login', this.handleLogin);
         this.bot.command('turnOnGroups', this.checkUser, ctx => ctx['user'].receiveGroups = true);
         this.bot.command('turnOffGroups', this.checkUser, ctx => ctx['user'].receiveGroups = false);
@@ -125,6 +126,8 @@ export default class Bot {
     }
 
     checkUser = (ctx: ContextMessageUpdate, next: Function) => {
+        if (!ctx) return next ? next() : undefined;
+
         let id = ctx.chat.id;
         let user = this.clients.get(id);
         if (!user) return;
@@ -159,7 +162,7 @@ export default class Bot {
         if (!contact) return;
 
         let file = msg.audio || (msg.video || (msg.photo && msg.photo[0]));
-        if (file) {
+        if (file && file.file_size <= 50 * 1024 * 1024) {
             try {
                 let url = `https://api.telegram.org/bot${this.token}/getFile?file_id=${file.file_id}`
                 let resp = await axios.get(url);
@@ -168,9 +171,8 @@ export default class Bot {
                 let filePath = resp.data.result.file_path;
                 url = `https://api.telegram.org/file/bot${this.token}/${filePath}`;
 
-                console.log(url);
-                let box = FileBox.fromStream(got.stream(url), file.file_id);
-                await contact.say(box);
+                // Not available on default puppet
+                await contact.say(FileBox.fromStream(got.stream(url), file.file_id));
             } catch (error) {
                 console.log(error.message);
             }
@@ -189,9 +191,7 @@ export default class Bot {
         let type = msg.type();
         let text = msg.text().replace(/<[^>]*>?/gm, '');
 
-        console.log(user.id, from.id);
         if (user.id === from.id && !user.receiveSelf) return;
-
         if (!user.receiveOfficialAccount && from.type() === ContactType.Official) return;
         if (!user.receiveGroups && room) return;
 
