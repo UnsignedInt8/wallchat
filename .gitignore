@@ -13,3 +13,5 @@ yarn.lock
 *.png
 
 config.json
+leavexchat-bot/
+*.tar.gz

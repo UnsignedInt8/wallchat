@@ -3,7 +3,7 @@ import puppeteer from 'puppeteer';
 let browser: puppeteer.Browser;
 
 export default async function takeScreenshot({ url, savePath }: { url: string, savePath?: string }) {
-    if (!browser) browser = await puppeteer.launch();
+    if (!browser) browser = await puppeteer.launch({ args: ['--no-sandbox'] });
 
     const page = await browser.newPage();
     await page.setViewport({ width: 500, height: 1200, deviceScaleFactor: 3 });
@@ -25,8 +25,7 @@ async function screenshotDOMElement(page: puppeteer.Page, opts: { padding?: numb
 
     const rect = await page.evaluate(selector => {
         const element = document.querySelector(selector);
-        if (!element)
-            return null;
+        if (!element) return null;
         const { x, y, width, height } = element.getBoundingClientRect();
         return { left: x, top: y, width, height, id: element.id };
     }, selector);
@@ -35,6 +34,7 @@ async function screenshotDOMElement(page: puppeteer.Page, opts: { padding?: numb
         throw Error(`Could not find element that matches selector: ${selector}.`);
 
     return await page.screenshot({
+        type: 'png',
         path,
         clip: {
             x: rect.left - padding,

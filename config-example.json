@@ -1,0 +1,12 @@
+{
+    "token": "",
+    "socks5Proxy": {
+        "host": "localhost",
+        "port": 1080,
+        "username": "",
+        "password": ""
+    },
+    "msgui": {
+        "url": "http://localhost:8080"
+    }
+}

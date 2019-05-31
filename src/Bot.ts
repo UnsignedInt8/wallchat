@@ -56,6 +56,8 @@ export default class Bot {
 
         this.bot.launch();
 
+        console.log(this.bot);
+
     }
 
     async exit() {
@@ -72,7 +74,10 @@ export default class Bot {
     handleLogin = async (ctx: ContextMessageUpdate) => {
         let id = ctx.chat.id;
         let qrcodeCache = '';
-        if (this.clients.has(id)) return;
+        if (this.clients.has(id)) {
+            ctx.reply(lang.login.retry);
+            return;
+        };
 
         ctx.reply(lang.login.request);
 
@@ -117,7 +122,7 @@ export default class Bot {
         let type = msg.type();
         let text = msg.text().replace(/<[^>]*>?/gm, '');
 
-        if (user.wechat.id === from.id) return;
+        // if (user.wechat.id === from.id) return;
 
         let avatar = room ? await room.avatar() : await from.avatar();
         let alias = await from.alias();
@@ -127,11 +132,22 @@ export default class Bot {
         let provice = from.province() || '';
         let sent: TT.Message;
 
+        console.log(msg);
+
         switch (type) {
             case MessageType.Text:
                 const url = `${this.msgui.url}/?n=${nickname}&s=${signature}&m=${text}&p=${provice}&c=${city}`;
                 let screen = await takeScreenshot({ url });
-                sent = await ctx.replyWithPhoto({ source: screen });
+
+                console.log('taking screen', url, screen);
+
+                try {
+                    sent = await this.bot.telegram.sendPhoto(ctx.chat.id, { source: screen });
+                    console.log('text message sent', sent);
+                } catch (error) {
+                    console.log('text message error', error);
+                }
+
                 break;
 
             case MessageType.Attachment:
