@@ -1,15 +1,16 @@
 import Telegraph, { ContextMessageUpdate, Telegram } from 'telegraf';
 import SocksAgent from 'socks5-https-client/lib/Agent';
-import { Wechaty, Message } from "wechaty";
+import { Wechaty, Message, Contact, Room, FileBox } from "wechaty";
 import qr from 'qr-image';
-import StreamToBuffer from './lib/StreamToBuffer';
 import lang from './strings';
 import { ContactType, MessageType } from 'wechaty-puppet';
 import * as TT from 'telegraf/typings/telegram-types';
 import takeScreenshot from './lib/TakeScreenshot';
 import { createHash } from 'crypto';
-import fs from 'fs';
 import MiscHelper from './lib/MiscHelper';
+import { FileBoxType } from 'file-box';
+import axios from 'axios';
+import got from 'got';
 
 interface MessageUI {
     url: string;
@@ -25,6 +26,8 @@ interface Client {
     wechat: Wechaty;
     receiveGroups?: boolean;
     receiveOfficialAccount?: boolean;
+    msgs: Map<number, Contact | Room>;
+    lastContact?: Room | Contact;
 }
 
 export default class Bot {
@@ -32,9 +35,11 @@ export default class Bot {
     protected bot: Telegraph<ContextMessageUpdate>;
     protected clients: Map<number, Client> = new Map();
     protected msgui: MessageUI;
+    private token: string;
 
     constructor({ token, socks5Proxy, msgui }: BotOptions) {
         let agent: any;
+        this.token = token;
         this.msgui = msgui;
 
         if (socks5Proxy) {
@@ -52,15 +57,18 @@ export default class Bot {
 
         this.bot.start(this.handleStart);
         this.bot.command('login', this.handleLogin);
-        this.bot.on('message', this.handleMessage);
+        this.bot.command('turnOnGroups', this.checkUser, ctx => ctx['user'].receiveGroups = true);
+        this.bot.command('turnOffGroups', this.checkUser, ctx => ctx['user'].receiveGroups = false);
+        this.bot.command('turnOnOfficial', this.checkUser, ctx => ctx['user'].receiveOfficialAccount = true);
+        this.bot.command('turnOffOfficial', this.checkUser, ctx => ctx['user'].receiveOfficialAccount = false);
+        this.bot.command('logout', this.checkUser, this.handleLogout);
+        this.bot.on('message', this.checkUser, this.handleTelegramMessage);
+
         this.bot.catch((err) => {
             console.log('Ooops', err)
         });
 
         this.bot.launch();
-
-        console.log(this.bot);
-
     }
 
     async exit() {
@@ -85,13 +93,11 @@ export default class Bot {
         ctx.reply(lang.login.request);
 
         let client = new Wechaty();
-        this.clients.set(ctx.chat.id, { wechat: client });
+        this.clients.set(ctx.chat.id, { wechat: client, msgs: new Map(), receiveGroups: true, receiveOfficialAccount: false });
 
         client.on('scan', async (qrcode: string) => {
             if (qrcode === qrcodeCache) return;
             qrcodeCache = qrcode;
-
-            // ctx.replyWithPhoto({ source: await StreamToBuffer(qr.image(qrcode)) });
             ctx.replyWithPhoto({ source: qr.image(qrcode) });
         });
 
@@ -112,8 +118,60 @@ export default class Bot {
         await client.start();
     }
 
-    handleMessage = (ctx: ContextMessageUpdate) => {
+    checkUser = (ctx: ContextMessageUpdate, next: Function) => {
+        let id = ctx.chat.id;
+        let user = this.clients.get(id);
+        if (!user) return;
+
+        ctx['user'] = user;
+        next(ctx);
+    }
+
+    handleLogout = async (ctx: ContextMessageUpdate) => {
+        let user = ctx['user'] as Client;
+        await user.wechat.logout();
+        await user.wechat.stop();
+        user.wechat.removeAllListeners();
+        this.clients.delete(ctx.chat.id);
+        ctx.reply(lang.login.bye);
+    }
+
+    handleTurnOffGroups = (client: Client, on: boolean) => {
+        client.receiveGroups = on;
+    }
+
+    handleTelegramMessage = async (ctx: ContextMessageUpdate) => {
         let msg = ctx.message;
+        let user = ctx['user'] as Client;
+
+        let contact = user.lastContact;
+        if (msg.reply_to_message) {
+            contact = user.msgs.get(msg.reply_to_message.message_id)
+        }
+
+
+        if (!contact) return;
+
+        let file = msg.audio || (msg.video || (msg.photo && msg.photo[0]));
+        if (file) {
+            try {
+                let url = `https://api.telegram.org/bot${this.token}/getFile?file_id=${file.file_id}`
+                let resp = await axios.get(url);
+                if (!resp.data || !resp.data.ok) return;
+
+                let filePath = resp.data.result.file_path;
+                url = `https://api.telegram.org/file/bot${this.token}/${filePath}`;
+
+                console.log(url);
+                let box = FileBox.fromStream(got.stream(url), file.file_id);
+                await contact.say(box);
+            } catch (error) {
+                console.log(error.message);
+            }
+            return;
+        }
+
+        if (msg.text) await contact.say(msg.text);
     }
 
     async handleWechatMessage(msg: Message, ctx: ContextMessageUpdate) {
@@ -125,7 +183,10 @@ export default class Bot {
         let type = msg.type();
         let text = msg.text().replace(/<[^>]*>?/gm, '');
 
-        // if (user.wechat.id === from.id) return;
+        if (user.wechat.id === from.id) return;
+
+        if (!user.receiveOfficialAccount && from.type() === ContactType.Official) return;
+        if (!user.receiveGroups && room) return;
 
         let alias = await from.alias();
         let nickname = from.name() + (alias ? ` (${alias})` : '');
@@ -141,8 +202,6 @@ export default class Bot {
             await avatar.toFile(avatarPath).catch(reason => console.error(reason));
         }
 
-        console.log(avatarPath);
-
         switch (type) {
             case MessageType.Text:
                 let data = `n=${nickname}&s=${signature}&m=${text}&p=${provice}&c=${city}&a=${avatarName}`;
@@ -153,7 +212,6 @@ export default class Bot {
 
                 try {
                     sent = await this.bot.telegram.sendPhoto(ctx.chat.id, { source: screen });
-                    console.log('text message sent', sent);
                 } catch (error) {
                     console.log('text message error', error);
                 }
@@ -180,6 +238,22 @@ export default class Bot {
 
             default:
                 break;
+        }
+
+        if (!sent) {
+            console.log(msg);
+            return;
+        }
+
+        user.msgs.set(sent.message_id, room || from);
+        user.lastContact = room || from;
+
+        // Delete old history
+        if (user.msgs.size > 1000) {
+            let start = sent.message_id - 1000;
+            while (user.msgs.size > 1000 && start >= 0) {
+                user.msgs.delete(start--);
+            }
         }
     }
 }

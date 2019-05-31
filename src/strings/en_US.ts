@@ -7,5 +7,6 @@ export default {
         logined: (name: string) => `Congratulations! ${name} has logined`,
         logouted: (name: string) => `${name} has logouted`,
         retry: `Please scan the QRCode and try again`,
+        bye: 'Bye',
     },
 }
