@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import commander from 'commander';
 import fs from 'fs';
 import Bot from './Bot';
