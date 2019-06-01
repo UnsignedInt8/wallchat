@@ -11,6 +11,7 @@ import MiscHelper from './lib/MiscHelper';
 import { FileBoxType } from 'file-box';
 import axios from 'axios';
 import got from 'got';
+import HTMLTemplates from './lib/HTMLTemplates';
 
 interface MessageUI {
     url: string;
@@ -27,6 +28,7 @@ interface Client {
     receiveGroups?: boolean;
     receiveOfficialAccount?: boolean;
     receiveSelf?: boolean;
+    imageOnly?: boolean;
     msgs: Map<number, Contact | Room>;
     lastContact?: Room | Contact;
     id?: string;
@@ -66,6 +68,8 @@ export default class Bot {
         this.bot.command('turnOffOfficial', this.checkUser, ctx => ctx['user'].receiveOfficialAccount = false);
         this.bot.command('turnOnSelf', this.checkUser, ctx => ctx['user'].receiveSelf = true);
         this.bot.command('turnOffSelf', this.checkUser, ctx => ctx['user'].receiveSelf = false);
+        this.bot.command('turnOnImage', this.checkUser, ctx => ctx['user'].imageOnly = true);
+        this.bot.command('turnOffImage', this.checkUser, ctx => ctx['user'].imageOnly = false);
 
         this.bot.command('logout', this.checkUser, this.handleLogout);
         this.bot.on('message', this.checkUser, this.handleTelegramMessage);
@@ -189,7 +193,7 @@ export default class Bot {
         let from = msg.from();
         let room = msg.room();
         let type = msg.type();
-        let text = msg.text().replace(/<[^>]*>?/gm, '');
+        let text = msg.text().replace(/\<br\/\>/g, ' \n').replace(/<[^>]*>?/gm, '');
 
         if (user.id === from.id && !user.receiveSelf) return;
         if (!user.receiveOfficialAccount && from.type() === ContactType.Official) return;
@@ -201,7 +205,7 @@ export default class Bot {
         let city = from.city() || '';
         let provice = from.province() || '';
         let sent: TT.Message;
-        let avatar = room ? await room.avatar() || await from.avatar() : await from.avatar();
+        let avatar = await from.avatar();
         let avatarName = createHash('md5').update(room ? signature : nickname).digest().toString('hex') + '.jpg';
         let avatarPath = `${this.msgui.avatarDir}/${avatarName}`;
 
@@ -215,12 +219,13 @@ export default class Bot {
                 data = Buffer.from(data, 'utf-8').toString('base64');
 
                 const url = `${this.msgui.url}/?${data}`;
-                let screen = await takeScreenshot({ url });
 
-                try {
+                if (user.imageOnly) {
+                    let screen = await takeScreenshot({ url });
+                    if (screen.length === 0) break;
                     sent = await this.bot.telegram.sendPhoto(ctx.chat.id, { source: screen });
-                } catch (error) {
-                    console.log('text message error', error);
+                } else {
+                    sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: text }));
                 }
 
                 break;

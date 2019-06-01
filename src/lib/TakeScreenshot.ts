@@ -6,13 +6,17 @@ export default async function takeScreenshot({ url, savePath }: { url: string, s
     if (!browser) browser = await puppeteer.launch({ args: ['--no-sandbox'] });
 
     const page = await browser.newPage();
-    await page.setViewport({ width: 450, height: 1200, deviceScaleFactor: 3 });
+    await page.setViewport({ width: 500, height: 1200, deviceScaleFactor: 3 });
     await page.goto(url);
 
-    const result = await screenshotDOMElement(page, { selector: '#container', path: savePath });
-    page.close();
-
-    return result;
+    try {
+        const result = await screenshotDOMElement(page, { selector: '#container', path: savePath });
+        return result;
+    } catch (error) {
+        return Buffer.alloc(0);
+    } finally {
+        page.close();
+    }
 }
 
 async function screenshotDOMElement(page: puppeteer.Page, opts: { padding?: number, path?: string, selector: string }) {
