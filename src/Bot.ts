@@ -8,7 +8,6 @@ import * as TT from 'telegraf/typings/telegram-types';
 import takeScreenshot from './lib/TakeScreenshot';
 import { createHash } from 'crypto';
 import MiscHelper from './lib/MiscHelper';
-import { FileBoxType } from 'file-box';
 import axios from 'axios';
 import got from 'got';
 import HTMLTemplates from './lib/HTMLTemplates';
@@ -62,16 +61,16 @@ export default class Bot {
         this.bot.start(this.handleStart);
         (this.bot['stop'] as any)(this.checkUser, this.handleLogout);
         this.bot.command('login', this.handleLogin);
-        this.bot.command('turnOnGroups', this.checkUser, (ctx, n) => { ctx['user'].receiveGroups = true; n(); }, ctx => ctx.reply('OK'));
-        this.bot.command('turnOffGroups', this.checkUser, (ctx, n) => { ctx['user'].receiveGroups = false; n(); }, ctx => ctx.reply('OK'));
-        this.bot.command('turnOnOfficial', this.checkUser, (ctx, n) => { ctx['user'].receiveOfficialAccount = true, n() }, ctx => ctx.reply('OK'));
-        this.bot.command('turnOffOfficial', this.checkUser, (ctx, n) => { ctx['user'].receiveOfficialAccount = false, n() }, ctx => ctx.reply('OK'));
-        this.bot.command('turnOnSelf', this.checkUser, (ctx, n) => { ctx['user'].receiveSelf = true; n() }, ctx => ctx.reply('OK'));
-        this.bot.command('turnOffSelf', this.checkUser, (ctx, n) => { ctx['user'].receiveSelf = false; n() }, ctx => ctx.reply('OK'));
-        this.bot.command('turnOnImage', this.checkUser, (ctx, n) => { ctx['user'].imageOnly = true; n(); }, ctx => ctx.reply('OK'));
-        this.bot.command('turnOffImage', this.checkUser, (ctx, n) => { ctx['user'].imageOnly = false; n() }, ctx => ctx.reply('OK'));
-
+        this.bot.command('groupon', this.checkUser, (ctx, n) => { ctx['user'].receiveGroups = true; n(); }, ctx => ctx.reply('OK'));
+        this.bot.command('groupoff', this.checkUser, (ctx, n) => { ctx['user'].receiveGroups = false; n(); }, ctx => ctx.reply('OK'));
+        this.bot.command('officialon', this.checkUser, (ctx, n) => { ctx['user'].receiveOfficialAccount = true, n() }, ctx => ctx.reply('OK'));
+        this.bot.command('officialoff', this.checkUser, (ctx, n) => { ctx['user'].receiveOfficialAccount = false, n() }, ctx => ctx.reply('OK'));
+        this.bot.command('selfon', this.checkUser, (ctx, n) => { ctx['user'].receiveSelf = true; n() }, ctx => ctx.reply('OK'));
+        this.bot.command('selfoff', this.checkUser, (ctx, n) => { ctx['user'].receiveSelf = false; n() }, ctx => ctx.reply('OK'));
+        this.bot.command('texton', this.checkUser, (ctx, n) => { ctx['user'].imageOnly = false; n(); }, ctx => ctx.reply('OK'));
+        this.bot.command('textoff', this.checkUser, (ctx, n) => { ctx['user'].imageOnly = true; n() }, ctx => ctx.reply('OK'));
         this.bot.command('logout', this.checkUser, this.handleLogout);
+        this.bot.help(ctx => ctx.reply(lang.help));
         this.bot.on('message', this.checkUser, this.handleTelegramMessage);
 
         this.bot.catch((err) => {
@@ -89,7 +88,8 @@ export default class Bot {
     }
 
     handleStart = (ctx: ContextMessageUpdate) => {
-        ctx.reply(`Hello`);
+        ctx.reply(lang.welcome);
+        ctx.reply(lang.help);
     }
 
     handleLogin = async (ctx: ContextMessageUpdate) => {
@@ -163,6 +163,7 @@ export default class Bot {
 
         let file = msg.audio || (msg.video || (msg.photo && msg.photo[0]));
         if (file && file.file_size <= 50 * 1024 * 1024) {
+            return;
             try {
                 let url = `https://api.telegram.org/bot${this.token}/getFile?file_id=${file.file_id}`
                 let resp = await axios.get(url);
@@ -201,6 +202,8 @@ export default class Bot {
 
         switch (type) {
             case MessageType.Text:
+                if (!text) break;
+
                 if (user.imageOnly) {
                     let signature = room ? await room.topic() : from['payload'].signature;
                     let city = from.city() || '';
@@ -256,12 +259,19 @@ export default class Bot {
         user.msgs.set(sent.message_id, room || from);
         user.lastContact = room || from;
 
-        // Delete old history
-        if (user.msgs.size > 1000) {
-            let start = sent.message_id - 1000;
-            while (user.msgs.size > 1000 && start >= 0) {
-                user.msgs.delete(start--);
+        // The bot just knows recent 100 messages
+        if (sent.message_id < 100) return;
+        let countToDelete = sent.message_id - 100;
+
+        do {
+            try {
+                if (!await this.bot.telegram.deleteMessage(ctx.chat.id, countToDelete)) break;
+            } catch (error) {
+                break;
             }
-        }
+
+            user.msgs.delete(countToDelete);
+            countToDelete--;
+        } while (countToDelete > 0);
     }
 }
