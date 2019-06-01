@@ -12,6 +12,7 @@ import axios from 'axios';
 import got from 'got';
 import HTMLTemplates from './lib/HTMLTemplates';
 import Logger from './lib/Logger';
+import { async } from 'rxjs/internal/scheduler/async';
 
 interface MessageUI {
     url: string;
@@ -71,6 +72,7 @@ export default class Bot {
         this.bot.command('selfoff', this.checkUser, (ctx, n) => { ctx['user'].receiveSelf = false; n() }, ctx => ctx.reply('OK'));
         this.bot.command('texton', this.checkUser, (ctx, n) => { ctx['user'].imageOnly = false; n(); }, ctx => ctx.reply('OK'));
         this.bot.command('textoff', this.checkUser, (ctx, n) => { ctx['user'].imageOnly = true; n() }, ctx => ctx.reply('OK'));
+        this.bot.command('find', this.checkUser, this.handleFind);
         this.bot.command('logout', this.checkUser, this.handleLogout);
         this.bot.help(ctx => ctx.reply(lang.help));
         this.bot.on('message', this.checkUser, this.handleTelegramMessage);
@@ -98,6 +100,7 @@ export default class Bot {
         let id = ctx.chat.id;
         let qrcodeCache = '';
         if (this.clients.has(id)) {
+            if (this.clients.get(id).id) return;
             ctx.reply(lang.login.retry);
             return;
         };
@@ -151,6 +154,11 @@ export default class Bot {
         user.wechat.removeAllListeners();
         this.clients.delete(ctx.chat.id);
         ctx.reply(lang.login.bye);
+    }
+
+    handleFind = async (ctx: ContextMessageUpdate) => {
+        let [_, name] = ctx.message.text.split(' ');
+        if (!name) return;
     }
 
     handleTelegramMessage = async (ctx: ContextMessageUpdate) => {
