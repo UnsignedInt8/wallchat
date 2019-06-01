@@ -18,8 +18,13 @@ if (program.config) {
     bot = new Bot(config);
 } else {
     (async () => {
-        let { token } = await inquirer.prompt({ name: 'token', message: 'Bot Token:', type: 'input', }) as { token: string };
-        bot = new Bot({ token });
+        try {
+            let { token } = await inquirer.prompt({ name: 'token', message: 'Bot Token:', type: 'input', }) as { token: string };
+            bot = new Bot({ token: token.trim() });
+        } catch (error) {
+            Logger.error(error.message);
+            process.exit(1);
+        }
     })();
 }
 
