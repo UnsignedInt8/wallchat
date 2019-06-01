@@ -141,8 +141,10 @@ export default class Bot {
 
     handleLogout = async (ctx: ContextMessageUpdate) => {
         let user = ctx['user'] as Client;
-        await user.wechat.logout();
-        await user.wechat.stop();
+        if (!user) return;
+
+        await user.wechat.logout().catch(reason => Logger.error(reason));
+        await user.wechat.stop().catch(reason => Logger.error(reason));
         user.wechat.removeAllListeners();
         this.clients.delete(ctx.chat.id);
         ctx.reply(lang.login.bye);
