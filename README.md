@@ -7,9 +7,13 @@
 1. 安装 Node.js 10+  官网: https://nodejs.org
 2. 访问 https://t.me/BotFather, 申请你的 `bot token`
 3. 按照以下步骤运行
+
 ```bash
-$> npm install -g leavexchat-bot  # 安装
-$> leavexchat-bot  # 运行
+git clone https://github.com/UnsignedInt8/leavexchat-bot.git  
+cd leavexchat-bot  
+npm i # 安装依赖，如果失败，请先安装图形依赖，参见 CentOS 和 Ubuntu 说明
+npm run build # 编译
+node build/main/index.js # 运行
 # 输入 bot token 即可
 ```
 
