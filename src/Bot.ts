@@ -58,7 +58,7 @@ export default class Bot {
         });
 
         this.bot.start(this.handleStart);
-        (this.bot['stop'] as any)(this.checkUser, this.handleLogout);
+        this.bot.command('stop', this.checkUser, this.handleLogout);
         this.bot.command('login', this.handleLogin);
         this.bot.command('groupon', this.checkUser, (ctx, n) => { ctx['user'].receiveGroups = true; n(); }, ctx => ctx.reply('OK'));
         this.bot.command('groupoff', this.checkUser, (ctx, n) => { ctx['user'].receiveGroups = false; n(); }, ctx => ctx.reply('OK'));
