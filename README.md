@@ -48,6 +48,23 @@ npm run build
 node build/main/index.js -c config.json
 ```
 
+### Bot 命令
+
+| 命令 | 说明 |
+|---|---|
+|/start|启动会话|
+|/login|请求登录|
+|/logout|登出WeChat|
+|/groupon|开启接收群消息|
+|/groupoff|关闭接收群消息|
+|/officialon|开启接收公众号消息（现在是鸡肋）|
+|/officialoff|关闭接收公众号消息|
+|/selfon|开启接收自己的消息|
+|/selfoff|关闭接收自己的消息|
+|/texton|启用文本模式|
+|/textoff|关闭文本模式（需要服务器端支持）|
+|/help|显示帮助|
+
 ### 使用注意
 
 1. 根据 Wechaty 说明，2017年6月之后注册的 Wechat 账号无法登陆网页版 Wechat，因此无法使用此 bot 代收消息
@@ -55,6 +72,8 @@ node build/main/index.js -c config.json
 2. 为保证安全，bot 只会在自己的聊天记录保留最近 `100` 条消息
 
 3. 直接在 Telegram 里回复消息的对象是最近收到消息的发送者（个人或群），如果担心回复错了，请手动指定回复某条消息（最近 100 条以内）
+
+4. 用于目前使用的 WeChat 的 web 版协议，因此除了回复文字信息，图片、视频、语音等都无法通过 bot 发送
 
 #### CentOS 7
 
