@@ -11,6 +11,7 @@ import MiscHelper from './lib/MiscHelper';
 import axios from 'axios';
 import got from 'got';
 import HTMLTemplates from './lib/HTMLTemplates';
+import Logger from './lib/Logger';
 
 interface MessageUI {
     url: string;
@@ -19,7 +20,7 @@ interface MessageUI {
 interface BotOptions {
     token: string;
     socks5Proxy?: { host: string, port: number, username?: string, password?: string, };
-    msgui: MessageUI;
+    msgui?: MessageUI;
 }
 
 interface Client {
@@ -41,18 +42,16 @@ export default class Bot {
     private token: string;
 
     constructor({ token, socks5Proxy, msgui }: BotOptions) {
-        let agent: any;
+
         this.token = token;
         this.msgui = msgui;
 
-        if (socks5Proxy) {
-            agent = new SocksAgent({
-                socksHost: socks5Proxy.host,
-                socksPort: socks5Proxy.port,
-                socksUsername: socks5Proxy.username,
-                socksPassword: socks5Proxy.password,
-            });
-        }
+        let agent = socks5Proxy ? new SocksAgent({
+            socksHost: socks5Proxy.host,
+            socksPort: socks5Proxy.port,
+            socksUsername: socks5Proxy.username,
+            socksPassword: socks5Proxy.password,
+        }) : undefined;
 
         this.bot = new Telegraph(token, {
             telegram: { agent }
@@ -74,10 +73,10 @@ export default class Bot {
         this.bot.on('message', this.checkUser, this.handleTelegramMessage);
 
         this.bot.catch((err) => {
-            console.log('Ooops', err)
+            Logger.error('Ooops', err)
         });
 
-        this.bot.launch();
+        this.bot.launch().then(() => Logger.info(`Bot is running`));
     }
 
     async exit() {
@@ -175,7 +174,7 @@ export default class Bot {
                 // Not available on default puppet
                 await contact.say(FileBox.fromStream(got.stream(url), file.file_id));
             } catch (error) {
-                console.log(error.message);
+                Logger.error(error.message);
             }
             return;
         }
@@ -204,7 +203,7 @@ export default class Bot {
             case MessageType.Text:
                 if (!text) break;
 
-                if (user.imageOnly) {
+                if (user.imageOnly && this.msgui) {
                     let signature = room ? await room.topic() : from['payload'].signature;
                     let city = from.city() || '';
                     let provice = from.province() || '';
@@ -213,7 +212,7 @@ export default class Bot {
                     let avatarPath = `${this.msgui.avatarDir}/${avatarName}`;
 
                     if (!await MiscHelper.fileExists(avatarPath)) {
-                        await avatar.toFile(avatarPath).catch(reason => console.error(reason));
+                        await avatar.toFile(avatarPath).catch(reason => Logger.error(reason));
                     }
 
                     let data = `n=${nickname}&s=${signature}&m=${text}&p=${provice}&c=${city}&a=${avatarName}`;
