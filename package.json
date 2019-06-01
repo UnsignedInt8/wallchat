@@ -1,11 +1,11 @@
 {
   "name": "leavexchat-bot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Receive your WeChat messages on Telegram",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
-  "repository": "https://github.com/UnsignedInt8/bot",
+  "repository": "https://github.com/UnsignedInt8/leavexchat-bot",
   "license": "MPL-2.0",
   "bin": {
     "leavexchat-bot": "build/main/index.js"
