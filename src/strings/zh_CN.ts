@@ -7,6 +7,10 @@ export default {
         retry: `请扫描二维码`,
         bye: 'Bye',
     },
+    message: {
+        redpacket: '发送了一个红包',
+        money: '向你转了一笔账',
+    },
     help: `命令说明:
 /start - 启动会话
 /login - 请求登录

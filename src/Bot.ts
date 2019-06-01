@@ -237,6 +237,10 @@ export default class Bot {
             case MessageType.Attachment:
                 break;
 
+            case MessageType.Money:
+                sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: lang.message.money }));
+                break;
+
             case MessageType.Audio:
                 let audio = await msg.toFileBox();
                 sent = await ctx['replyWithVoice']({ source: await audio.toStream() }) as TT.Message;

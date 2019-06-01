@@ -7,6 +7,10 @@ export default {
         retry: `Please scan the QRCode and try again`,
         bye: 'Bye',
     },
+    message: {
+        redpacket: 'A red packet',
+        money: 'Transferred some money to you',
+    },
     help: `Command reference:
 /start - Start bot
 /login - Login Wechat
