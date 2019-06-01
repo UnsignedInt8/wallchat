@@ -21,6 +21,7 @@ interface BotOptions {
     token: string;
     socks5Proxy?: { host: string, port: number, username?: string, password?: string, };
     msgui?: MessageUI;
+    keepMsgs?: number;
 }
 
 interface Client {
@@ -39,12 +40,14 @@ export default class Bot {
     protected bot: Telegraph<ContextMessageUpdate>;
     protected clients: Map<number, Client> = new Map();
     protected msgui: MessageUI;
+    protected keeyMsgs: number;
     private token: string;
 
-    constructor({ token, socks5Proxy, msgui }: BotOptions) {
+    constructor({ token, socks5Proxy, msgui, keepMsgs }: BotOptions) {
 
         this.token = token;
         this.msgui = msgui;
+        this.keeyMsgs = keepMsgs === undefined ? 300 : (Math.max(keepMsgs, 100) || 300);
 
         let agent = socks5Proxy ? new SocksAgent({
             socksHost: socks5Proxy.host,
@@ -260,9 +263,9 @@ export default class Bot {
         user.msgs.set(sent.message_id, room || from);
         user.lastContact = room || from;
 
-        // The bot just knows recent 100 messages
-        if (sent.message_id < 100) return;
-        let countToDelete = sent.message_id - 100;
+        // The bot just knows recent messages
+        if (sent.message_id < this.keeyMsgs) return;
+        let countToDelete = sent.message_id - this.keeyMsgs;
 
         do {
             try {
