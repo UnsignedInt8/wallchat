@@ -39,7 +39,7 @@ npm install
 npm run build
 ```
 
-3. Clone , 该工程是用于将消息转化为图片发送。 编译后使用 http-server 运行 http 服务。记下 static 目录的绝对路径，更多请访问
+3. Clone [leavexchat-web-ui](https://github.com/UnsignedInt8/leavexchat-web-ui/), 该工程是用于将消息转化为图片发送。 编译后使用 http-server 运行 http 服务。记下 static 目录的绝对路径，并填写好配置文件，更多请访问[leavexchat-web-ui](https://github.com/UnsignedInt8/leavexchat-web-ui/)
 
 4. 重命名 `config-example.json` 为 `config.json`，并配置好token 与其它信息。在 `avatarDir` 中填写好 static 目录的绝对路径
 

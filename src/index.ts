@@ -33,3 +33,5 @@ process.on('SIGINT', async () => {
     Logger.info('all users exited');
     process.exit();
 });
+
+export { Bot };
