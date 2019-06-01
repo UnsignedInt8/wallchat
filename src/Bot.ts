@@ -62,14 +62,14 @@ export default class Bot {
         this.bot.start(this.handleStart);
         (this.bot['stop'] as any)(this.checkUser, this.handleLogout);
         this.bot.command('login', this.handleLogin);
-        this.bot.command('turnOnGroups', this.checkUser, ctx => ctx['user'].receiveGroups = true);
-        this.bot.command('turnOffGroups', this.checkUser, ctx => ctx['user'].receiveGroups = false);
-        this.bot.command('turnOnOfficial', this.checkUser, ctx => ctx['user'].receiveOfficialAccount = true);
-        this.bot.command('turnOffOfficial', this.checkUser, ctx => ctx['user'].receiveOfficialAccount = false);
-        this.bot.command('turnOnSelf', this.checkUser, ctx => ctx['user'].receiveSelf = true);
-        this.bot.command('turnOffSelf', this.checkUser, ctx => ctx['user'].receiveSelf = false);
-        this.bot.command('turnOnImage', this.checkUser, ctx => ctx['user'].imageOnly = true);
-        this.bot.command('turnOffImage', this.checkUser, ctx => ctx['user'].imageOnly = false);
+        this.bot.command('turnOnGroups', this.checkUser, (ctx, n) => { ctx['user'].receiveGroups = true; n(); }, ctx => ctx.reply('OK'));
+        this.bot.command('turnOffGroups', this.checkUser, (ctx, n) => { ctx['user'].receiveGroups = false; n(); }, ctx => ctx.reply('OK'));
+        this.bot.command('turnOnOfficial', this.checkUser, (ctx, n) => { ctx['user'].receiveOfficialAccount = true, n() }, ctx => ctx.reply('OK'));
+        this.bot.command('turnOffOfficial', this.checkUser, (ctx, n) => { ctx['user'].receiveOfficialAccount = false, n() }, ctx => ctx.reply('OK'));
+        this.bot.command('turnOnSelf', this.checkUser, (ctx, n) => { ctx['user'].receiveSelf = true; n() }, ctx => ctx.reply('OK'));
+        this.bot.command('turnOffSelf', this.checkUser, (ctx, n) => { ctx['user'].receiveSelf = false; n() }, ctx => ctx.reply('OK'));
+        this.bot.command('turnOnImage', this.checkUser, (ctx, n) => { ctx['user'].imageOnly = true; n(); }, ctx => ctx.reply('OK'));
+        this.bot.command('turnOffImage', this.checkUser, (ctx, n) => { ctx['user'].imageOnly = false; n() }, ctx => ctx.reply('OK'));
 
         this.bot.command('logout', this.checkUser, this.handleLogout);
         this.bot.on('message', this.checkUser, this.handleTelegramMessage);
@@ -149,10 +149,6 @@ export default class Bot {
         ctx.reply(lang.login.bye);
     }
 
-    handleTurnOffGroups = (client: Client, on: boolean) => {
-        client.receiveGroups = on;
-    }
-
     handleTelegramMessage = async (ctx: ContextMessageUpdate) => {
         let msg = ctx.message;
         let user = ctx['user'] as Client;
@@ -201,30 +197,31 @@ export default class Bot {
 
         let alias = await from.alias();
         let nickname = from.name() + (alias ? ` (${alias})` : '');
-        let signature = room ? await room.topic() : from['payload'].signature;
-        let city = from.city() || '';
-        let provice = from.province() || '';
         let sent: TT.Message;
-        let avatar = await from.avatar();
-        let avatarName = createHash('md5').update(room ? signature : nickname).digest().toString('hex') + '.jpg';
-        let avatarPath = `${this.msgui.avatarDir}/${avatarName}`;
-
-        if (!await MiscHelper.fileExists(avatarPath)) {
-            await avatar.toFile(avatarPath).catch(reason => console.error(reason));
-        }
 
         switch (type) {
             case MessageType.Text:
-                let data = `n=${nickname}&s=${signature}&m=${text}&p=${provice}&c=${city}&a=${avatarName}`;
-                data = Buffer.from(data, 'utf-8').toString('base64');
-
-                const url = `${this.msgui.url}/?${data}`;
-
                 if (user.imageOnly) {
+                    let signature = room ? await room.topic() : from['payload'].signature;
+                    let city = from.city() || '';
+                    let provice = from.province() || '';
+                    let avatar = await from.avatar();
+                    let avatarName = createHash('md5').update(room ? signature : nickname).digest().toString('hex') + '.jpg';
+                    let avatarPath = `${this.msgui.avatarDir}/${avatarName}`;
+
+                    if (!await MiscHelper.fileExists(avatarPath)) {
+                        await avatar.toFile(avatarPath).catch(reason => console.error(reason));
+                    }
+
+                    let data = `n=${nickname}&s=${signature}&m=${text}&p=${provice}&c=${city}&a=${avatarName}`;
+                    data = Buffer.from(data, 'utf-8').toString('base64');
+                    const url = `${this.msgui.url}/?${data}`;
+
                     let screen = await takeScreenshot({ url });
                     if (screen.length === 0) break;
                     sent = await this.bot.telegram.sendPhoto(ctx.chat.id, { source: screen });
                 } else {
+                    nickname = `${nickname}` + (room ? ` [${await room.topic()}]` : '');
                     sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: text }));
                 }
 
@@ -253,7 +250,6 @@ export default class Bot {
         }
 
         if (!sent) {
-            console.log(msg);
             return;
         }
 
