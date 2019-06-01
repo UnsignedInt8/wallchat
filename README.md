@@ -48,7 +48,7 @@ npm run build
 node build/main/index.js -c config.json
 ```
 
-### Bot 命令
+## Bot 命令
 
 | 命令 | 说明 |
 |---|---|
@@ -65,7 +65,7 @@ node build/main/index.js -c config.json
 |/textoff|关闭文本模式（需要服务器端支持）|
 |/help|显示帮助|
 
-### 使用注意
+## 使用注意
 
 1. 根据 Wechaty 说明，2017年6月之后注册的 Wechat 账号无法登陆网页版 Wechat，因此无法使用此 bot 代收消息
 
@@ -75,7 +75,9 @@ node build/main/index.js -c config.json
 
 4. 用于目前使用的 WeChat 的 web 版协议，因此除了回复文字信息，图片、视频、语音等都无法通过 bot 发送
 
-#### CentOS 7
+## 服务器端的部署
+
+##### CentOS 7
 
 如果需要在 CentOS 7 部署，并启用 web-ui，就需要安装以下依赖
 
@@ -86,7 +88,7 @@ yum install pango.x86_64 libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_6
 https://medium.com/source-words/how-to-manually-install-update-and-uninstall-fonts-on-linux-a8d09a3853b0
 ```
 
-#### Ubuntu 
+##### Ubuntu 
 
 如果需要在 Ubuntu 部署，并启用 web-ui，就需要安装以下依赖
 ```
