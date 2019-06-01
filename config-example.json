@@ -8,6 +8,6 @@
     },
     "msgui": {
         "url": "http://localhost:3000",
-        "avatarDir": ""
+        "avatarDir": "/path/to/web/ui/static"
     }
 }
