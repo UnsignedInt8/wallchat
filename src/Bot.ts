@@ -33,6 +33,7 @@ interface Client {
     imageOnly?: boolean;
     msgs: Map<number, Contact | Room>;
     lastContact?: Room | Contact;
+    contactLocked?: boolean;
     id?: string;
 }
 
@@ -73,6 +74,9 @@ export default class Bot {
         this.bot.command('texton', this.checkUser, (ctx, n) => { ctx['user'].imageOnly = false; n(); }, ctx => ctx.reply('OK'));
         this.bot.command('textoff', this.checkUser, (ctx, n) => { ctx['user'].imageOnly = true; n() }, ctx => ctx.reply('OK'));
         this.bot.command('find', this.checkUser, this.handleFind);
+        this.bot.command('lock', this.checkUser, this.handleLock);
+        this.bot.command('unlock', this.checkUser, this.handleUnlock);
+        this.bot.command('findandlock', this.checkUser, this.handleFind, this.handleLock);
         this.bot.command('logout', this.checkUser, this.handleLogout);
         this.bot.help(ctx => ctx.reply(lang.help));
         this.bot.on('message', this.checkUser, this.handleTelegramMessage);
@@ -156,20 +160,53 @@ export default class Bot {
         ctx.reply(lang.login.bye);
     }
 
-    handleFind = async (ctx: ContextMessageUpdate) => {
+    handleFind = async (ctx: ContextMessageUpdate, next: Function) => {
         let [_, name] = ctx.message.text.split(' ');
         if (!name) return;
+        let user = ctx['user'] as Client;
+
+        let found: Contact;
+        try {
+            found = await user.wechat.Contact.find({ name }) || await user.wechat.Contact.find({ alias: name });
+        } catch (error) {
+            Logger.error(error.message);
+            return;
+        }
+
+        if (!found) {
+            ctx.reply(lang.message.contactNotFound)
+            return;
+        }
+
+        ctx.reply(lang.message.contactFound(found.name()));
+        user.lastContact = found;
+
+        if (next) next();
+    }
+
+    handleLock = async (ctx: ContextMessageUpdate) => {
+        let user = ctx['user'] as Client;
+        if (!user.lastContact) return;
+        user.contactLocked = true;
+        ctx.reply(lang.message.contactLocked((user.lastContact as Contact).name()));
+    }
+
+    handleUnlock = async (ctx: ContextMessageUpdate) => {
+        let user = ctx['user'] as Client;
+        if (!user.lastContact) return;
+        user.contactLocked = false;
+        ctx.reply(lang.message.contactUnlocked((user.lastContact as Contact).name()));
     }
 
     handleTelegramMessage = async (ctx: ContextMessageUpdate) => {
         let msg = ctx.message;
         let user = ctx['user'] as Client;
+        if (msg.text.startsWith('/find')) return;
 
         let contact = user.lastContact;
         if (msg.reply_to_message) {
             contact = user.msgs.get(msg.reply_to_message.message_id)
         }
-
 
         if (!contact) return;
 
@@ -256,7 +293,7 @@ export default class Bot {
 
             case MessageType.Image:
                 let image = await msg.toFileBox();
-                sent = await ctx.replyWithPhoto({ source: await image.toStream() }, { caption: nickname });
+                sent = await ctx.replyWithPhoto({ source: await image.toStream() }, { caption: nickname + (room ? ` [${await room.topic()}]` : '') });
                 break;
 
             case MessageType.Video:
@@ -273,7 +310,7 @@ export default class Bot {
         }
 
         user.msgs.set(sent.message_id, room || from);
-        user.lastContact = room || from;
+        if (!user.contactLocked) user.lastContact = room || from;
 
         // The bot just knows recent messages
         if (sent.message_id < this.keeyMsgs) return;

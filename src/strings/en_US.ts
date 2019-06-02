@@ -10,6 +10,11 @@ export default {
     message: {
         redpacket: 'A red packet',
         money: 'Transferred some money to you',
+        contactNotFound: 'Contact not found',
+        contactFound: (name: string) => `${name} is current contact`,
+        contactLocked: (name: string) => `${name} is locked`,
+        contactUnlocked: (name: string) => `${name} is unlocked`,
+
     },
     help: `Command reference:
 /start - Start bot
