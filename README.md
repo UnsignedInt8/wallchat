@@ -63,6 +63,10 @@ node build/main/index.js -c config.json
 |/selfoff|关闭接收自己的消息|
 |/texton|启用文本模式|
 |/textoff|关闭文本模式（需要服务器端支持）|
+|/find|查找联系人并设置为最近联系人（区分大小写）|
+|/lock|锁定最近联系人|
+|/unlock|取消锁定最近联系人|
+|/findandlock|查找并锁定联系人|
 |/help|显示帮助|
 
 ## 使用注意

@@ -28,5 +28,9 @@ export default {
 /selfoff - Stop receiving self messages
 /texton - Just text message (default)
 /textoff - Show you rich-type message
+/find - Find a contact and set as the last contact (Case sensitive)
+/lock - Lock the last contact
+/unlock - Unlock the last contact
+/findandlock - Find and lock a contact (Case sensitive)
 /help - Show this help page`,
 }

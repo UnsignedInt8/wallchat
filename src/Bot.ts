@@ -249,6 +249,7 @@ export default class Bot {
 
         let alias = await from.alias();
         let nickname = from.name() + (alias ? ` (${alias})` : '');
+        let caption = nickname + (room ? ` [${await room.topic()}]` : '');
         let sent: TT.Message;
 
         switch (type) {
@@ -290,17 +291,17 @@ export default class Bot {
 
             case MessageType.Audio:
                 let audio = await msg.toFileBox();
-                sent = await ctx['replyWithVoice']({ source: await audio.toStream() }) as TT.Message;
+                sent = await ctx['replyWithVoice']({ source: await audio.toStream(), }, { caption }) as TT.Message;
                 break;
 
             case MessageType.Image:
                 let image = await msg.toFileBox();
-                sent = await ctx.replyWithPhoto({ source: await image.toStream() }, { caption: nickname + (room ? ` [${await room.topic()}]` : '') });
+                sent = await ctx.replyWithPhoto({ source: await image.toStream() }, { caption });
                 break;
 
             case MessageType.Video:
                 let video = await msg.toFileBox();
-                sent = await ctx.replyWithVideo({ source: await video.toStream() });
+                sent = await ctx.replyWithVideo({ source: await video.toStream() }, { caption } as any);
                 break;
 
             default:
