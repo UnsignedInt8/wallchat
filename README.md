@@ -12,7 +12,7 @@
 ```
 $> npm i -g leavexchat-bot
 $> leavexchat-bot
-$> 输入 token
+$> 输入 token, Done!
 ```
 
 ## 快速开始 -- 服务器端
@@ -23,6 +23,12 @@ $> cd leavexchat-bot
 $> npm i 
 $> npm run build 
 $> node build/main/index.js 
+$> 输入 token, Done!
+```
+
+```bash
+# 使用配置文件方式
+$> node build/main/index.js -c config.json
 ```
 
 ## 进阶使用
