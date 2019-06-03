@@ -12,7 +12,6 @@ import axios from 'axios';
 import got from 'got';
 import HTMLTemplates from './lib/HTMLTemplates';
 import Logger from './lib/Logger';
-import { async } from 'rxjs/internal/scheduler/async';
 
 interface MessageUI {
     url: string;
@@ -64,30 +63,29 @@ export default class Bot {
         });
 
         this.bot.start(this.handleStart);
-        this.bot.command('stop', this.checkUser, this.handleLogout);
+        this.bot.command('stop', (ctx, n) => this.checkUser(ctx, n), this.handleLogout);
         this.bot.command('login', this.handleLogin);
-        this.bot.command('groupon', this.checkUser, (ctx, n) => { ctx['user'].receiveGroups = true; n(); }, ctx => ctx.reply('OK'));
-        this.bot.command('groupoff', this.checkUser, (ctx, n) => { ctx['user'].receiveGroups = false; n(); }, ctx => ctx.reply('OK'));
-        this.bot.command('officialon', this.checkUser, (ctx, n) => { ctx['user'].receiveOfficialAccount = true, n() }, ctx => ctx.reply('OK'));
-        this.bot.command('officialoff', this.checkUser, (ctx, n) => { ctx['user'].receiveOfficialAccount = false, n() }, ctx => ctx.reply('OK'));
-        this.bot.command('selfon', this.checkUser, (ctx, n) => { ctx['user'].receiveSelf = true; n() }, ctx => ctx.reply('OK'));
-        this.bot.command('selfoff', this.checkUser, (ctx, n) => { ctx['user'].receiveSelf = false; n() }, ctx => ctx.reply('OK'));
-        this.bot.command('texton', this.checkUser, (ctx, n) => { ctx['user'].imageOnly = false; n(); }, ctx => ctx.reply('OK'));
-        this.bot.command('textoff', this.checkUser, (ctx, n) => { ctx['user'].imageOnly = true; n() }, ctx => ctx.reply('OK'));
-        this.bot.command('find', this.checkUser, this.handleFind);
-        this.bot.command('lock', this.checkUser, this.handleLock);
-        this.bot.command('unlock', this.checkUser, this.handleUnlock);
-        this.bot.command('findandlock', this.checkUser, this.handleFind, this.handleLock);
-        this.bot.command('current', this.checkUser, this.handleCurrent);
-        this.bot.command('logout', this.checkUser, this.handleLogout);
+        this.bot.command('groupon', (ctx, n) => this.checkUser(ctx, n), (ctx, n) => { ctx['user'].receiveGroups = true; n(); }, ctx => ctx.reply('OK'));
+        this.bot.command('groupoff', (ctx, n) => this.checkUser(ctx, n), (ctx, n) => { ctx['user'].receiveGroups = false; n(); }, ctx => ctx.reply('OK'));
+        this.bot.command('officialon', (ctx, n) => this.checkUser(ctx, n), (ctx, n) => { ctx['user'].receiveOfficialAccount = true, n() }, ctx => ctx.reply('OK'));
+        this.bot.command('officialoff', (ctx, n) => this.checkUser(ctx, n), (ctx, n) => { ctx['user'].receiveOfficialAccount = false, n() }, ctx => ctx.reply('OK'));
+        this.bot.command('selfon', (ctx, n) => this.checkUser(ctx, n), (ctx, n) => { ctx['user'].receiveSelf = true; n() }, ctx => ctx.reply('OK'));
+        this.bot.command('selfoff', (ctx, n) => this.checkUser(ctx, n), (ctx, n) => { ctx['user'].receiveSelf = false; n() }, ctx => ctx.reply('OK'));
+        this.bot.command('texton', (ctx, n) => this.checkUser(ctx, n), (ctx, n) => { ctx['user'].imageOnly = false; n(); }, ctx => ctx.reply('OK'));
+        this.bot.command('textoff', (ctx, n) => this.checkUser(ctx, n), (ctx, n) => { ctx['user'].imageOnly = true; n() }, ctx => ctx.reply('OK'));
+        this.bot.command('find', (ctx, n) => this.checkUser(ctx, n), this.handleFind);
+        this.bot.command('lock', (ctx, n) => this.checkUser(ctx, n), this.handleLock);
+        this.bot.command('unlock', (ctx, n) => this.checkUser(ctx, n), this.handleUnlock);
+        this.bot.command('findandlock', (ctx, n) => this.checkUser(ctx, n), this.handleFind, this.handleLock);
+        this.bot.command('current', (ctx, n) => this.checkUser(ctx, n), this.handleCurrent);
+        this.bot.command('logout', (ctx, n) => this.checkUser(ctx, n), this.handleLogout);
         this.bot.help(ctx => ctx.reply(lang.help));
-        this.bot.on('message', this.checkUser, this.handleTelegramMessage);
+        this.bot.on('message', (ctx, n) => this.checkUser(ctx, n), this.handleTelegramMessage);
 
         this.bot.catch((err) => {
             Logger.error('Ooops', err)
 
         });
-
     }
 
     launch() {
@@ -153,7 +151,7 @@ export default class Bot {
         await wechat.start();
     }
 
-    checkUser = (ctx: ContextMessageUpdate, next: Function) => {
+    protected checkUser(ctx: ContextMessageUpdate, next: Function) {
         if (!ctx) return next ? next() : undefined;
 
         let id = ctx.chat.id;

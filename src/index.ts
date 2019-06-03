@@ -36,4 +36,4 @@ process.on('SIGINT', async () => {
     process.exit();
 });
 
-export { Bot };
+export { Bot, Logger };
