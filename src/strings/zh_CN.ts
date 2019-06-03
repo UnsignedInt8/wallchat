@@ -14,6 +14,8 @@ export default {
         contactFound: (name: string) => `${name} 已是当前联系人`,
         contactLocked: (name: string) => `${name} 已锁定`,
         contactUnlocked: (name: string) => `${name} 已取消锁定`,
+        noCurrentContact: '无当前联系人',
+        current: (name: string) => `当前联系人 ${name}`,
     },
     help: `命令说明:
 /start - 启动会话
@@ -27,9 +29,9 @@ export default {
 /selfoff - 关闭接收自己的消息
 /texton - 启用文本模式
 /textoff - 关闭文本模式（需要服务器端支持） 
-/find - 查找联系人并设置为最近联系人（区分大小写）
-/lock - 锁定最近联系人
-/unlock - 取消锁定最近联系人
-/findandlock - 查找并锁定联系人（区分大小写）
+/find - 查找联系人并设置为当前联系人（区分大小写）
+/lock - 锁定当前联系人
+/unlock - 取消锁定当前联系人
+/findandlock - 查找并锁定为当前联系人（区分大小写）
 /help - 显示帮助`,
 }

@@ -14,7 +14,8 @@ export default {
         contactFound: (name: string) => `${name} is current contact`,
         contactLocked: (name: string) => `${name} is locked`,
         contactUnlocked: (name: string) => `${name} is unlocked`,
-
+        noCurrentContact: `No current contact`,
+        current: (name: string) => `Current contact: ${name}`,
     },
     help: `Command reference:
 /start - Start bot
@@ -28,9 +29,9 @@ export default {
 /selfoff - Stop receiving self messages
 /texton - Just text message (default)
 /textoff - Show you rich-type message
-/find - Find a contact and set as the last contact (Case sensitive)
-/lock - Lock the last contact
-/unlock - Unlock the last contact
-/findandlock - Find and lock a contact (Case sensitive)
+/find - Find a contact and set as the current contact (Case sensitive)
+/lock - Lock the current contact
+/unlock - Unlock the current contact
+/findandlock - Find and lock the contact (Case sensitive)
 /help - Show this help page`,
 }

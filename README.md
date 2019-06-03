@@ -9,7 +9,7 @@
 
 ## 快速开始 -- 个人桌面端 
 
-```
+```bash
 $> npm i -g leavexchat-bot
 $> leavexchat-bot
 $> 输入 token, Done!
@@ -45,9 +45,9 @@ npm install
 npm run build
 ```
 
-3. Clone [leavexchat-web-ui](https://github.com/UnsignedInt8/leavexchat-web-ui/), 该工程是用于将消息转化为图片发送。 编译后使用 http-server 运行 http 服务。记下 static 目录的绝对路径，并填写好配置文件，更多请访问[leavexchat-web-ui](https://github.com/UnsignedInt8/leavexchat-web-ui/)
+3. 访问 [leavexchat-web-ui](https://github.com/UnsignedInt8/leavexchat-web-ui/), 该工程是用于将消息转化为图片发送。 编译后使用 http-server 运行 http 服务。记下 static 目录的绝对路径，并填写好配置文件，更多请访问[leavexchat-web-ui](https://github.com/UnsignedInt8/leavexchat-web-ui/)
 
-4. 重命名 `config-example.json` 为 `config.json`，并配置好token 与其它信息。在 `avatarDir` 中填写好 static 目录的绝对路径
+4. 重命名 `config-example.json` 为 `config.json`，并配置好 token 与其它信息。在 `avatarDir` 中填写好 static 目录的绝对路径
 
 5. 运行
 ```
@@ -67,7 +67,7 @@ node build/main/index.js -c config.json
 |/officialoff|关闭接收公众号消息|
 |/selfon|开启接收自己的消息|
 |/selfoff|关闭接收自己的消息|
-|/texton|启用文本模式|
+|/texton|启用文本模式（默认，推荐）|
 |/textoff|关闭文本模式（需要服务器端支持）|
 |/find|查找联系人并设置为最近联系人（区分大小写）|
 |/lock|锁定最近联系人|
