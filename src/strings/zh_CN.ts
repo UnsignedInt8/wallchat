@@ -33,5 +33,6 @@ export default {
 /lock - 锁定当前联系人
 /unlock - 取消锁定当前联系人
 /findandlock - 查找并锁定为当前联系人（区分大小写）
+/current - 显示当前联系人
 /help - 显示帮助`,
 }

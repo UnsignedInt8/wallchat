@@ -33,5 +33,6 @@ export default {
 /lock - Lock the current contact
 /unlock - Unlock the current contact
 /findandlock - Find and lock the contact (Case sensitive)
+/current - Show current contact
 /help - Show this help page`,
 }

@@ -73,6 +73,7 @@ node build/main/index.js -c config.json
 |/lock|锁定最近联系人|
 |/unlock|取消锁定最近联系人|
 |/findandlock|查找并锁定联系人|
+|/current|显示当前联系人|
 |/help|显示帮助|
 
 ## 使用注意
