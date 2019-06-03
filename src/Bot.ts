@@ -87,6 +87,9 @@ export default class Bot {
 
         });
 
+    }
+
+    launch() {
         this.bot.launch().then(() => Logger.info(`Bot is running`));
     }
 
@@ -115,29 +118,33 @@ export default class Bot {
 
         let wechat = new Wechaty();
         this.clients.set(ctx.chat.id, { wechat, msgs: new Map(), receiveGroups: true, receiveOfficialAccount: false });
+        let loginTimer: NodeJS.Timeout;
+        let deleteWechat = () => {
+            wechat.stop().catch();
+            wechat.removeAllListeners();
+            this.clients.delete(ctx.chat.id);
+        }
 
         wechat.on('scan', async (qrcode: string) => {
             if (qrcode === qrcodeCache) return;
             qrcodeCache = qrcode;
 
-            ctx.replyWithPhoto({ source: qr.image(qrcode) }).catch(async () => {
-                await wechat.stop().catch();
-                wechat.removeAllListeners();
-                this.clients.delete(ctx.chat.id);
-            });
+            if (!loginTimer) {
+                loginTimer = setTimeout(() => deleteWechat(), 3 * 60 * 1000);
+            }
+
+            ctx.replyWithPhoto({ source: qr.image(qrcode) }).catch(() => deleteWechat());
         });
 
         wechat.once('login', user => {
             this.clients.get(ctx.chat.id).id = user.id;
             ctx.reply(lang.login.logined(user.name()));
+            clearTimeout(loginTimer);
         });
 
         wechat.on('logout', user => {
             ctx.reply(lang.login.logouted(user.name()));
-            wechat.stop();
-            wechat.removeAllListeners();
-
-            this.clients.delete(id);
+            deleteWechat();
         });
 
         wechat.on('message', msg => this.handleWechatMessage(msg, ctx));

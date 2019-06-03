@@ -16,11 +16,13 @@ if (program.config) {
     let json = fs.readFileSync(program.config, { encoding: 'utf8' });
     let config = JSON.parse(json);
     bot = new Bot(config);
+    bot.launch();
 } else {
     (async () => {
         try {
             let { token } = await inquirer.prompt({ name: 'token', message: 'Bot Token:', type: 'input', }) as { token: string };
             bot = new Bot({ token: token.trim() });
+            bot.launch();
         } catch (error) {
             Logger.error(error.message);
             process.exit(1);
