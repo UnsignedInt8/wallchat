@@ -18,7 +18,8 @@ interface MessageUI {
     url: string;
     avatarDir: string;
 }
-interface BotOptions {
+
+export interface BotOptions {
     token: string;
     socks5Proxy?: { host: string, port: number, username?: string, password?: string, };
     msgui?: MessageUI;
