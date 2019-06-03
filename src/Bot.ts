@@ -262,6 +262,7 @@ export default class Bot {
         }
 
         if (msg.text) await contact.say(msg.text);
+        if (!user.contactLocked) user.currentContact = contact;
     }
 
     async handleWechatMessage(msg: Message, ctx: ContextMessageUpdate) {
