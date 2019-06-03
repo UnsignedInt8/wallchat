@@ -16,6 +16,7 @@ export default {
         contactUnlocked: (name: string) => `${name} 已取消锁定`,
         noCurrentContact: '无当前联系人',
         current: (name: string) => `当前联系人 ${name}`,
+        timeout: '登录超时，Bye',
     },
     help: `命令说明:
 /start - 启动会话

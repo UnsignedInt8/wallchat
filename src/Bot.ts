@@ -130,7 +130,7 @@ export default class Bot {
             qrcodeCache = qrcode;
 
             if (!loginTimer) {
-                loginTimer = setTimeout(() => deleteWechat(), 3 * 60 * 1000);
+                loginTimer = setTimeout(() => { deleteWechat(); ctx.reply(lang.message.timeout); }, 3 * 60 * 1000);
             }
 
             ctx.replyWithPhoto({ source: qr.image(qrcode) }).catch(() => deleteWechat());

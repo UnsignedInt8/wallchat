@@ -16,6 +16,7 @@ export default {
         contactUnlocked: (name: string) => `${name} is unlocked`,
         noCurrentContact: `No current contact`,
         current: (name: string) => `Current contact: ${name}`,
+        timeout: 'Login timeout, bye',
     },
     help: `Command reference:
 /start - Start bot
