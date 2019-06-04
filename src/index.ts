@@ -2,7 +2,7 @@
 
 import commander from 'commander';
 import fs from 'fs';
-import Bot from './Bot';
+import Bot, { BotOptions } from './Bot';
 import Logger from './lib/Logger';
 import inquirer from 'inquirer';
 
@@ -36,4 +36,4 @@ process.on('SIGINT', async () => {
     process.exit();
 });
 
-export { Bot, Logger };
+export { Bot, Logger, BotOptions };

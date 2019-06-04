@@ -1,7 +1,7 @@
 export default {
     welcome: `Welcome, I'm a wechat message transferring bot.`,
     login: {
-        request: `I'm requesting the Wechat QRCode for you, please wait a moment`,
+        request: `I'm requesting Wechat Login QRCode for you, please wait a moment`,
         logined: (name: string) => `Congratulations! ${name} has logined`,
         logouted: (name: string) => `${name} has logouted`,
         retry: `Please scan the QRCode and try again`,
@@ -30,10 +30,10 @@ export default {
 /selfoff - Stop receiving self messages
 /texton - Just text message (default)
 /textoff - Show you rich-type message
-/find - Find a contact and set as the current contact (Case sensitive)
-/lock - Lock the current contact
-/unlock - Unlock the current contact
-/findandlock - Find and lock the contact (Case sensitive)
+/find - Find a contact and set as current contact (Case sensitive)
+/lock - Lock current contact
+/unlock - Unlock current contact
+/findandlock - Find and lock contact (Case sensitive)
 /current - Show current contact
 /help - Show this help page`,
 }

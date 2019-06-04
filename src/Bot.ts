@@ -193,7 +193,7 @@ export default class Bot {
             return;
         }
 
-        ctx.reply(lang.message.contactFound(found.name()));
+        await ctx.reply(lang.message.contactFound(found.name() + (user.contactLocked ? ` [${lang.message.contactLocked}]` : ''))).catch();
         user.currentContact = found;
 
         if (next) next();
