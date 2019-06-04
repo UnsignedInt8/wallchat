@@ -193,7 +193,8 @@ export default class Bot {
             return;
         }
 
-        await ctx.reply(lang.message.contactFound(found.name() + (user.contactLocked ? ` [${lang.message.contactLocked}]` : ''))).catch();
+        let info = (user.contactLocked ? ` [${lang.message.contactLocked('').trim()}]` : '');
+        await ctx.reply(lang.message.contactFound(`${name}`) + info).catch();
         user.currentContact = found;
 
         if (next) next();
@@ -202,6 +203,7 @@ export default class Bot {
     handleLock = async (ctx: ContextMessageUpdate) => {
         let user = ctx['user'] as Client;
         if (!user.currentContact) return;
+        if (user.contactLocked) return;
         user.contactLocked = true;
         ctx.reply(lang.message.contactLocked((user.currentContact as Contact).name()));
     }
@@ -209,6 +211,7 @@ export default class Bot {
     handleUnlock = async (ctx: ContextMessageUpdate) => {
         let user = ctx['user'] as Client;
         if (!user.currentContact) return;
+        if (!user.contactLocked) return;
         user.contactLocked = false;
         ctx.reply(lang.message.contactUnlocked((user.currentContact as Contact).name()));
     }
@@ -227,7 +230,9 @@ export default class Bot {
             name = await (user.currentContact as Room).topic();
         }
 
-        ctx.reply(lang.message.current(name));
+        let info = (user.contactLocked ? ` [${lang.message.contactLocked('').trim()}]` : '');
+
+        ctx.reply(lang.message.current(name) + info);
     }
 
     handleTelegramMessage = async (ctx: ContextMessageUpdate) => {

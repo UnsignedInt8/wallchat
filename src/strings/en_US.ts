@@ -30,10 +30,10 @@ export default {
 /selfoff - Stop receiving self messages
 /texton - Just text message (default)
 /textoff - Show you rich-type message
-/find - Find a contact and set as current contact (Case sensitive)
+/find - Find a contact and set as current contact (Case sensitive) [/find name]
 /lock - Lock current contact
 /unlock - Unlock current contact
-/findandlock - Find and lock contact (Case sensitive)
+/findandlock - Find and lock contact (Case sensitive) [/find name]
 /current - Show current contact
 /help - Show this help page`,
 }

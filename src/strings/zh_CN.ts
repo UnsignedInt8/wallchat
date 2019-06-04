@@ -30,10 +30,10 @@ export default {
 /selfoff - 关闭接收自己的消息
 /texton - 启用文本模式
 /textoff - 关闭文本模式（需要服务器端支持） 
-/find - 查找联系人并设置为当前联系人（区分大小写）
+/find - 查找联系人并设置为当前联系人（区分大小写） [/find 昵称|备注]
 /lock - 锁定当前联系人
 /unlock - 取消锁定当前联系人
-/findandlock - 查找并锁定为当前联系人（区分大小写）
+/findandlock - 查找并锁定为当前联系人（区分大小写） [/find 昵称|备注]
 /current - 显示当前联系人
 /help - 显示帮助`,
 }
