@@ -175,7 +175,10 @@ export default class Bot {
 
     handleFind = async (ctx: ContextMessageUpdate, next: Function) => {
         let [_, name] = ctx.message.text.split(' ');
-        if (!name) return;
+        if (!name) {
+            ctx.reply(lang.commands.find);
+            return;
+        }
 
         name = name.trim();
         let user = ctx['user'] as Client;

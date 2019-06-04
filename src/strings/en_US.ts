@@ -18,6 +18,9 @@ export default {
         current: (name: string) => `Current contact: ${name}`,
         timeout: 'Login timeout, bye',
     },
+    commands: {
+        find: '/find name|alias'
+    },
     help: `Command reference:
 /start - Start bot
 /login - Login Wechat

@@ -18,6 +18,9 @@ export default {
         current: (name: string) => `当前联系人 ${name}`,
         timeout: '登录超时，Bye',
     },
+    commands: {
+        find: '/find 昵称|备注'
+    },
     help: `命令说明:
 /start - 启动会话
 /login - 请求登录
