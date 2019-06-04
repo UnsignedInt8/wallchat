@@ -107,7 +107,7 @@ export default class Bot {
     protected verifyTelegram: (ctx: ContextMessageUpdate) => Promise<boolean> = undefined;
 
     protected async handleLogin(ctx: ContextMessageUpdate) {
-        if (this.verifyTelegram !== undefined && !this.verifyTelegram(ctx)) return;
+        if (this.verifyTelegram !== undefined && !(await this.verifyTelegram(ctx))) return;
 
         let id = ctx.chat.id;
         let qrcodeCache = '';
@@ -155,8 +155,8 @@ export default class Bot {
         await wechat.start();
     }
 
-    protected checkUser(ctx: ContextMessageUpdate, next: Function) {
-        if (this.verifyTelegram !== undefined && !this.verifyTelegram(ctx)) return;
+    protected async checkUser(ctx: ContextMessageUpdate, next: Function) {
+        if (this.verifyTelegram !== undefined && !(await this.verifyTelegram(ctx))) return;
 
         if (!ctx) return next ? next() : undefined;
 
