@@ -104,7 +104,7 @@ export default class Bot {
         ctx.reply(lang.help);
     }
 
-    protected verifyTelegram: (ctx: ContextMessageUpdate) => boolean = undefined;
+    protected verifyTelegram: (ctx: ContextMessageUpdate) => Promise<boolean> = undefined;
 
     protected async handleLogin(ctx: ContextMessageUpdate) {
         if (this.verifyTelegram !== undefined && !this.verifyTelegram(ctx)) return;
