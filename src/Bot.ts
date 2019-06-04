@@ -104,7 +104,11 @@ export default class Bot {
         ctx.reply(lang.help);
     }
 
+    protected verifyTelegram: (ctx: ContextMessageUpdate) => boolean = undefined;
+
     protected async handleLogin(ctx: ContextMessageUpdate) {
+        if (this.verifyTelegram !== undefined && !this.verifyTelegram(ctx)) return;
+
         let id = ctx.chat.id;
         let qrcodeCache = '';
         if (this.clients.has(id)) {
@@ -152,6 +156,8 @@ export default class Bot {
     }
 
     protected checkUser(ctx: ContextMessageUpdate, next: Function) {
+        if (this.verifyTelegram !== undefined && !this.verifyTelegram(ctx)) return;
+
         if (!ctx) return next ? next() : undefined;
 
         let id = ctx.chat.id;
