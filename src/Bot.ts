@@ -64,7 +64,7 @@ export default class Bot {
 
         this.bot.start(this.handleStart);
         this.bot.command('stop', (ctx, n) => this.checkUser(ctx, n), this.handleLogout);
-        this.bot.command('login', this.handleLogin);
+        this.bot.command('login', (ctx) => this.handleLogin(ctx));
         this.bot.command('groupon', (ctx, n) => this.checkUser(ctx, n), (ctx, n) => { ctx['user'].receiveGroups = true; n(); }, ctx => ctx.reply('OK'));
         this.bot.command('groupoff', (ctx, n) => this.checkUser(ctx, n), (ctx, n) => { ctx['user'].receiveGroups = false; n(); }, ctx => ctx.reply('OK'));
         this.bot.command('officialon', (ctx, n) => this.checkUser(ctx, n), (ctx, n) => { ctx['user'].receiveOfficialAccount = true, n() }, ctx => ctx.reply('OK'));
@@ -99,12 +99,12 @@ export default class Bot {
         }
     }
 
-    handleStart = (ctx: ContextMessageUpdate) => {
+    protected handleStart = (ctx: ContextMessageUpdate) => {
         ctx.reply(lang.welcome);
         ctx.reply(lang.help);
     }
 
-    handleLogin = async (ctx: ContextMessageUpdate) => {
+    protected async handleLogin(ctx: ContextMessageUpdate) {
         let id = ctx.chat.id;
         let qrcodeCache = '';
         if (this.clients.has(id)) {
@@ -162,7 +162,7 @@ export default class Bot {
         next(ctx);
     }
 
-    handleLogout = async (ctx: ContextMessageUpdate) => {
+    protected handleLogout = async (ctx: ContextMessageUpdate) => {
         let user = ctx['user'] as Client;
         if (!user) return;
 
@@ -173,7 +173,7 @@ export default class Bot {
         ctx.reply(lang.login.bye);
     }
 
-    handleFind = async (ctx: ContextMessageUpdate, next: Function) => {
+    protected handleFind = async (ctx: ContextMessageUpdate, next: Function) => {
         let [_, name] = ctx.message.text.split(' ');
         if (!name) {
             ctx.reply(lang.commands.find);
@@ -203,7 +203,7 @@ export default class Bot {
         if (next) next();
     }
 
-    handleLock = async (ctx: ContextMessageUpdate) => {
+    protected handleLock = async (ctx: ContextMessageUpdate) => {
         let user = ctx['user'] as Client;
         if (!user.currentContact) return;
         if (user.contactLocked) return;
@@ -211,7 +211,7 @@ export default class Bot {
         ctx.reply(lang.message.contactLocked((user.currentContact as Contact).name()));
     }
 
-    handleUnlock = async (ctx: ContextMessageUpdate) => {
+    protected handleUnlock = async (ctx: ContextMessageUpdate) => {
         let user = ctx['user'] as Client;
         if (!user.currentContact) return;
         if (!user.contactLocked) return;
@@ -219,7 +219,7 @@ export default class Bot {
         ctx.reply(lang.message.contactUnlocked((user.currentContact as Contact).name()));
     }
 
-    handleCurrent = async (ctx: ContextMessageUpdate) => {
+    protected handleCurrent = async (ctx: ContextMessageUpdate) => {
         let user = ctx['user'] as Client;
         if (!user.currentContact) {
             ctx.reply(lang.message.noCurrentContact);
@@ -238,7 +238,7 @@ export default class Bot {
         ctx.reply(lang.message.current(name) + info);
     }
 
-    handleTelegramMessage = async (ctx: ContextMessageUpdate) => {
+    protected handleTelegramMessage = async (ctx: ContextMessageUpdate) => {
         let msg = ctx.message;
         let user = ctx['user'] as Client;
         if (msg.text.startsWith('/find')) return;
@@ -273,7 +273,7 @@ export default class Bot {
         if (!user.contactLocked) user.currentContact = contact;
     }
 
-    async handleWechatMessage(msg: Message, ctx: ContextMessageUpdate) {
+    protected async handleWechatMessage(msg: Message, ctx: ContextMessageUpdate) {
         let id = ctx.chat.id;
         let user = this.clients.get(id);
 
