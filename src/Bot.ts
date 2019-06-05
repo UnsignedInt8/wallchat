@@ -44,6 +44,7 @@ export default class Bot {
     protected msgui: MessageUI;
     protected keeyMsgs: number;
     private token: string;
+    protected beforeCheckUserList: ((ctx?: ContextMessageUpdate) => Promise<boolean>)[] = [];
 
     constructor({ token, socks5Proxy, msgui, keepMsgs }: BotOptions) {
 
@@ -103,10 +104,10 @@ export default class Bot {
         ctx.reply(lang.help);
     }
 
-    protected verifyTelegram: (ctx: ContextMessageUpdate) => Promise<boolean> = undefined;
-
     protected async handleLogin(ctx: ContextMessageUpdate) {
-        if (this.verifyTelegram !== undefined && !(await this.verifyTelegram(ctx))) return;
+        for (let c of this.beforeCheckUserList) {
+            if (!await c(ctx)) return;
+        }
 
         let id = ctx.chat.id;
         let qrcodeCache = '';
@@ -160,7 +161,9 @@ export default class Bot {
     }
 
     protected async checkUser(ctx: ContextMessageUpdate, next: Function) {
-        if (this.verifyTelegram !== undefined && !(await this.verifyTelegram(ctx))) return;
+        for (let c of this.beforeCheckUserList) {
+            if (!await c(ctx)) return;
+        }
 
         if (!ctx) return next ? next() : undefined;
 
