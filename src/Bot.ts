@@ -35,6 +35,7 @@ interface Client {
     currentContact?: Room | Contact;
     contactLocked?: boolean;
     id?: string;
+    logouted?: boolean;
 }
 
 export default class Bot {
@@ -125,7 +126,8 @@ export default class Bot {
         ctx.reply(lang.login.request);
 
         let wechat = new Wechaty();
-        this.clients.set(ctx.chat.id, { wechat, msgs: new Map(), receiveGroups: true, receiveOfficialAccount: false });
+        let client: Client = { wechat, msgs: new Map(), receiveGroups: true, receiveOfficialAccount: false };
+        this.clients.set(ctx.chat.id, client);
         let loginTimer: NodeJS.Timeout;
         let deleteWechat = () => {
             wechat.stop().catch();
@@ -134,7 +136,7 @@ export default class Bot {
         }
 
         wechat.on('scan', async (qrcode: string) => {
-            if (qrcode === qrcodeCache) return;
+            if (qrcode === qrcodeCache || client.logouted) return;
             qrcodeCache = qrcode;
 
             if (!loginTimer) {
@@ -179,6 +181,7 @@ export default class Bot {
         let user = ctx['user'] as Client;
         if (!user) return;
 
+        user.logouted = true;
         await user.wechat.logout().catch(reason => Logger.error(reason));
         await user.wechat.stop().catch(reason => Logger.error(reason));
         user.wechat.removeAllListeners();
@@ -335,6 +338,7 @@ export default class Bot {
                 break;
 
             case MessageType.Attachment:
+                Logger.info(msg.text());
                 break;
 
             case MessageType.Money:

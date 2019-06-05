@@ -22,7 +22,7 @@ $> git clone https://github.com/UnsignedInt8/leavexchat-bot.git
 $> cd leavexchat-bot  
 $> npm i 
 $> npm run build 
-$> node build/main/index.js 
+$> node build/main/index.js # 无需配置文件
 $> 输入 token, Done!
 ```
 
@@ -32,6 +32,8 @@ $> node build/main/index.js -c config.json
 ```
 
 ## 进阶使用
+
+进阶使用是针对想启用 bot 全部功能的用户，bot 提供图片消息功能，但由于十分消耗系统资源，因此默认不启用，请自行搭建 bot 服务后启用
 
 1. Clone 仓库
 ```bash
