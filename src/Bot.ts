@@ -35,7 +35,6 @@ interface Client {
     currentContact?: Room | Contact;
     contactLocked?: boolean;
     id?: string;
-    logouted?: boolean;
 }
 
 export default class Bot {
@@ -129,32 +128,36 @@ export default class Bot {
         let client: Client = { wechat, msgs: new Map(), receiveGroups: true, receiveOfficialAccount: false };
         this.clients.set(ctx.chat.id, client);
         let loginTimer: NodeJS.Timeout;
-        let deleteWechat = () => {
-            wechat.stop().catch();
+        let deleteWechat = async () => {
+            this.clients.delete(id);
             wechat.removeAllListeners();
-            this.clients.delete(ctx.chat.id);
+            await wechat.stop().catch();
         }
 
-        wechat.on('scan', async (qrcode: string) => {
-            if (qrcode === qrcodeCache || client.logouted) return;
+        const handleQrcode = async (qrcode: string) => {
+            if (qrcode === qrcodeCache) return;
             qrcodeCache = qrcode;
+
+            if (client.id) return;
 
             if (!loginTimer) {
                 loginTimer = setTimeout(() => { deleteWechat(); ctx.reply(lang.message.timeout); }, 3 * 60 * 1000);
             }
 
-            ctx.replyWithPhoto({ source: qr.image(qrcode) }).catch(() => deleteWechat());
-        });
+            await ctx.replyWithPhoto({ source: qr.image(qrcode) }).catch(() => deleteWechat());
+        };
+        wechat.on('scan', handleQrcode);
 
         wechat.once('login', user => {
-            this.clients.get(ctx.chat.id).id = user.id;
+            this.clients.get(id).id = user.id;
             ctx.reply(lang.login.logined(user.name()));
             clearTimeout(loginTimer);
+            wechat.removeListener('scan', handleQrcode);
         });
 
-        wechat.on('logout', user => {
-            ctx.reply(lang.login.logouted(user.name()));
-            deleteWechat();
+        wechat.on('logout', async user => {
+            await deleteWechat();
+            await ctx.reply(lang.login.logouted(user.name()));
         });
 
         wechat.on('message', msg => this.handleWechatMessage(msg, ctx));
@@ -181,11 +184,13 @@ export default class Bot {
         let user = ctx['user'] as Client;
         if (!user) return;
 
-        user.logouted = true;
+        try {
+            this.clients.delete(ctx.chat.id);
+            user.wechat.removeAllListeners();
+        } catch (error) { }
+
         await user.wechat.logout().catch(reason => Logger.error(reason));
         await user.wechat.stop().catch(reason => Logger.error(reason));
-        user.wechat.removeAllListeners();
-        this.clients.delete(ctx.chat.id);
         ctx.reply(lang.login.bye);
     }
 
