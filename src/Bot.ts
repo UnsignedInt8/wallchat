@@ -80,15 +80,14 @@ export default class Bot {
         this.bot.command('current', (ctx, n) => this.checkUser(ctx, n), this.handleCurrent);
         this.bot.command('logout', (ctx, n) => this.checkUser(ctx, n), this.handleLogout);
         this.bot.help(ctx => ctx.reply(lang.help));
-        this.bot.on('message', (ctx, n) => this.checkUser(ctx, n), this.handleTelegramMessage);
 
         this.bot.catch((err) => {
-            Logger.error('Ooops', err)
-
+            Logger.error('Ooops', err.message);
         });
     }
 
     launch() {
+        this.bot.on('message', (ctx, n) => this.checkUser(ctx, n), this.handleTelegramMessage);
         this.bot.launch().then(() => Logger.info(`Bot is running`));
     }
 
@@ -99,8 +98,8 @@ export default class Bot {
         }
     }
 
-    protected handleStart = (ctx: ContextMessageUpdate) => {
-        ctx.reply(lang.welcome);
+    protected handleStart = async (ctx: ContextMessageUpdate) => {
+        await ctx.reply(lang.welcome).catch();
         ctx.reply(lang.help);
     }
 
@@ -112,7 +111,12 @@ export default class Bot {
         let id = ctx.chat.id;
         let qrcodeCache = '';
         if (this.clients.has(id)) {
-            if (this.clients.get(id).id) return;
+            let user = this.clients.get(id);
+            if (user.id) {
+                ctx.reply(lang.login.logined(user.wechat.self().name()))
+                return;
+            }
+
             ctx.reply(lang.login.retry);
             return;
         };
