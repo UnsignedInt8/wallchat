@@ -34,7 +34,7 @@ interface Client {
     msgs: Map<number, Contact | Room>;
     currentContact?: Room | Contact;
     contactLocked?: boolean;
-    id?: string;
+    wechatId?: string;
 }
 
 export default class Bot {
@@ -113,7 +113,7 @@ export default class Bot {
         let qrcodeCache = '';
         if (this.clients.has(id)) {
             let user = this.clients.get(id);
-            if (user.id) {
+            if (user.wechatId) {
                 ctx.reply(lang.login.logined(user.wechat.self().name()))
                 return;
             }
@@ -138,7 +138,7 @@ export default class Bot {
             if (qrcode === qrcodeCache) return;
             qrcodeCache = qrcode;
 
-            if (client.id) return;
+            if (client.wechatId) return;
 
             if (!loginTimer) {
                 loginTimer = setTimeout(() => { deleteWechat(); ctx.reply(lang.message.timeout); }, 3 * 60 * 1000);
@@ -149,7 +149,7 @@ export default class Bot {
         wechat.on('scan', handleQrcode);
 
         wechat.once('login', user => {
-            this.clients.get(id).id = user.id;
+            this.clients.get(id).wechatId = user.id;
             ctx.reply(lang.login.logined(user.name()));
             clearTimeout(loginTimer);
             wechat.removeListener('scan', handleQrcode);
@@ -303,7 +303,7 @@ export default class Bot {
         let type = msg.type();
         let text = msg.text().replace(/\<br\/\>/g, ' \n').replace(/<[^>]*>?/gm, '');
 
-        if (user.id === from.id && !user.receiveSelf) return;
+        if (user.wechatId === from.id && !user.receiveSelf) return;
         if (!user.receiveOfficialAccount && from.type() === ContactType.Official) return;
         if (!user.receiveGroups && room) return;
 
