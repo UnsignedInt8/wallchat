@@ -58,6 +58,7 @@
     "commander": "^2.20.0",
     "end-of-stream": "^1.4.1",
     "got": "^9.6.0",
+    "he": "^1.2.0",
     "inquirer": "^6.3.1",
     "puppeteer": "^1.17.0",
     "qr-image": "^3.2.0",
@@ -70,6 +71,7 @@
   "devDependencies": {
     "@types/end-of-stream": "^1.4.0",
     "@types/got": "^9.4.4",
+    "@types/he": "^1.1.0",
     "@types/inquirer": "^6.0.3",
     "@types/puppeteer": "^1.12.4",
     "ava": "1.0.0-beta.7",

@@ -12,6 +12,7 @@ import axios from 'axios';
 import got from 'got';
 import HTMLTemplates from './lib/HTMLTemplates';
 import Logger from './lib/Logger';
+import he from 'he';
 
 interface MessageUI {
     url: string;
@@ -343,7 +344,11 @@ export default class Bot {
                 break;
 
             case MessageType.Attachment:
-                Logger.info(msg.text());
+                try {
+                    let text = he.decode(msg.text()).replace(/\<br\/\>/g, ' \n').replace(/<[^>]*>?/gm, '');
+                    sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: text }));
+                } catch (error) { }
+
                 break;
 
             case MessageType.Money:
