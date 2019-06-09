@@ -17,6 +17,7 @@ export default {
         noCurrentContact: '无当前联系人',
         current: (name: string) => `当前联系人 ${name}`,
         timeout: '登录超时，Bye',
+        error: 'WeChat 遇到错误，请重试',
     },
     commands: {
         find: '/find 昵称|备注'

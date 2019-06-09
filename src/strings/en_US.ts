@@ -17,6 +17,7 @@ export default {
         noCurrentContact: `No current contact`,
         current: (name: string) => `Current contact: ${name}`,
         timeout: 'Login timeout, bye',
+        error: 'Some errors happen, try again please',
     },
     commands: {
         find: '/find name|alias'
