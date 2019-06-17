@@ -166,10 +166,11 @@ export default class Bot {
             await deleteWechat();
         });
 
-        wechat.puppet.on('error', async () => {
-            ctx.reply(lang.message.error);
-            await deleteWechat();
-        });
+
+        // wechat.puppet.on('error', async () => {
+        //     ctx.reply(lang.message.error);
+        //     await deleteWechat();
+        // });
 
         wechat.on('message', msg => this.handleWechatMessage(msg, ctx));
 
