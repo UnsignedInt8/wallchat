@@ -1,17 +1,20 @@
 
 import xml from 'fast-xml-parser';
 
+function replaceMarkdownChars(txt: string) {
+    return (txt || '').replace(/\[/g, '\\[').replace(/\]/g, '\\]');
+}
 
 export function parseOffical(rawXml: string) {
     try {
         const msg = xml.parse(rawXml);
         const items = msg['msg']['appmsg']['mmreader']['category']['item'] as Array<any>;
         return items.reduce((prev, curr) => {
-            let title = curr['title'];
+            let title = replaceMarkdownChars(curr['title']);
             let url = curr['url'];
 
             return `${prev}[${title}](${url})\n\n`;
-        }, '\n');
+        }, '');
     } catch (err) {
         return parseAttach(rawXml);
     }
@@ -20,7 +23,7 @@ export function parseOffical(rawXml: string) {
 export function parseAttach(rawXml: string) {
     const msg = xml.parse(rawXml);
     const appmsg = msg['msg']['appmsg'];
-    const title = appmsg['title'];
+    const title = replaceMarkdownChars(appmsg['title']);
     const desc = appmsg['des'];
     const url = appmsg['url'];
 
