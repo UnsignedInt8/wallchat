@@ -318,12 +318,12 @@ export default class Bot {
         let type = msg.type();
         let text = msg.text().replace(/\<br\/\>/g, ' \n').replace(/<[^>]*>?/gm, '');
 
-        if (from.type() === ContactType.Official) {
-            console.log('-------------\n')
-            console.log(html.decode(msg.text()));
-            console.log(type);
-            console.log('-------------\n')
-        }
+        // if (from.type() === ContactType.Official) {
+        //     console.log('-------------\n')
+        //     console.log(html.decode(msg.text()));
+        //     console.log(type);
+        //     console.log('-------------\n')
+        // }
 
         if (user.wechatId === from.id && !user.receiveSelf) return;
         if (!user.receiveOfficialAccount && from.type() === ContactType.Official) return;
