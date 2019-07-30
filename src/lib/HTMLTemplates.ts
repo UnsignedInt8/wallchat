@@ -4,4 +4,8 @@ export default class HTMLTemplates {
         const html = `<code>${nickname}</code>\n\n${message}`;
         return html;
     }
+
+    static markdown({ nickname, content }: { nickname: string, content: string }) {
+        return `\`${nickname}\`\n\n${content}`;
+    }
 }

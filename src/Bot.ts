@@ -12,7 +12,10 @@ import axios from 'axios';
 import got from 'got';
 import HTMLTemplates from './lib/HTMLTemplates';
 import Logger from './lib/Logger';
-import he from 'he';
+import * as XMLParser from './lib/XmlParser';
+import { AllHtmlEntities } from 'html-entities';
+
+const html = new AllHtmlEntities();
 
 interface MessageUI {
     url: string;
@@ -115,7 +118,7 @@ export default class Bot {
         if (this.clients.has(id)) {
             let user = this.clients.get(id);
             if (user.wechatId) {
-                ctx.reply(lang.login.logined(user.wechat.self().name()))
+                ctx.reply(lang.login.logined(user.wechat.userSelf().name()))
                 return;
             }
 
@@ -126,7 +129,7 @@ export default class Bot {
         ctx.reply(lang.login.request);
 
         let wechat = new Wechaty();
-        let client: Client = { wechat, msgs: new Map(), receiveGroups: true, receiveOfficialAccount: false };
+        let client: Client = { wechat, msgs: new Map(), receiveGroups: true, receiveOfficialAccount: true };
         this.clients.set(ctx.chat.id, client);
         let loginTimer: NodeJS.Timeout;
         let deleteWechat = async () => {
@@ -315,6 +318,13 @@ export default class Bot {
         let type = msg.type();
         let text = msg.text().replace(/\<br\/\>/g, ' \n').replace(/<[^>]*>?/gm, '');
 
+        if (from.type() === ContactType.Official) {
+            console.log('-------------\n')
+            console.log(html.decode(msg.text()));
+            console.log(type);
+            console.log('-------------\n')
+        }
+
         if (user.wechatId === from.id && !user.receiveSelf) return;
         if (!user.receiveOfficialAccount && from.type() === ContactType.Official) return;
         if (!user.receiveGroups && room) return;
@@ -356,8 +366,9 @@ export default class Bot {
 
             case MessageType.Attachment:
                 try {
-                    let text = he.decode(msg.text()).replace(/\<br\/\>/g, ' \n').replace(/<[^>]*>?/gm, '');
-                    sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: text }));
+                    let xml = html.decode(msg.text());
+                    let markdown = from.type() === ContactType.Official ? XMLParser.parseOffical(xml) : XMLParser.parseAttach(xml);
+                    sent = await ctx.replyWithMarkdown(HTMLTemplates.markdown({ nickname, content: markdown }));
                 } catch (error) { }
 
                 break;
