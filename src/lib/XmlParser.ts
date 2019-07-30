@@ -2,7 +2,7 @@
 import xml from 'fast-xml-parser';
 
 function replaceMarkdownChars(txt: string) {
-    return (txt || '').replace(/\[/g, '\\[').replace(/\]/g, '\\]');
+    return (txt || '').replace(/\[/g, '').replace(/\]/g, '');
 }
 
 export function parseOffical(rawXml: string) {
