@@ -10,7 +10,7 @@ export function parseOffical(rawXml: string) {
             let title = curr['title'];
             let url = curr['url'];
 
-            return `${prev}[${title}](${url})\n`;
+            return `${prev}[${title}](${url})\n\n`;
         }, '\n');
     } catch (err) {
         return parseAttach(rawXml);
