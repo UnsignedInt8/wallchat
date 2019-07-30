@@ -59,6 +59,7 @@
     "end-of-stream": "^1.4.1",
     "fast-xml-parser": "^3.12.19",
     "got": "^9.6.0",
+    "'html-entities": "*",
     "inquirer": "^6.5.0",
     "puppeteer": "^1.19.0",
     "qr-image": "^3.2.0",
