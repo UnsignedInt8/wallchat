@@ -1,5 +1,6 @@
 
 import xml from 'fast-xml-parser';
+import h2m from 'h2m';
 
 function replaceMarkdownChars(txt: string) {
     return (txt || '').replace(/\[/g, '').replace(/\]/g, '');
@@ -10,7 +11,7 @@ export function parseOffical(rawXml: string) {
         const msg = xml.parse(rawXml);
         const items = msg['msg']['appmsg']['mmreader']['category']['item'] as Array<any>;
         return items.reduce((prev, curr) => {
-            let title = replaceMarkdownChars(curr['title']);
+            let title = h2m(replaceMarkdownChars(curr['title']))
             let url = curr['url'];
 
             return `${prev}[${title}](${url})\n\n`;
@@ -23,8 +24,8 @@ export function parseOffical(rawXml: string) {
 export function parseAttach(rawXml: string) {
     const msg = xml.parse(rawXml);
     const appmsg = msg['msg']['appmsg'];
-    const title = replaceMarkdownChars(appmsg['title']);
-    const desc = appmsg['des'];
+    const title = h2m(replaceMarkdownChars(appmsg['title']));
+    const desc = h2m((appmsg['des'] || ''));
     const url = appmsg['url'];
 
     return `[${title}](${url})\n${desc}`;
@@ -39,3 +40,6 @@ function testAttach() {
     const att = `<?xml version="1.0"?><br/><msg><br/>	<appmsg appid="" sdkver="0"><br/>		<title>靠印钞支撑的复兴梦，是如何崩掉的？</title><br/>		<des>作死的！</des><br/>		<action /><br/>		<type>5</type><br/>		<showtype>0</showtype><br/>		<soundtype>0</soundtype><br/>		<mediatagname /><br/>		<messageext /><br/>		<messageaction /><br/>		<content /><br/>		<contentattr>0</contentattr><br/>		<url>http://mp.weixin.qq.com/s?__biz=MzAxNzczMTY2Ng==&amp;mid=2648625685&amp;idx=1&amp;sn=1650bc329f928bd5b14d43bbca4cb65b&amp;chksm=83cb6b28b4bce23e7b002f67760f679144c1f822a4ff6f8d7e3eecbe48fdee6d3b2e6fec2984&amp;scene=0&amp;xtrack=1#rd</url><br/>		<lowurl /><br/>		<dataurl /><br/>		<lowdataurl /><br/>		<songalbumurl /><br/>		<songlyric /><br/>		<appattach><br/>			<totallen>0</totallen><br/>			<attachid /><br/>			<emoticonmd5 /><br/>		<fileext /><br/>			<cdnthumbaeskey /><br/>			<aeskey /><br/>		</appattach><br/>		<extinfo /><br/>	<sourceusername></sourceusername><br/>		<sourcedisplayname>财主家的余粮</sourcedisplayname><br/>		<thumburl>https://mmbiz.qpic.cn/mmbiz_jpg/r4Em8wOBKDicia3Chia2gKTHWPBmENdibPVLYG5wLxn5GhiaYj3gQVCWb26GYCSodWAzP9QpCe7f0wnM02lFNMSqcgA/300?wxtype=jpeg&amp;wxfrom=0</thumburl><br/>	<md5 /><br/>		<statextstr /><br/>		<mmreadershare><br/>			<itemshowtype>0</itemshowtype><br/>			<nativepage>0</nativepage><br/>			<pubtime>1564394943</pubtime><br/>			<duration>0</duration><br/>			<width>0</width><br/>			<height>0</height><br/>			<vid /><br/>			<funcflag>0</funcflag><br/>		</mmreadershare><br/>	</appmsg><br/>	<fromusername></fromusername><br/>	<scene>0</scene><br/>	<appinfo><br/>		<version>1</version><br/>		<appname></appname><br/>	</appinfo><br/>	<commenturl></commenturl><br/></msg><br/>`;
     console.log(parseAttach(att));
 }
+
+// testOffical();
+// testAttach();
