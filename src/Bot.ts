@@ -320,7 +320,7 @@ export default class Bot {
 
         // if (from.type() === ContactType.Official) {
         //     console.log('-------------\n')
-            console.log(html.decode(msg.text()));
+        // console.log(html.decode(msg.text()));
         //     console.log(type);
         //     console.log('-------------\n')
         // }

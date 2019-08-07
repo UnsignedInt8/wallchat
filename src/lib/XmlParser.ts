@@ -2,9 +2,9 @@
 import xml from 'fast-xml-parser';
 import h2m from 'h2m';
 
-function replaceMarkdownChars(txt: string | object, removeQuote = true) {
+function replaceMarkdownChars(txt: string | object) {
     let title = (typeof (txt) === 'string' ? txt : txt['#text']) || '';
-    return removeQuote ? title.replace(/\[/g, '').replace(/\]/g, '') : title;
+    return title.replace(/\[/g, '').replace(/\]/g, '');
 }
 
 export function parseOffical(rawXml: string) {
@@ -23,11 +23,11 @@ export function parseOffical(rawXml: string) {
 }
 
 export function parseAttach(rawXml: string) {
-    const msg = xml.parse(rawXml);
+    const msg = xml.parse(rawXml.replace(/\<br\/\>/g, '\n'));
     const appmsg = msg['msg']['appmsg'];
     const title = h2m(replaceMarkdownChars(appmsg['title']));
     const desc = h2m((replaceMarkdownChars(appmsg['des'])));
-    const url = appmsg['url'];
+    const url = appmsg['url'];  
 
     return `[${title}](${url})\n${desc}`;
 }
@@ -47,6 +47,12 @@ function testPic() {
     console.log(parseAttach(pic));
 }
 
+function testBr() {
+    const br = `<?xml version="1.0"?><br/><msg><br/>	<appmsg appid="" sdkver="0"><br/>		<title>纤云弄巧，飞星传恨，银汉迢迢暗度。<br/>金风玉露一相逢，便胜却、人间无数。<br/>柔情似水，佳期如梦，忍顾鹊桥归路。<br/>两情若是久长时，又岂在、朝朝暮暮。<br/><br/>百度AI交互设计院<img class="emoji emoji3297" text="_web" src="/zh_CN/htmledition/v2/images/spacer.gif" />️天下有情人终成眷属， 借此良辰吉日诚邀各路英雄好汉体验百度AI小程序，附赠七夕心意一份，希望幸运的您可以被选中。</title><br/>		<des>纤云弄巧，飞星传恨，银汉迢迢暗度。<br/>金风玉露一相逢，便胜却、人间无数。<br/>柔情似水，佳期如梦，忍顾鹊桥归路。<br/>两情若是久长时，又岂在、朝朝暮暮。<br/><br/>百度AI交互设计院<img class="emoji emoji3297" text="_web" src="/zh_CN/htmledition/v2/images/spacer.gif" />️天下有情人终成眷属， 借此良辰吉日诚邀各路英雄好汉体验百度AI小程序，附赠七夕心意一份，希望幸运的您可以被选中。</des><br/>		<action /><br/>		<type>5</type><br/>		<showtype>0</showtype><br/>		<soundtype>0</soundtype><br/>		<mediatagname /><br/>		<messageext /><br/>		<messageaction /><br/>		<content /><br/>		<contentattr>0</contentattr><br/>	<url>http://mp.weixin.qq.com/s?__biz=MzU0OTUzMjUwOA==&amp;mid=2247486316&amp;idx=1&amp;sn=9ad9437503c9d17b21f114fb7300a042&amp;chksm=fbaf2d5fccd8a4490c596ad20ac666f39ac0ec2810cc9c94d9e831ee782612894d9253719ef5&amp;scene=0&amp;xtrack=1#rd</url><br/>		<lowurl /><br/>		<dataurl /><br/>		<lowdataurl /><br/>		<songalbumurl /><br/>		<songlyric /><br/>		<appattach><br/>			<totallen>0</totallen><br/>			<attachid /><br/>			<emoticonmd5 /><br/>			<fileext /><br/>	<cdnthumbaeskey /><br/>			<aeskey /><br/>		</appattach><br/>		<extinfo /><br/>		<sourceusername></sourceusername><br/>		<sourcedisplayname>百度AI交互设计院</sourcedisplayname><br/>		<thumburl>https://mmbiz.qpic.cn/mmbiz_jpg/iacQlDibO9CB5aBiaVw3opHv7RlzEgtAhhL35hN5gIdia3JncfQ2R8Xv4eFKnlmibhiczebWB3MV0SmUU373Vu2cWicGA/640?wxfrom=0</thumburl><br/>		<md5 /><br/>		<statextstr /><br/>		<mmreadershare><br/>			<itemshowtype>8</itemshowtype><br/>			<nativepage>0</nativepage><br/>			<pubtime>1565162314</pubtime><br/>			<duration>0</duration><br/>			<width>0</width><br/>			<height>0</height><br/>			<vid /><br/>			<funcflag>0</funcflag><br/>		</mmreadershare><br/>	</appmsg><br/>	<fromusername></fromusername><br/>	<scene>0</scene><br/>	<appinfo><br/>		<version>1</version><br/>		<appname></appname><br/>	</appinfo><br/>	<commenturl></commenturl><br/></msg><br/>`;
+    console.log(parseAttach(br));
+}
+
 // testOffical();
 // testAttach();
 // testPic();
+// testBr();
