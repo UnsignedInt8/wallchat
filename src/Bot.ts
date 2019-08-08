@@ -384,7 +384,8 @@ export default class Bot {
 
             case MessageType.Image:
                 let image = await msg.toFileBox();
-                sent = (image.mimeType || '').toLowerCase().includes('gif') ? await ctx.replyWithVideo({ source: await image.toStream() }) : await ctx.replyWithPhoto({ source: await image.toStream() }, { caption });
+                // sent = (image.mimeType || '').toLowerCase().includes('gif') ? await ctx.replyWithVideo({ source: await image.toStream() }) : await ctx.replyWithPhoto({ source: await image.toStream() }, { caption });
+                sent = await await ctx.replyWithPhoto({ source: await image.toStream() }, { caption });
                 break;
 
             case MessageType.Video:
