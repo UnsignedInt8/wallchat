@@ -66,25 +66,27 @@ node build/main/index.js -c config.json
 
 ## Bot 命令
 
-| 命令 | 说明 |
-|---|---|
+| 命令 | 说明 | 示例 |
+|---|---|---|
 |/start|启动会话|
 |/login|请求登录|
 |/logout|登出WeChat|
 |/groupon|开启接收群消息|
 |/groupoff|关闭接收群消息|
-|/officialon|开启接收公众号消息（现在是鸡肋）|
+|/officialon|开启接收公众号消息|
 |/officialoff|关闭接收公众号消息|
 |/selfon|开启接收自己的消息|
 |/selfoff|关闭接收自己的消息|
 |/texton|启用文本模式（默认，推荐）|
 |/textoff|关闭文本模式（需要服务器端支持）|
-|/find|查找联系人并设置为最近联系人（区分大小写）|
+|/find|查找联系人并设置为最近联系人（区分大小写）| /find ABC |
 |/lock|锁定最近联系人|
 |/unlock|取消锁定最近联系人|
-|/findandlock|查找并锁定联系人|
+|/findandlock|查找并锁定联系人| /findandlock ABC
 |/current|显示当前联系人|
 |/help|显示帮助|
+
+除了 `/find` 和 `/findandlock` 必须带有要查找的联系人名字，其它命令均无参数
 
 ## 使用注意
 
