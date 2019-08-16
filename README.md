@@ -7,7 +7,7 @@
 1. 安装 Node.js 10+  官网: https://nodejs.org
 2. 访问 https://t.me/BotFather, 申请你的 `bot token`
 
-## 快速开始 -- 个人桌面端 
+## 快速开始
 
 ```bash
 $> npm i -g leavexchat-bot
@@ -23,7 +23,7 @@ $> leavexchat-bot -c ./config.json
 
 `config.json` 请参照 [config-example.json](./config-example.json) 填写。
 
-## 快速开始 -- 服务器端
+## 自行编译
 
 ```bash
 $> git clone https://github.com/UnsignedInt8/leavexchat-bot.git  
@@ -39,31 +39,6 @@ $> 输入 token, Done!
 $> node build/main/index.js -c config.json
 ```
 
-## 进阶使用
-
-进阶使用是针对想启用 bot 全部功能的用户，bot 提供图片消息功能，但由于十分消耗系统资源，因此默认不启用，请自行搭建 bot 服务后启用
-
-1. Clone 仓库
-```bash
-git clone https://github.com/UnsignedInt8/leavexchat-bot.git
-```
-
-2. 安装依赖并编译
-```bash
-cd leavexchat-bot
-npm install
-npm run build
-```
-
-3. 访问 [leavexchat-web-ui](https://github.com/UnsignedInt8/leavexchat-web-ui/), 该工程是用于将消息转化为图片发送。 编译后使用 http-server 运行 http 服务。记下 static 目录的绝对路径，并填写好配置文件，更多请访问[leavexchat-web-ui](https://github.com/UnsignedInt8/leavexchat-web-ui/)
-
-4. 重命名 `config-example.json` 为 `config.json`，并配置好 token 与其它信息。在 `avatarDir` 中填写好 static 目录的绝对路径
-
-5. 运行
-```
-node build/main/index.js -c config.json
-```
-
 ## Bot 命令
 
 | 命令 | 说明 | 示例 |
@@ -77,8 +52,6 @@ node build/main/index.js -c config.json
 |/officialoff|关闭接收公众号消息|
 |/selfon|开启接收自己的消息|
 |/selfoff|关闭接收自己的消息|
-|/texton|启用文本模式（默认，推荐）|
-|/textoff|关闭文本模式（需要服务器端支持）|
 |/find|查找联系人并设置为最近联系人（区分大小写）| /find ABC |
 |/lock|锁定最近联系人|
 |/unlock|取消锁定最近联系人|
@@ -100,28 +73,9 @@ node build/main/index.js -c config.json
 
 5. 如果使用VPS，WeChat 会检测到异地登陆，并发出提示。可以在本地运行该 bot，只需在配置文件里填写好 socks5 代理信息即可
 
-## 服务器端的部署
+## Telegram Bot 支持
 
-##### CentOS 7
-
-如果需要在 CentOS 7 部署，并启用 web-ui，就需要安装以下依赖
-
-```
-yum install pango.x86_64 libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_64 libXext.x86_64 libXi.x86_64 libXtst.x86_64 cups-libs.x86_64 libXScrnSaver.x86_64 libXrandr.x86_64 GConf2.x86_64 alsa-lib.x86_64 atk.x86_64 gtk3.x86_64 ipa-gothic-fonts xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x11-utils xorg-x11-fonts-cyrillic xorg-x11-fonts-Type1 xorg-x11-fonts-misc -y
-
-# Fonts
-https://medium.com/source-words/how-to-manually-install-update-and-uninstall-fonts-on-linux-a8d09a3853b0
-```
-
-##### Ubuntu 
-
-如果需要在 Ubuntu 部署，并启用 web-ui，就需要安装以下依赖
-```
-sudo apt-get install gconf-service libasound2 libatk1.0-0 libatk-bridge2.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
-
-# Fonts
-http://ubuntuhandbook.org/index.php/2016/05/manually-install-fonts-ubuntu-16-04/
-```
+命令说明在[此处](./src/strings/BotFather.txt)，粘贴到 BotFather 中即可启用 Telegram Bot 输入框提示
 
 ## 感谢
 
