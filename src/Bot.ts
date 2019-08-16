@@ -277,7 +277,7 @@ export default class Bot {
     protected handleTelegramMessage = async (ctx: ContextMessageUpdate) => {
         let msg = ctx.message;
         let user = ctx['user'] as Client;
-        if (msg.text.startsWith('/find')) return;
+        if (msg.text && msg.text.startsWith('/find')) return;
 
         let contact = user.currentContact;
         if (msg.reply_to_message) {
