@@ -379,7 +379,8 @@ export default class Bot {
 
             case MessageType.Audio:
                 let audio = await msg.toFileBox();
-                sent = await ctx['replyWithVoice']({ source: await audio.toStream(), }, { caption }) as TT.Message;
+                let duration = audio.metadata['duration'] as number || (audio.size / 1024 / 3);
+                sent = await ctx.replyWithVoice({ source: await audio.toStream(), }, { caption, duration }) as TT.Message;
                 break;
 
             case MessageType.Image:
