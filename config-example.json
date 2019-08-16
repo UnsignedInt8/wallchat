@@ -5,9 +5,5 @@
         "port": 1080,
         "username": "",
         "password": ""
-    },
-    "msgui": {
-        "url": "http://localhost:3000",
-        "avatarDir": "/path/to/web/ui/static"
     }
 }

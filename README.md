@@ -15,6 +15,14 @@ $> leavexchat-bot
 $> 输入 token, Done!
 ```
 
+由于中国用户无法直接访问 Telegram，所以需要在配置文件中指定 SOCKS5 代理:
+
+```
+$> leavexchat-bot -c ./config.json
+```
+
+`config.json` 请参照 [config-example.json](./config-example.json) 填写。
+
 ## 快速开始 -- 服务器端
 
 ```bash
