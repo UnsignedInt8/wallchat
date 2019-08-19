@@ -2,7 +2,7 @@ export default {
     welcome: `欢迎使用`,
     login: {
         request: `正在请求 WeChat 登录二维码，请稍等`,
-        logined: (name: string) => `${name} 已经登入`,
+        logined: (name: string) => `${name} 已经登录`,
         logouted: (name: string) => `${name} 已登出`,
         retry: `请扫描二维码`,
         bye: 'Bye',
