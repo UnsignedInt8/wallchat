@@ -1,6 +1,6 @@
 import Telegraph, { ContextMessageUpdate, Telegram } from 'telegraf';
 import SocksAgent from 'socks5-https-client/lib/Agent';
-import { Wechaty, Message, Contact, Room, FileBox } from "wechaty";
+import { Wechaty, Message, Contact, Room, FileBox, Friendship } from "wechaty";
 import qr from 'qr-image';
 import lang from './strings';
 import { ContactType, MessageType } from 'wechaty-puppet';
@@ -49,6 +49,7 @@ export default class Bot {
     protected keeyMsgs: number;
     private token: string;
     protected beforeCheckUserList: ((ctx?: ContextMessageUpdate) => Promise<boolean>)[] = [];
+    protected pendingFriends = new Map<string, Friendship>();
 
     constructor({ token, socks5Proxy, msgui, keepMsgs }: BotOptions) {
 
@@ -83,6 +84,8 @@ export default class Bot {
         this.bot.command('unlock', (ctx, n) => this.checkUser(ctx, n), this.handleUnlock);
         this.bot.command('findandlock', (ctx, n) => this.checkUser(ctx, n), this.handleFind, this.handleLock);
         this.bot.command('current', (ctx, n) => this.checkUser(ctx, n), this.handleCurrent);
+        this.bot.command('agree', (ctx, n) => this.checkUser(ctx, n), this.handleAgreeFriendship);
+        this.bot.command('disagree', (ctx, n) => this.checkUser(ctx, n), this.handleDisagreeFriendship);
         this.bot.command('logout', (ctx, n) => this.checkUser(ctx, n), this.handleLogout);
         this.bot.help(ctx => ctx.reply(lang.help));
 
@@ -157,6 +160,17 @@ export default class Bot {
             ctx.reply(lang.login.logined(user.name()));
             clearTimeout(loginTimer);
             wechat.removeListener('scan', handleQrcode);
+        });
+
+        wechat.on('friendship', async req => {
+            let hello = req.hello();
+            let contact = req.contact();
+            let name = contact.name();
+
+            let avatar = await (await contact.avatar()).toStream();
+            await ctx.replyWithPhoto({ source: avatar }, { caption: `${name}: ${hello}, /agree ${name} /disagree ${name}` });
+
+            this.pendingFriends.set(name, req);
         });
 
         wechat.on('logout', async user => {
@@ -272,6 +286,31 @@ export default class Bot {
         let info = (user.contactLocked ? ` [${lang.message.contactLocked('').trim()}]` : '');
 
         ctx.reply(lang.message.current(name) + info);
+    }
+
+    protected handleAgreeFriendship = async (ctx: ContextMessageUpdate) => {
+        let [_, name] = ctx.message.text.split(' ');
+        if (!name) {
+            await ctx.reply(lang.commands.agree);
+            return;
+        }
+
+        let req = this.pendingFriends.get(name);
+        await req?.accept();
+        this.pendingFriends.delete(name);
+
+        await ctx.reply('OK');
+    }
+
+    protected handleDisagreeFriendship = async (ctx: ContextMessageUpdate) => {
+        let [_, name] = ctx.message.text.split(' ');
+        if (!name) {
+            await ctx.reply(lang.commands.disagree);
+            return;
+        }
+
+        this.pendingFriends.delete(name);
+        await ctx.reply('OK');
     }
 
     protected handleTelegramMessage = async (ctx: ContextMessageUpdate) => {

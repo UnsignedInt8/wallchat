@@ -20,7 +20,9 @@ export default {
         error: 'WeChat 遇到错误，请重试',
     },
     commands: {
-        find: '/find 昵称|备注'
+        find: '/find 昵称|备注',
+        agree: '/agree 名称',
+        disagree: '/disagreee 名称',
     },
     help: `命令说明:
 /start - 启动会话

@@ -20,7 +20,9 @@ export default {
         error: 'Some errors happen, try again please',
     },
     commands: {
-        find: '/find name|alias'
+        find: '/find name|alias',
+        agree: '/agree name',
+        disagree: '/disagreee name',
     },
     help: `Command reference:
 /start - Start bot
