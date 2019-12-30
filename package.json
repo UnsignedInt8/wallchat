@@ -68,7 +68,17 @@
     "socks5-https-client": "^1.2.1",
     "telegraf": "^3.32.0",
     "telegraf-i18n": "^6.6.0",
-    "wechaty": "^0.26.1"
+    "wechaty": "^0.26.1",
+    "brolog": "^1.8.3",
+    "file-box": "^0.8.27",
+    "memory-card": "^0.6.21",
+    "wechaty-puppet": "^0.16.1"
+  },
+  "peerDependencies": {
+    "brolog": "^1.8.3",
+    "file-box": "^0.8.27",
+    "memory-card": "^0.6.21",
+    "wechaty-puppet": "^0.16.1"
   },
   "devDependencies": {
     "@types/end-of-stream": "^1.4.0",

@@ -24,7 +24,7 @@ login - 请求登录
 logout - 登出WeChat
 groupon - 开启接收群消息
 groupoff - 关闭接收群消息
-officialon - 开启接收公众号消息（不推荐）
+officialon - 开启接收公众号消息
 officialoff - 关闭接收公众号消息
 selfon - 开启接收自己的消息
 selfoff - 关闭接收自己的消息

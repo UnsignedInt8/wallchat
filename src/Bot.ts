@@ -131,11 +131,12 @@ export default class Bot {
 
         ctx.reply(lang.login.request);
 
-        let wechat = new Wechaty();
+        let wechat = new Wechaty({ puppet: 'wechaty-puppet-wechat4u' });
         let client: Client = { wechat, msgs: new Map(), receiveGroups: true, receiveOfficialAccount: true };
         this.clients.set(ctx.chat.id, client);
         let loginTimer: NodeJS.Timeout;
         let deleteWechat = async () => {
+            Logger.info('login timeout');
             this.clients.delete(id);
             wechat.removeAllListeners();
             await wechat.stop().catch();
@@ -153,6 +154,7 @@ export default class Bot {
 
             await ctx.replyWithPhoto({ source: qr.image(qrcode) }).catch(() => deleteWechat());
         };
+
         wechat.on('scan', handleQrcode);
 
         wechat.once('login', user => {
@@ -178,7 +180,8 @@ export default class Bot {
             await ctx.reply(lang.login.logouted(user.name()));
         });
 
-        wechat.on('error', async () => {
+        wechat.on('error', async (error) => {
+            Logger.warn(error.message);
             ctx.reply(lang.message.error);
             await deleteWechat();
         });

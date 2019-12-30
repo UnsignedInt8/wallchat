@@ -2,6 +2,8 @@
 
 使用 Telegram Bot 接收 WeChat 文字、语音、图片、视频消息
 
+[![Powered by Wechaty](https://img.shields.io/badge/Powered%20By-Wechaty-blue.svg)](https://github.com/Wechaty/wechaty)
+
 ## 安装准备
 
 1. 安装 Node.js 10+  官网: https://nodejs.org
