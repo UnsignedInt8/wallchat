@@ -170,7 +170,7 @@ export default class Bot {
             let avatar = await (await contact.avatar()).toStream();
             await ctx.replyWithPhoto({ source: avatar }, { caption: `${name}: ${hello}, /agree ${name} /disagree ${name}` });
 
-            this.pendingFriends.set(name, req);
+            this.pendingFriends.set(name.toLowerCase(), req);
         });
 
         wechat.on('logout', async user => {
@@ -295,9 +295,9 @@ export default class Bot {
             return;
         }
 
-        let req = this.pendingFriends.get(name);
+        let req = this.pendingFriends.get(name.toLowerCase());
         await req?.accept();
-        this.pendingFriends.delete(name);
+        this.pendingFriends.delete(name.toLowerCase());
 
         await ctx.reply('OK');
     }
@@ -309,7 +309,7 @@ export default class Bot {
             return;
         }
 
-        this.pendingFriends.delete(name);
+        this.pendingFriends.delete(name.toLowerCase());
         await ctx.reply('OK');
     }
 

@@ -41,5 +41,7 @@ export default {
 /unlock - Unlock current contact
 /findandlock - Find and lock contact (Case sensitive) [/find name]
 /current - Show current contact
+/agree - Agree with current friendship request
+/disagree - Disagree with current friendship request
 /help - Show this help page`,
 }

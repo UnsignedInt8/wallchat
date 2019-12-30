@@ -71,8 +71,10 @@ $> node build/main/index.js -c config.json
 |/find|查找联系人并设置为最近联系人（区分大小写）| /find ABC |
 |/lock|锁定最近联系人|
 |/unlock|取消锁定最近联系人|
-|/findandlock|查找并锁定联系人| /findandlock ABC
+|/findandlock|查找并锁定联系人| /findandlock ABC |
 |/current|显示当前联系人|
+|/agree|同意好友请求| /agree ABC |
+|/disagree|忽略好友请求| /disagree ABC |
 |/help|显示帮助|
 
 除了 `/find` 和 `/findandlock` 必须带有要查找的联系人名字，其它命令均无参数

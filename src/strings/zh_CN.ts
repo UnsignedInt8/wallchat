@@ -41,5 +41,7 @@ export default {
 /unlock - 取消锁定当前联系人
 /findandlock - 查找并锁定为当前联系人（区分大小写） [/find 昵称|备注]
 /current - 显示当前联系人
+/agree - 同意好友请求
+/disagree - 忽略好友请求
 /help - 显示帮助`,
 }
