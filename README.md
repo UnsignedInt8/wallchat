@@ -68,9 +68,9 @@ $> node build/main/index.js -c config.json
 |/officialoff|关闭接收公众号消息|
 |/selfon|开启接收自己的消息|
 |/selfoff|关闭接收自己的消息|
-|/find|查找联系人并设置为最近联系人（区分大小写）| /find ABC |
-|/lock|锁定最近联系人|
-|/unlock|取消锁定最近联系人|
+|/find|查找联系人并设置为当前联系人（区分大小写）| /find ABC |
+|/lock|锁定当前联系人|
+|/unlock|取消锁定当前联系人|
 |/findandlock|查找并锁定联系人| /findandlock ABC |
 |/current|显示当前联系人|
 |/agree|同意好友请求| /agree ABC |
@@ -83,9 +83,9 @@ $> node build/main/index.js -c config.json
 
 1. 根据 Wechaty 说明，2017年6月之后注册的 Wechat 账号无法登陆网页版 Wechat，因此无法使用此 bot 代收消息
 
-2. 为保证安全，bot 只会在自己的聊天记录保留最近 **300** 条消息 (默认 300)
+2. 为保证安全，bot 只会在自己的聊天记录保留最近 **200** 条消息 (默认 200)
 
-3. 直接在 Telegram 里回复消息的对象**默认**是最近收到消息的发送者（个人或群），如果担心回复错了，请手动指定回复某条消息（最近 300 条以内）。可以手动 /lock /unlock 锁定当前联系人
+3. 直接在 Telegram 里回复消息的对象**默认**是最近收到消息的发送者（个人或群），如果担心回复错了，请手动指定回复某条消息（最近 200 条以内）。可以手动 /lock /unlock 锁定当前联系人
 
 4. 用于目前使用的 WeChat 的 web 版协议，因此**除了回复文字信息，图片、视频、语音等都暂时无法通过 bot 发送**
 

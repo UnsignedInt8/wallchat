@@ -55,7 +55,7 @@ export default class Bot {
 
         this.token = token;
         this.msgui = msgui;
-        this.keeyMsgs = keepMsgs === undefined ? 300 : (Math.max(keepMsgs, 100) || 300);
+        this.keeyMsgs = keepMsgs === undefined ? 200 : (Math.max(keepMsgs, 100) || 200);
 
         let agent = socks5Proxy ? new SocksAgent({
             socksHost: socks5Proxy.host,
