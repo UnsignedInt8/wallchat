@@ -330,7 +330,7 @@ export default class Bot {
 
         let file = msg.audio || (msg.video || (msg.photo && msg.photo[0]));
         if (file && file.file_size <= 50 * 1024 * 1024) {
-            return;
+            // return;
             try {
                 let url = `https://api.telegram.org/bot${this.token}/getFile?file_id=${file.file_id}`
                 let resp = await axios.get(url);
