@@ -12,8 +12,8 @@ lock - Lock current contact
 unlock - Unlock current contact
 findandlock - Find and lock contact (Case sensitive) [/find name]
 current - Show current contact
-agree - Agree with current friendship request [/agree name]
-disagree - Disagree with current friendship request [/disagree name]
+agree - Agree with current friendship request [/agree reqid]
+disagree - Disagree with current friendship request [/disagree reqid]
 acceptroom - Accept chatroom invitation
 help - Show this help page
 
@@ -34,7 +34,7 @@ lock - 锁定当前联系人
 unlock - 取消锁定当前联系人
 findandlock - 查找并锁定为当前联系人（区分大小写） [/find 昵称|备注]
 current - 显示当前联系人
-agree - 同意好友请求 [/agree 名称]
-disagree - 忽略好友请求 [/disagree 名称]
+agree - 同意好友请求 [/agree reqid]
+disagree - 忽略好友请求 [/disagree reqid]
 acceptroom - 接受群邀请
 help - 显示帮助

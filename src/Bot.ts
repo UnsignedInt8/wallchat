@@ -3,13 +3,12 @@ import SocksAgent from 'socks5-https-client/lib/Agent';
 import { Wechaty, Message, Contact, Room, FileBox, Friendship, RoomInvitation } from "wechaty";
 import qr from 'qr-image';
 import lang from './strings';
-import { ContactType, MessageType } from 'wechaty-puppet';
+import { ContactType, MessageType, FriendshipType } from 'wechaty-puppet';
 import * as TT from 'telegraf/typings/telegram-types';
 import takeScreenshot from './lib/TakeScreenshot';
 import { createHash } from 'crypto';
 import MiscHelper from './lib/MiscHelper';
 import axios from 'axios';
-import got from 'got';
 import download from 'download';
 import fs from 'fs';
 import path from 'path';
@@ -173,12 +172,13 @@ export default class Bot {
         wechat.on('friendship', async req => {
             let hello = req.hello();
             let contact = req.contact();
-            let name = contact.name();
 
-            let avatar = await (await contact.avatar()).toStream();
-            await ctx.replyWithPhoto({ source: avatar }, { caption: `${name}: ${hello}, /agree ${name} | /disagree ${name}` });
+            if (req.type() === FriendshipType.Receive) {
+                let avatar = await (await contact.avatar()).toStream();
+                await ctx.replyWithPhoto({ source: avatar }, { caption: `${hello}, /agree ${req.id} or /disagree ${req.id}` });
 
-            this.pendingFriends.set(name.toLowerCase(), req);
+                this.pendingFriends.set(req.id, req);
+            }
         });
 
         wechat.on('room-invite', async (invitation) => {
@@ -310,7 +310,7 @@ export default class Bot {
     }
 
     protected handleAgreeFriendship = async (ctx: ContextMessageUpdate) => {
-        let [_, name] = ctx.message.text.split(' ');
+        let [_, id] = ctx.message.text.split(' ');
 
         if (this.pendingFriends.size === 1) {
             for (let [key, req] of this.pendingFriends) {
@@ -322,26 +322,26 @@ export default class Bot {
             return;
         }
 
-        if (!name) {
+        if (!id) {
             await ctx.reply(lang.commands.agree);
             return;
         }
 
-        let req = this.pendingFriends.get(name.toLowerCase());
+        let req = this.pendingFriends.get(id.toLowerCase());
         await req?.accept();
-        this.pendingFriends.delete(name.toLowerCase());
+        this.pendingFriends.delete(id.toLowerCase());
 
         await ctx.reply('OK');
     }
 
     protected handleDisagreeFriendship = async (ctx: ContextMessageUpdate) => {
-        let [_, name] = ctx.message.text.split(' ');
-        if (!name) {
+        let [_, id] = ctx.message.text.split(' ');
+        if (!id) {
             await ctx.reply(lang.commands.disagree);
             return;
         }
 
-        this.pendingFriends.delete(name.toLowerCase());
+        this.pendingFriends.delete(id.toLowerCase());
         await ctx.reply('OK');
     }
 
@@ -359,7 +359,7 @@ export default class Bot {
 
         let file = msg.audio || (msg.video || (msg.photo && msg.photo[0]));
         if (file && file.file_size <= 50 * 1024 * 1024) {
-            // return;
+            return;
             try {
                 let url = `https://api.telegram.org/bot${this.token}/getFile?file_id=${file.file_id}`
                 let resp = await axios.get(url);
@@ -371,9 +371,10 @@ export default class Bot {
                 let distFile = tempfile(ext);
                 fs.writeFileSync(distFile, await download(url));
 
-                console.log(distFile);
                 // Not available on default puppet
+
                 await contact.say(FileBox.fromFile(distFile));
+                // await contact.say(FileBox.fromStream(await download(url) as any, file.file_id));
                 // await contact.say(FileBox.fromStream(got.stream(url), file.file_id));
             } catch (error) {
                 Logger.error(error.message);
