@@ -18,6 +18,7 @@ export default {
         current: (name: string) => `Current contact: ${name}`,
         timeout: 'Login timeout, bye',
         error: 'Some errors happen, try again please',
+        inviteRoom: (inviter: string, room: string) => `${inviter} invites you to join: ${room}`,
     },
     commands: {
         find: '/find name|alias',

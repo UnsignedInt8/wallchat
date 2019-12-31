@@ -14,6 +14,7 @@ findandlock - Find and lock contact (Case sensitive) [/find name]
 current - Show current contact
 agree - Agree with current friendship request [/agree name]
 disagree - Disagree with current friendship request [/disagree name]
+acceptroom - Accept chatroom invitation
 help - Show this help page
 
 
@@ -35,4 +36,5 @@ findandlock - 查找并锁定为当前联系人（区分大小写） [/find 昵�
 current - 显示当前联系人
 agree - 同意好友请求 [/agree 名称]
 disagree - 忽略好友请求 [/disagree 名称]
+acceptroom - 接受群邀请
 help - 显示帮助

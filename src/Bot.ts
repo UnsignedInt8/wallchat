@@ -1,6 +1,6 @@
 import Telegraph, { ContextMessageUpdate, Telegram } from 'telegraf';
 import SocksAgent from 'socks5-https-client/lib/Agent';
-import { Wechaty, Message, Contact, Room, FileBox, Friendship } from "wechaty";
+import { Wechaty, Message, Contact, Room, FileBox, Friendship, RoomInvitation } from "wechaty";
 import qr from 'qr-image';
 import lang from './strings';
 import { ContactType, MessageType } from 'wechaty-puppet';
@@ -10,6 +10,10 @@ import { createHash } from 'crypto';
 import MiscHelper from './lib/MiscHelper';
 import axios from 'axios';
 import got from 'got';
+import download from 'download';
+import fs from 'fs';
+import path from 'path';
+import tempfile from 'tempfile';
 import HTMLTemplates from './lib/HTMLTemplates';
 import Logger from './lib/Logger';
 import * as XMLParser from './lib/XmlParser';
@@ -50,6 +54,7 @@ export default class Bot {
     private token: string;
     protected beforeCheckUserList: ((ctx?: ContextMessageUpdate) => Promise<boolean>)[] = [];
     protected pendingFriends = new Map<string, Friendship>();
+    protected lastRoomInvitation: RoomInvitation = null;
 
     constructor({ token, socks5Proxy, msgui, keepMsgs }: BotOptions) {
 
@@ -86,6 +91,7 @@ export default class Bot {
         this.bot.command('current', (ctx, n) => this.checkUser(ctx, n), this.handleCurrent);
         this.bot.command('agree', (ctx, n) => this.checkUser(ctx, n), this.handleAgreeFriendship);
         this.bot.command('disagree', (ctx, n) => this.checkUser(ctx, n), this.handleDisagreeFriendship);
+        this.bot.command('acceptroom', (ctx, n) => this.checkUser(ctx, n));
         this.bot.command('logout', (ctx, n) => this.checkUser(ctx, n), this.handleLogout);
         this.bot.help(ctx => ctx.reply(lang.help));
 
@@ -131,7 +137,7 @@ export default class Bot {
 
         ctx.reply(lang.login.request);
 
-        let wechat = new Wechaty({ puppet: 'wechaty-puppet-wechat4u' });
+        let wechat = new Wechaty();
         let client: Client = { wechat, msgs: new Map(), receiveGroups: true, receiveOfficialAccount: true };
         this.clients.set(ctx.chat.id, client);
         let loginTimer: NodeJS.Timeout;
@@ -170,9 +176,16 @@ export default class Bot {
             let name = contact.name();
 
             let avatar = await (await contact.avatar()).toStream();
-            await ctx.replyWithPhoto({ source: avatar }, { caption: `${name}: ${hello}, /agree ${name} /disagree ${name}` });
+            await ctx.replyWithPhoto({ source: avatar }, { caption: `${name}: ${hello}, /agree ${name} | /disagree ${name}` });
 
             this.pendingFriends.set(name.toLowerCase(), req);
+        });
+
+        wechat.on('room-invite', async (invitation) => {
+            let inviter = (await invitation.inviter()).name();
+            let topic = await invitation.roomTopic();
+
+            await ctx.reply(`${lang.message.inviteRoom(inviter, topic)} /acceptroom`);
         });
 
         wechat.on('logout', async user => {
@@ -291,8 +304,24 @@ export default class Bot {
         ctx.reply(lang.message.current(name) + info);
     }
 
+    protected handleAcceptRoomInvitation = async (ctx: ContextMessageUpdate) => {
+        this.lastRoomInvitation?.accept();
+        this.lastRoomInvitation = null;
+    }
+
     protected handleAgreeFriendship = async (ctx: ContextMessageUpdate) => {
         let [_, name] = ctx.message.text.split(' ');
+
+        if (this.pendingFriends.size === 1) {
+            for (let [key, req] of this.pendingFriends) {
+                await req.accept();
+                await ctx.reply(`${key} OK`);
+            }
+
+            this.pendingFriends.clear();
+            return;
+        }
+
         if (!name) {
             await ctx.reply(lang.commands.agree);
             return;
@@ -338,9 +367,13 @@ export default class Bot {
 
                 let filePath = resp.data.result.file_path;
                 url = `https://api.telegram.org/file/bot${this.token}/${filePath}`;
+                let ext = path.extname(filePath);
+                let distFile = tempfile(ext);
+                await download(url, distFile);
 
                 // Not available on default puppet
-                await contact.say(FileBox.fromStream(got.stream(url), file.file_id));
+                await contact.say(FileBox.fromFile(distFile));
+                // await contact.say(FileBox.fromStream(got.stream(url), file.file_id));
             } catch (error) {
                 Logger.error(error.message);
             }
