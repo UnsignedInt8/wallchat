@@ -369,8 +369,9 @@ export default class Bot {
                 url = `https://api.telegram.org/file/bot${this.token}/${filePath}`;
                 let ext = path.extname(filePath);
                 let distFile = tempfile(ext);
-                await download(url, distFile);
+                fs.writeFileSync(distFile, await download(url));
 
+                console.log(distFile);
                 // Not available on default puppet
                 await contact.say(FileBox.fromFile(distFile));
                 // await contact.say(FileBox.fromStream(got.stream(url), file.file_id));
