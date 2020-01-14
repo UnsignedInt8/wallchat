@@ -1,8 +1,8 @@
 # LeaveXChat
 
-使用 Telegram Bot 接收 WeChat 文字、语音、图片、视频消息
-
 [![Powered by Wechaty](https://img.shields.io/badge/Powered%20By-Wechaty-blue.svg)](https://github.com/Wechaty/wechaty)
+
+使用 Telegram Bot 接收 WeChat 文字、语音、图片、视频消息
 
 ## 安装准备
 
@@ -73,10 +73,10 @@ $> node build/main/index.js -c config.json
 |/find|查找联系人并设置为当前联系人（区分大小写）| /find ABC |
 |/lock|锁定当前联系人|
 |/unlock|取消锁定当前联系人|
-|/findandlock|查找并锁定联系人| /findandlock ABC |
+|/findandlock|查找并锁定为当前联系人| /findandlock ABC |
 |/current|显示当前联系人|
-|/agree|同意好友请求| /agree ABC |
-|/disagree|忽略好友请求| /disagree ABC |
+|/agree|同意好友请求| /agree [reqid] |
+|/disagree|忽略好友请求| /disagree [reqid] |
 |/help|显示帮助|
 
 除了 `/find` 和 `/findandlock` 必须带有要查找的联系人名字，其它命令均无参数
@@ -96,10 +96,6 @@ $> node build/main/index.js -c config.json
 ## Telegram Bot 支持
 
 命令说明在[此处](./src/strings/BotFather.txt)，粘贴到 BotFather 中即可启用 Telegram Bot 输入框提示
-
-## 感谢
-
-感谢 [Wechaty](https://github.com/Chatie/wechaty/) 开源项目提供的底层支持
 
 ## License
 

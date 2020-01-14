@@ -13,7 +13,7 @@ export function parseOffical(rawXml: string) {
         const items = msg['msg']['appmsg']['mmreader']['category']['item'] as Array<any>;
         return items.reduce((prev, curr) => {
             let title = h2m(replaceMarkdownChars(curr['title']))
-            let url = curr['url'];
+            let url = (curr['url'] as string).replace('xtrack=1', 'xtrack=0');
 
             return `${prev}[${title}](${url})\n\n`;
         }, '');
