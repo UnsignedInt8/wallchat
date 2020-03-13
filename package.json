@@ -54,7 +54,7 @@
     "node": ">=8.9"
   },
   "dependencies": {
-    "axios": "^0.19.1",
+    "axios": "^0.19.2",
     "brolog": "^1.8.3",
     "commander": "^2.20.0",
     "download": "^7.1.0",
@@ -70,11 +70,11 @@
     "qr-image": "^3.2.0",
     "qrcode-terminal": "^0.12.0",
     "socks5-https-client": "^1.2.1",
-    "telegraf": "^3.35.0",
+    "telegraf": "^3.36.0",
     "telegraf-i18n": "^6.6.0",
     "tempfile": "^3.0.0",
     "wechaty": "^0.26.1",
-    "wechaty-puppet": "^0.16.1"
+    "wechaty-puppet": "^0.20.2"
   },
   "peerDependencies": {
     "brolog": "^1.8.3",
@@ -88,9 +88,9 @@
     "@types/got": "^9.6.9",
     "@types/html-entities": "*",
     "@types/inquirer": "^6.5.0",
-    "@types/puppeteer": "^1.20.3",
+    "@types/puppeteer": "^1.20.4",
     "ava": "1.0.0-beta.7",
-    "codecov": "^3.6.1",
+    "codecov": "^3.6.5",
     "cz-conventional-changelog": "^2.1.0",
     "gh-pages": "^2.2.0",
     "npm-run-all": "^4.1.5",
@@ -103,7 +103,7 @@
     "tslint-config-prettier": "^1.17.0",
     "tslint-immutable": "^5.0.0",
     "typedoc": "^0.13.0",
-    "typescript": "^3.7.4"
+    "typescript": "^3.8.3"
   },
   "ava": {
     "failFast": true,
