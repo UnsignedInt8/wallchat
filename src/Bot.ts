@@ -3,7 +3,7 @@ import SocksAgent from 'socks5-https-client/lib/Agent';
 import { Wechaty, Message, Contact, Room, FileBox, Friendship, RoomInvitation } from "wechaty";
 import qr from 'qr-image';
 import lang from './strings';
-import { ContactType, MessageType, FriendshipType } from 'wechaty-puppet';
+import { ContactType, FriendshipType, MessageType } from 'wechaty-puppet';
 import * as TT from 'telegraf/typings/telegram-types';
 import takeScreenshot from './lib/TakeScreenshot';
 import { createHash } from 'crypto';
@@ -392,7 +392,7 @@ export default class Bot {
 
         let from = msg.from();
         let room = msg.room();
-        let type = msg.type();
+        let type = msg.type() as any;
         let text = msg.text().replace(/\<br\/\>/g, ' \n').replace(/<[^>]*>?/gm, '');
 
         // if (from.type() === ContactType.Official) {
@@ -450,9 +450,9 @@ export default class Bot {
 
                 break;
 
-            case MessageType.Money:
-                sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: lang.message.money }));
-                break;
+            // case MessageType.Money:
+            //     sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: lang.message.money }));
+            //     break;
 
             case MessageType.Audio:
                 let audio = await msg.toFileBox();
