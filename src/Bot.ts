@@ -240,7 +240,10 @@ export default class Bot {
     }
 
     protected handleFind = async (ctx: ContextMessageUpdate, next: Function) => {
-        let [_, name] = ctx.message.text.split(' ');
+        let contents = ctx.message.text.split(' ');
+        contents.shift();
+
+        let name = contents.reduce((p, c) => p + c);
         if (!name) {
             ctx.reply(lang.commands.find);
             return;
@@ -249,12 +252,16 @@ export default class Bot {
         name = name.trim();
         let user = ctx['user'] as Client;
 
-        let found: Contact;
+        let found: Contact | Room;
         try {
             found = await user.wechat.Contact.find({ name }) || await user.wechat.Contact.find({ alias: name });
         } catch (error) {
             Logger.error(error.message);
             return;
+        }
+
+        if (!found) {
+            found = await user.wechat.Room.find({ topic: name });
         }
 
         if (!found) {
