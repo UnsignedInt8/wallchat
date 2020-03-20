@@ -21,7 +21,8 @@ if (require.main === module) {
         bot.launch();
 
         process.on('uncaughtException', () => {
-            bot.exit()
+            bot.exit();
+            process.exit();
         });
     } else {
         (async () => {
