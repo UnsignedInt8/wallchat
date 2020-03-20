@@ -19,6 +19,10 @@ if (require.main === module) {
         let config = JSON.parse(json);
         bot = new Bot(config);
         bot.launch();
+
+        process.on('uncaughtException', () => {
+            bot.exit()
+        });
     } else {
         (async () => {
             try {
