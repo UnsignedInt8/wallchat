@@ -243,7 +243,7 @@ export default class Bot {
         let contents = ctx.message.text.split(' ');
         contents.shift();
 
-        let name = contents.reduce((p, c) => p + c);
+        let name = contents.reduce((p, c) => `${p} ${c}`);
         if (!name) {
             ctx.reply(lang.commands.find);
             return;
@@ -251,7 +251,7 @@ export default class Bot {
 
         name = name.trim();
         let user = ctx['user'] as Client;
-
+        
         let found: Contact | Room;
         try {
             found = await user.wechat.Contact.find({ name }) || await user.wechat.Contact.find({ alias: name });
