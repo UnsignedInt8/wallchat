@@ -172,12 +172,13 @@ export default class Bot {
         wechat.on('friendship', async req => {
             let hello = req.hello();
             let contact = req.contact();
+            let name = contact.name();
 
             if (req.type() === FriendshipType.Receive) {
                 let avatar = await (await contact.avatar()).toStream();
-                await ctx.replyWithPhoto({ source: avatar }, { caption: `${hello}, /agree ${req.id} or /disagree ${req.id}` });
+                await ctx.replyWithPhoto({ source: avatar }, { caption: `${hello}, /agree ${name} or /disagree ${name}` });
 
-                this.pendingFriends.set(req.id, req);
+                this.pendingFriends.set(name.toLowerCase(), req);
             }
         });
 
@@ -251,7 +252,7 @@ export default class Bot {
 
         name = name.trim();
         let user = ctx['user'] as Client;
-        
+
         let found: Contact | Room;
         try {
             found = await user.wechat.Contact.find({ name }) || await user.wechat.Contact.find({ alias: name });
