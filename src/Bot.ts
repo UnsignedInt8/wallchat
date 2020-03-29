@@ -140,11 +140,21 @@ export default class Bot {
         let client: Client = { wechat, msgs: new Map(), receiveGroups: true, receiveOfficialAccount: true };
         this.clients.set(ctx.chat.id, client);
         let loginTimer: NodeJS.Timeout;
-        let deleteWechat = async () => {
+
+        let qrMessage: TT.MessagePhoto | void = undefined;
+
+        const removeQRMessage = async () => {
+            if (!qrMessage) return;
+            await this.bot.telegram.deleteMessage(ctx.chat.id, qrMessage.message_id);
+            qrMessage = undefined;
+        }
+
+        const deleteWechat = async () => {
             Logger.info('login timeout');
             this.clients.delete(id);
             wechat.removeAllListeners();
             await wechat.stop().catch();
+            await removeQRMessage();
         }
 
         const handleQrcode = async (qrcode: string) => {
@@ -157,16 +167,17 @@ export default class Bot {
                 loginTimer = setTimeout(() => { deleteWechat(); ctx.reply(lang.message.timeout); }, 3 * 60 * 1000);
             }
 
-            await ctx.replyWithPhoto({ source: qr.image(qrcode) }).catch(() => deleteWechat());
+            qrMessage = await ctx.replyWithPhoto({ source: qr.image(qrcode) }).catch(() => deleteWechat());
         };
 
         wechat.on('scan', handleQrcode);
 
-        wechat.once('login', user => {
+        wechat.once('login', async user => {
             this.clients.get(id).wechatId = user.id;
-            ctx.reply(lang.login.logined(user.name()));
+            await ctx.reply(lang.login.logined(user.name()));
             clearTimeout(loginTimer);
             wechat.removeListener('scan', handleQrcode);
+            await removeQRMessage();
         });
 
         wechat.on('friendship', async req => {
