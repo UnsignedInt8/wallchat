@@ -47,7 +47,7 @@ interface Client {
 export default class Bot {
 
     protected bot: Telegraph<ContextMessageUpdate>;
-    protected clients: Map<number, Client> = new Map();
+    protected clients: Map<number, Client> = new Map(); // chat id => client
     protected msgui: MessageUI;
     protected keeyMsgs: number;
     private token: string;
@@ -102,6 +102,17 @@ export default class Bot {
     launch() {
         this.bot.on('message', (ctx, n) => this.checkUser(ctx, n), this.handleTelegramMessage);
         this.bot.launch().then(() => Logger.info(`Bot is running`));
+
+
+        const handleFatalError = async (err: Error) => {
+            for (let [id, _] of this.clients) {
+                await this.bot.telegram.sendMessage(id, `Fatal error happened:\n\n ${err.message}`)
+            }
+
+            process.removeListener('uncaughtException', handleFatalError);
+        }
+
+        process.on('uncaughtException', handleFatalError);
     }
 
     async exit() {
@@ -113,7 +124,7 @@ export default class Bot {
 
     protected handleStart = async (ctx: ContextMessageUpdate) => {
         await ctx.reply(lang.welcome).catch();
-        ctx.reply(lang.help);
+        await ctx.reply(lang.help);
     }
 
     protected async handleLogin(ctx: ContextMessageUpdate) {
