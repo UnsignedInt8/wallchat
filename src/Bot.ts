@@ -103,7 +103,6 @@ export default class Bot {
         this.bot.on('message', (ctx, n) => this.checkUser(ctx, n), this.handleTelegramMessage);
         this.bot.launch().then(() => Logger.info(`Bot is running`));
 
-
         const handleFatalError = async (err: Error) => {
             for (let [id, _] of this.clients) {
                 await this.bot.telegram.sendMessage(id, `Fatal error happened:\n\n ${err.message}`)

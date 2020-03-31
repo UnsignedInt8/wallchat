@@ -70,11 +70,12 @@
     "qr-image": "^3.2.0",
     "qrcode-terminal": "^0.12.0",
     "socks5-https-client": "^1.2.1",
-    "telegraf": "^3.36.0",
+    "telegraf": "^3.37.0",
     "telegraf-i18n": "^6.6.0",
     "tempfile": "^3.0.0",
     "wechaty": "^0.26.1",
-    "wechaty-puppet": "^0.20.2"
+    "wechaty-puppet": "^0.20.2",
+    "wechaty-puppet-puppeteer": "^0.18.6"
   },
   "peerDependencies": {
     "brolog": "^1.8.3",
