@@ -516,11 +516,11 @@ export default class Bot {
         let countToDelete = sent.message_id - this.keeyMsgs;
 
         do {
-            try {
-                if (!await this.bot.telegram.deleteMessage(ctx.chat.id, countToDelete)) break;
-            } catch (error) {
-                break;
-            }
+            // try {
+            //     if (!await this.bot.telegram.deleteMessage(ctx.chat.id, countToDelete)) break;
+            // } catch (error) {
+            //     break;
+            // }
 
             user.msgs.delete(countToDelete);
             countToDelete--;

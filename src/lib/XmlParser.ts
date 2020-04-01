@@ -1,13 +1,17 @@
 
 import xml from 'fast-xml-parser';
 import h2m from 'h2m';
+import Mercury from '@postlight/mercury-parser';
+import marked from 'marked';
+import axios from 'axios';
+import { parse, HTMLElement } from 'node-html-parser';
 
 function replaceMarkdownChars(txt: string | object) {
     let title = (typeof (txt) === 'string' ? txt : txt['#text']) || '';
     return title.replace(/\[/g, '').replace(/\]/g, '');
 }
 
-export function parseOffical(rawXml: string) {
+export function parseOffical(rawXml: string): string {
     try {
         const msg = xml.parse(rawXml);
         const items = msg['msg']['appmsg']['mmreader']['category']['item'] as Array<any>;
@@ -27,9 +31,38 @@ export function parseAttach(rawXml: string) {
     const appmsg = msg['msg']['appmsg'];
     const title = h2m(replaceMarkdownChars(appmsg['title']));
     const desc = h2m((replaceMarkdownChars(appmsg['des'])));
-    const url = appmsg['url'];  
+    const url = appmsg['url'];
 
     return `[${title}](${url})\n${desc}`;
+}
+
+export async function convertXmlToTelegraphMarkdown(rawXml: string, token: string = '4a1c7c544a7f2e9c146240e92ad4dc9e2e14e3e8a0ec01665ddbc80fbba3') {
+    const msg = xml.parse(rawXml);
+    const items = msg['msg']['appmsg']['mmreader']['category']['item'] as Array<any>;
+    const urls = items.map(async curr => {
+        // let title = h2m(replaceMarkdownChars(curr['title']))
+        let url = (curr['url'] as string).replace('xtrack=1', 'xtrack=0');
+
+        const { title, content, excerpt } = await Mercury.parse(url, { contentType: 'markdown' }) as { title: string, content: string, excerpt: string };
+
+        const html = marked(content, {});
+        const root = parse(html, {}) as HTMLElement;
+
+        const convert = (n: HTMLElement) => {
+            
+            if (n.childNodes.length === 0) return;
+            convert(n);
+        }
+        root.childNodes.map(c => {
+            const n = c as HTMLElement;
+            return {
+                tag: n.tagName,
+            }
+        })
+
+        return { title, url };
+    });
+
 }
 
 function testOffical() {
