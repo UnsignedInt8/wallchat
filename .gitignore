@@ -15,3 +15,5 @@ yarn.lock
 config.json
 leavexchat-bot/
 *.tar.gz
+config.development.json
+*.memory-card.json
