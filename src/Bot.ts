@@ -38,7 +38,7 @@ export interface BotOptions {
 }
 
 interface Client {
-  wechat: Wechaty;
+  wechat?: Wechaty;
   receiveGroups?: boolean;
   receiveOfficialAccount?: boolean;
   receiveSelf?: boolean;
@@ -151,8 +151,8 @@ export default class Bot {
 
   async exit() {
     for (let [_, client] of this.clients) {
-      await client.wechat.logout();
-      await client.wechat.stop();
+      await client.wechat?.logout();
+      await client.wechat?.stop();
     }
   }
 
@@ -171,7 +171,7 @@ export default class Bot {
     if (this.clients.has(id)) {
       let user = this.clients.get(id);
       if (user.wechatId) {
-        ctx.reply(lang.login.logined(user.wechat.userSelf().name()));
+        ctx.reply(lang.login.logined(user.wechat?.userSelf().name()));
         return;
       }
 
@@ -208,8 +208,8 @@ export default class Bot {
     const deleteWechat = async () => {
       Logger.info('login timeout');
       this.clients.delete(id);
-      wechat.removeAllListeners();
-      await wechat.stop().catch();
+      wechat?.removeAllListeners();
+      await wechat?.stop().catch();
       await removeQRMessage();
     };
 
@@ -229,17 +229,17 @@ export default class Bot {
       qrMessage = await ctx.replyWithPhoto({ source: qr.image(qrcode) }).catch(() => deleteWechat());
     };
 
-    wechat.on('scan', handleQrcode);
+    wechat?.on('scan', handleQrcode);
 
-    wechat.once('login', async user => {
+    wechat?.once('login', async user => {
       this.clients.get(id).wechatId = user.id;
       await ctx.reply(lang.login.logined(user.name()));
       clearTimeout(loginTimer);
-      wechat.removeListener('scan', handleQrcode);
+      wechat?.removeListener('scan', handleQrcode);
       await removeQRMessage();
     });
 
-    wechat.on('friendship', async req => {
+    wechat?.on('friendship', async req => {
       let hello = req.hello();
       let contact = req.contact();
       let name = contact.name();
@@ -252,32 +252,32 @@ export default class Bot {
       }
     });
 
-    wechat.on('room-invite', async invitation => {
+    wechat?.on('room-invite', async invitation => {
       let inviter = (await invitation.inviter()).name();
       let topic = await invitation.roomTopic();
 
       await ctx.reply(`${lang.message.inviteRoom(inviter, topic)} /acceptroom`);
     });
 
-    wechat.on('logout', async user => {
+    wechat?.on('logout', async user => {
       await deleteWechat();
       await ctx.reply(lang.login.logouted(user.name()));
     });
 
-    wechat.on('error', async error => {
+    wechat?.on('error', async error => {
       Logger.warn(error.message);
       ctx.reply(lang.message.error);
       await deleteWechat();
     });
 
-    // wechat.puppet.on('error', async () => {
+    // wechat?.puppet.on('error', async () => {
     //     ctx.reply(lang.message.error);
     //     await deleteWechat();
     // });
 
-    wechat.on('message', msg => this.handleWechatMessage(msg, ctx));
+    wechat?.on('message', msg => this.handleWechatMessage(msg, ctx));
 
-    await wechat.start();
+    await wechat?.start();
   }
 
   protected async checkUser(ctx: TelegrafContext, next: Function) {
@@ -301,11 +301,11 @@ export default class Bot {
 
     try {
       this.clients.delete(ctx.chat.id);
-      user.wechat.removeAllListeners();
+      user.wechat?.removeAllListeners();
     } catch (error) {}
 
-    await user.wechat.logout().catch(reason => Logger.error(reason));
-    await user.wechat.stop().catch(reason => Logger.error(reason));
+    await user.wechat?.logout().catch(reason => Logger.error(reason));
+    await user.wechat?.stop().catch(reason => Logger.error(reason));
     ctx.reply(lang.login.bye);
   };
 
@@ -324,14 +324,14 @@ export default class Bot {
 
     let found: Contact | Room;
     try {
-      found = (await user.wechat.Contact.find({ name })) || (await user.wechat.Contact.find({ alias: name }));
+      found = (await user.wechat?.Contact.find({ name })) || (await user.wechat?.Contact.find({ alias: name }));
     } catch (error) {
       Logger.error(error.message);
       return;
     }
 
     if (!found) {
-      found = await user.wechat.Room.find({ topic: name });
+      found = await user.wechat?.Room.find({ topic: name });
     }
 
     if (!found) {
