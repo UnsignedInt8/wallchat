@@ -187,6 +187,10 @@ export default class Bot {
         })
       : undefined;
 
+    if (puppet) {
+      Logger.info('You are using wechaty-puppet-padplus');
+    }
+
     let wechat = new Wechaty({ puppet, name: 'leavewechat' });
     let client: Client = {
       wechat,
