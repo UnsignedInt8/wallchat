@@ -4,6 +4,10 @@
 
 使用 Telegram Bot 接收 WeChat 文字、语音、图片、视频消息
 
+## Padplus 版本
+
+需要购买 Wechaty Token。Padplus 版本额外支持发送图片、视频，但暂时无法接收公众号消息。
+
 ## 安装准备
 
 1. 安装 Node.js 10+  官网: https://nodejs.org
