@@ -201,7 +201,7 @@ export default class Bot {
     this.clients.set(ctx.chat.id, client);
     let loginTimer: NodeJS.Timeout;
 
-    let qrMessage: TT.MessagePhoto | void = undefined;
+    let qrMessage: TT.MessagePhoto | undefined | void = undefined;
 
     const removeQRMessage = async () => {
       if (!qrMessage) return;
@@ -230,12 +230,13 @@ export default class Bot {
         }, 3 * 60 * 1000);
       }
 
+      removeQRMessage();
       qrMessage = await ctx.replyWithPhoto({ source: qr.image(qrcode) }).catch(() => deleteWechat());
     };
 
     wechat?.on('scan', handleQrcode);
 
-    wechat?.once('login', async user => {
+    wechat?.on('login', async user => {
       this.clients.get(id).wechatId = user.id;
       await ctx.reply(lang.login.logined(user.name()));
       clearTimeout(loginTimer);
@@ -248,7 +249,7 @@ export default class Bot {
       let contact = req.contact();
       let name = contact.name();
 
-      if (req.type() as number === FriendshipType.Receive) {
+      if ((req.type() as number) === FriendshipType.Receive) {
         let avatar = await (await contact.avatar()).toStream();
         await ctx.replyWithPhoto({ source: avatar }, { caption: `${hello}, /agree ${name} or /disagree ${name}` });
 
@@ -479,7 +480,7 @@ export default class Bot {
       .replace(/<[^>]*>?/gm, '');
 
     if (user.wechatId === from.id && !user.receiveSelf) return;
-    if (!user.receiveOfficialAccount && from.type() as number === ContactType.Official) return;
+    if (!user.receiveOfficialAccount && (from.type() as number) === ContactType.Official) return;
     if (!user.receiveGroups && room) return;
 
     let alias = await from.alias();
@@ -497,7 +498,7 @@ export default class Bot {
       case MessageType.Attachment:
         try {
           let xml = html.decode(msg.text());
-          let markdown = from.type() as number === ContactType.Official ? XMLParser.parseOffical(xml) : XMLParser.parseAttach(xml);
+          let markdown = (from.type() as number) === ContactType.Official ? XMLParser.parseOffical(xml) : XMLParser.parseAttach(xml);
           sent = await ctx.replyWithMarkdown(HTMLTemplates.markdown({ nickname, content: markdown }));
         } catch (error) {}
 

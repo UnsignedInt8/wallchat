@@ -23,7 +23,7 @@ export default {
     commands: {
         find: '/find name|alias',
         agree: '/agree name',
-        disagree: '/disagreee name',
+        disagree: '/disagree name',
     },
     help: `Command reference:
 /start - Start bot
