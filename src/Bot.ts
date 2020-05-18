@@ -248,7 +248,7 @@ export default class Bot {
       let contact = req.contact();
       let name = contact.name();
 
-      if (req.type() === FriendshipType.Receive) {
+      if (req.type() as number === FriendshipType.Receive) {
         let avatar = await (await contact.avatar()).toStream();
         await ctx.replyWithPhoto({ source: avatar }, { caption: `${hello}, /agree ${name} or /disagree ${name}` });
 
@@ -440,7 +440,6 @@ export default class Bot {
 
     let file = msg.audio || msg.video || (msg.photo && msg.photo[0]);
     if (file && file.file_size <= 50 * 1024 * 1024) {
-      return;
       try {
         let url = `https://api.telegram.org/bot${this.token}/getFile?file_id=${file.file_id}`;
         let resp = await axios.get(url);
@@ -480,7 +479,7 @@ export default class Bot {
       .replace(/<[^>]*>?/gm, '');
 
     if (user.wechatId === from.id && !user.receiveSelf) return;
-    if (!user.receiveOfficialAccount && from.type() === ContactType.Official) return;
+    if (!user.receiveOfficialAccount && from.type() as number === ContactType.Official) return;
     if (!user.receiveGroups && room) return;
 
     let alias = await from.alias();
@@ -498,7 +497,7 @@ export default class Bot {
       case MessageType.Attachment:
         try {
           let xml = html.decode(msg.text());
-          let markdown = from.type() === ContactType.Official ? XMLParser.parseOffical(xml) : XMLParser.parseAttach(xml);
+          let markdown = from.type() as number === ContactType.Official ? XMLParser.parseOffical(xml) : XMLParser.parseAttach(xml);
           sent = await ctx.replyWithMarkdown(HTMLTemplates.markdown({ nickname, content: markdown }));
         } catch (error) {}
 
