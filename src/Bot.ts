@@ -238,9 +238,14 @@ export default class Bot {
 
     wechat?.on('login', async user => {
       this.clients.get(id).wechatId = user.id;
+      client.wechatId = user.id;
+
       await ctx.reply(lang.login.logined(user.name()));
-      clearTimeout(loginTimer);
       wechat?.removeListener('scan', handleQrcode);
+      
+      clearTimeout(loginTimer);
+      loginTimer = undefined;
+
       await removeQRMessage();
     });
 
