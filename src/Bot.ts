@@ -50,7 +50,7 @@ interface Client {
 
 export default class Bot {
   protected bot: Telegraph<TelegrafContext>;
-  protected clients: Map<number, Client> = new Map(); // chat id => client
+  protected clients: Map<number, Client> = new Map(); // telegram chat id => client
   protected msgui: MessageUI;
   protected keeyMsgs: number;
   private token: string;
@@ -138,14 +138,22 @@ export default class Bot {
     this.bot.on('message', (ctx: TelegrafContext, n: Function) => this.checkUser(ctx, n), this.handleTelegramMessage);
     this.bot.launch().then(() => Logger.info(`Bot is running`));
 
-    const handleFatalError = async (err: Error) => {
+    const handleFatalError = async (err: Error | number | NodeJS.Signals) => {
       for (let [id, _] of this.clients) {
-        await this.bot.telegram.sendMessage(id, `Fatal error happened:\n\n ${err.message}`);
+        await this.bot.telegram.sendMessage(id, `Fatal error happened:\n\n ${JSON.stringify(err)}\n\n Trying to restart...`);
       }
-
-      process.removeListener('uncaughtException', handleFatalError);
     };
 
+    process.on('exit', handleFatalError);
+
+    //catches ctrl+c event
+    process.on('SIGINT', handleFatalError);
+
+    // catches "kill pid" (for example: nodemon restart)
+    process.on('SIGUSR1', handleFatalError);
+    process.on('SIGUSR2', handleFatalError);
+
+    //catches uncaught exceptions
     process.on('uncaughtException', handleFatalError);
   }
 
@@ -198,6 +206,7 @@ export default class Bot {
       receiveGroups: true,
       receiveOfficialAccount: true
     };
+    
     this.clients.set(ctx.chat.id, client);
     let loginTimer: NodeJS.Timeout;
 
@@ -242,7 +251,7 @@ export default class Bot {
 
       await ctx.reply(lang.login.logined(user.name()));
       wechat?.removeListener('scan', handleQrcode);
-      
+
       clearTimeout(loginTimer);
       loginTimer = undefined;
 
