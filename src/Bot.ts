@@ -159,7 +159,7 @@ export default class Bot {
 
   async exit() {
     for (let [_, client] of this.clients) {
-      await client.wechat?.logout();
+      // await client.wechat?.logout();
       await client.wechat?.stop();
     }
   }
@@ -318,7 +318,7 @@ export default class Bot {
       user.wechat?.removeAllListeners();
     } catch (error) {}
 
-    await user.wechat?.logout().catch(reason => Logger.error(reason));
+    // await user.wechat?.logout().catch(reason => Logger.error(reason));
     await user.wechat?.stop().catch(reason => Logger.error(reason));
     ctx.reply(lang.login.bye);
   };
