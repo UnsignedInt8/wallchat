@@ -55,6 +55,7 @@ export default class Bot {
   protected keeyMsgs: number;
   private token: string;
   private wechatyToken?: string;
+  private wechatyPadplus?: Wechaty;
   protected beforeCheckUserList: ((ctx?: TelegrafContext) => Promise<boolean>)[] = [];
   protected pendingFriends = new Map<string, Friendship>();
   protected lastRoomInvitation: RoomInvitation = null;
@@ -189,24 +190,26 @@ export default class Bot {
 
     ctx.reply(lang.login.request);
 
-    let puppet: any = this.wechatyToken
-      ? new PuppetPadplus({
-          token: this.wechatyToken
-        })
-      : undefined;
+    if (!this.wechatyPadplus) {
+      let puppet: any = new PuppetPadplus({
+        token: this.wechatyToken
+      });
+      
+      if (puppet) {
+        Logger.info('You are using wechaty-puppet-padplus');
+      }
 
-    if (puppet) {
-      Logger.info('You are using wechaty-puppet-padplus');
+      this.wechatyPadplus = new Wechaty({ puppet, name: 'leavewechat' });
     }
 
-    let wechat = new Wechaty({ puppet, name: 'leavewechat' });
+    let wechat = this.wechatyPadplus!;
     let client: Client = {
       wechat,
       msgs: new Map(),
       receiveGroups: true,
       receiveOfficialAccount: true
     };
-    
+
     this.clients.set(ctx.chat.id, client);
     let loginTimer: NodeJS.Timeout;
 
@@ -318,7 +321,7 @@ export default class Bot {
       user.wechat?.removeAllListeners();
     } catch (error) {}
 
-    // await user.wechat?.logout().catch(reason => Logger.error(reason));
+    await user.wechat?.logout().catch(reason => Logger.error(reason));
     await user.wechat?.stop().catch(reason => Logger.error(reason));
     ctx.reply(lang.login.bye);
   };
@@ -464,8 +467,6 @@ export default class Bot {
         // Not available on default puppet
 
         await contact.say(FileBox.fromFile(distFile));
-        // await contact.say(FileBox.fromStream(await download(url) as any, file.file_id));
-        // await contact.say(FileBox.fromStream(got.stream(url), file.file_id));
       } catch (error) {
         Logger.error(error.message);
       }
