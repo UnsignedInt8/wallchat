@@ -46,6 +46,7 @@ interface Client {
   currentContact?: Room | Contact;
   contactLocked?: boolean;
   wechatId?: string;
+  lastMessage?: any;
 }
 
 export default class Bot {
@@ -482,8 +483,6 @@ export default class Bot {
     if (!user.contactLocked) user.currentContact = contact;
   };
 
-  private _lastMessage: any;
-
   protected async handleWechatMessage(msg: Message, ctx: TelegrafContext) {
     let id = ctx.chat.id;
     let user = this.clients.get(id);
@@ -497,8 +496,8 @@ export default class Bot {
       .replace(/<[^>]*>?/gm, '');
 
     // Fix duplicate messages
-    if (text === this._lastMessage) {
-      this._lastMessage = text;
+    if (user.lastMessage === text) {
+      user.lastMessage = text;
       return;
     }
 
