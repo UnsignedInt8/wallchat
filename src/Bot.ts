@@ -497,9 +497,10 @@ export default class Bot {
 
     // Fix duplicate messages
     if (user.lastMessage === text) {
-      user.lastMessage = text;
       return;
     }
+
+    user.lastMessage = text;
 
     if (user.wechatId === from.id && !user.receiveSelf) return;
     if (!user.receiveOfficialAccount && (from.type() as number) === ContactType.Official) return;
