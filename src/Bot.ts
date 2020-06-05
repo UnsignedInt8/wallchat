@@ -495,13 +495,6 @@ export default class Bot {
       .replace(/\<br\/\>/g, ' \n')
       .replace(/<[^>]*>?/gm, '');
 
-    // Fix duplicate messages
-    if (user.lastMessage === text) {
-      return;
-    }
-
-    user.lastMessage = text;
-
     if (user.wechatId === from.id && !user.receiveSelf) return;
     if (!user.receiveOfficialAccount && (from.type() as number) === ContactType.Official) return;
     if (!user.receiveGroups && room) return;
@@ -510,6 +503,10 @@ export default class Bot {
     let nickname = from.name() + (alias ? ` (${alias})` : '');
     let caption = nickname + (room ? ` [${await room.topic()}]` : '');
     let sent: TT.Message;
+
+    // Fix duplicate messages
+    if (user.lastMessage === `${caption} ${text}`) return;
+    user.lastMessage = `${caption} ${text}`;
 
     switch (type) {
       case MessageType.Text:
