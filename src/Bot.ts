@@ -482,6 +482,8 @@ export default class Bot {
     if (!user.contactLocked) user.currentContact = contact;
   };
 
+  private _lastMessage: any;
+
   protected async handleWechatMessage(msg: Message, ctx: TelegrafContext) {
     let id = ctx.chat.id;
     let user = this.clients.get(id);
@@ -493,6 +495,12 @@ export default class Bot {
       .text()
       .replace(/\<br\/\>/g, ' \n')
       .replace(/<[^>]*>?/gm, '');
+
+    // Fix duplicate messages
+    if (text === this._lastMessage) {
+      this._lastMessage = text;
+      return;
+    }
 
     if (user.wechatId === from.id && !user.receiveSelf) return;
     if (!user.receiveOfficialAccount && (from.type() as number) === ContactType.Official) return;
