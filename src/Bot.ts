@@ -194,7 +194,7 @@ export default class Bot {
       let puppet: any = new PuppetPadplus({
         token: this.wechatyToken
       });
-      
+
       if (puppet) {
         Logger.info('You are using wechaty-puppet-padplus');
       }
@@ -224,9 +224,13 @@ export default class Bot {
     const deleteWechat = async () => {
       Logger.info('login timeout');
       this.clients.delete(id);
-      wechat?.removeAllListeners();
-      await wechat?.stop().catch();
       await removeQRMessage();
+      wechat?.removeListener('message', handleWechatMessage);
+
+      if (this.clients.size === 0) {
+        wechat?.removeAllListeners();
+        await wechat?.stop().catch();
+      }
     };
 
     const handleQrcode = async (qrcode: string) => {
@@ -292,7 +296,8 @@ export default class Bot {
       await deleteWechat();
     });
 
-    wechat?.on('message', msg => this.handleWechatMessage(msg, ctx));
+    const handleWechatMessage = (msg: Message) => this.handleWechatMessage(msg, ctx);
+    wechat?.on('message', msg => handleWechatMessage(msg));
 
     await wechat?.start();
   }
