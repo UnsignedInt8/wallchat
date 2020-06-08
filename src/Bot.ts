@@ -239,6 +239,7 @@ export default class Bot {
         }, 3 * 60 * 1000);
       }
 
+      await removeQRMessage();
       qrMessage = await ctx.replyWithPhoto({ source: qr.image(qrcode) }).catch(() => deleteWechat());
     };
 

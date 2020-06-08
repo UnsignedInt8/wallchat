@@ -70,7 +70,7 @@ $> node build/main/index.js -c config.json
 |/officialoff|关闭接收公众号消息|
 |/selfon|开启接收自己的消息|
 |/selfoff|关闭接收自己的消息|
-|/find|查找联系人并设置为当前联系人（区分大小写）| /find ABC |
+|/find|查找联系人并设置为当前联系人| /find ABC |
 |/lock|锁定当前联系人|
 |/unlock|取消锁定当前联系人|
 |/findandlock|查找并锁定为当前联系人| /findandlock ABC |
@@ -79,7 +79,7 @@ $> node build/main/index.js -c config.json
 |/disagree|忽略好友请求| /disagree [reqid] |
 |/help|显示帮助|
 
-除了 `/find` 和 `/findandlock` 必须带有要查找的联系人名字，其它命令均无参数
+除了 `/find` 和 `/findandlock` 必须带有要查找的联系人名字，其它命令均可无参数
 
 ## 使用注意
 
@@ -93,7 +93,7 @@ $> node build/main/index.js -c config.json
 
 5. 如果使用VPS，WeChat 会检测到异地登陆，并发出提示。可以在本地运行该 bot，只需在配置文件里填写好 socks5 代理信息即可
 
-## Telegram Bot 支持
+## Telegram Bot 快捷命令支持
 
 命令说明在[此处](./src/strings/BotFather.txt)，粘贴到 BotFather 中即可启用 Telegram Bot 输入框提示
 
