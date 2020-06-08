@@ -330,7 +330,7 @@ export default class Bot {
 
     let found: Contact | Room;
     try {
-      found = await user.wechat?.Contact.find({ name: regexp, alias: regexp });
+      found = (await user.wechat?.Contact.find({ name: regexp })) || (await user.wechat?.Contact.find({ alias: regexp }));
     } catch (error) {
       Logger.error(error.message);
       return;
