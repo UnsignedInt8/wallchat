@@ -328,9 +328,11 @@ export default class Bot {
     const regexp = new RegExp(name, 'ig');
     let user = ctx['user'] as Client;
 
-    let found: Contact | Room;
+    let found: Contact | Room | undefined;
+    let foundName = '';
     try {
       found = (await user.wechat?.Contact.find({ name: regexp })) || (await user.wechat?.Contact.find({ alias: regexp }));
+      foundName = found?.name();
     } catch (error) {
       Logger.error(error.message);
       return;
@@ -338,6 +340,7 @@ export default class Bot {
 
     if (!found) {
       found = await user.wechat?.Room.find({ topic: regexp });
+      foundName = await found?.topic();
     }
 
     if (!found) {
@@ -346,7 +349,7 @@ export default class Bot {
     }
 
     let info = user.contactLocked ? ` [${lang.message.contactLocked('').trim()}]` : '';
-    await ctx.reply(lang.message.contactFound(`${name}`) + info).catch();
+    await ctx.reply(lang.message.contactFound(`${foundName}`) + info).catch();
     user.currentContact = found;
 
     if (next) next();
