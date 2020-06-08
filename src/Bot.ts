@@ -137,7 +137,7 @@ export default class Bot {
   launch() {
     this.bot.on('message', (ctx: TelegrafContext, n: Function) => this.checkUser(ctx, n), this.handleTelegramMessage);
     this.bot.launch().then(() => Logger.info(`Bot is running`));
-    
+
     const handleFatalError = async (err: Error | number | NodeJS.Signals) => {
       for (let [id, _] of this.clients) {
         await this.bot.telegram.sendMessage(id, `Fatal error happened:\n\n ${JSON.stringify(err)}\n\n Trying to restart...`);
@@ -199,7 +199,7 @@ export default class Bot {
       Logger.info('You are using wechaty-puppet-padplus');
     }
 
-    let wechat = new Wechaty({ puppet, name: 'leavewechat' });
+    let wechat = new Wechaty({ puppet, name: `leavewechat_${Number.parseInt(`${Math.random() * 100000}`)}` });
     let client: Client = {
       wechat,
       msgs: new Map(),
