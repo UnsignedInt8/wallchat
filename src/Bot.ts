@@ -224,9 +224,10 @@ export default class Bot {
       if (client.wechatId) return;
 
       if (!loginTimer) {
-        loginTimer = setTimeout(() => {
-          deleteWechat();
+        loginTimer = setTimeout(async () => {
+          await deleteWechat();
           ctx.reply(lang.message.timeout);
+          await removeQRMessage();
         }, 3 * 60 * 1000);
       }
 
