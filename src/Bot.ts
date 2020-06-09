@@ -341,7 +341,8 @@ export default class Bot {
     let foundName = '';
     try {
       found = (await user.wechat?.Contact.find({ name: regexp })) || (await user.wechat?.Contact.find({ alias: regexp }));
-      foundName = `${found?.name()} (${await found?.alias()})`;
+      const alias = await found?.alias();
+      foundName = alias ? `${found?.name()} (${alias})` : found?.name();
     } catch (error) {
       Logger.error(error.message);
       return;
