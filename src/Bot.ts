@@ -144,17 +144,18 @@ export default class Bot {
       }
     };
 
-    process.once('exit', handleFatalError);
+    process.on('exit', handleFatalError);
 
     //catches ctrl+c event
-    process.once('SIGINT', handleFatalError);
+    process.on('SIGINT', handleFatalError);
 
     // catches "kill pid" (for example: nodemon restart)
-    process.once('SIGUSR1', handleFatalError);
-    process.once('SIGUSR2', handleFatalError);
+    process.on('SIGUSR1', handleFatalError);
+    process.on('SIGUSR2', handleFatalError);
 
     //catches uncaught exceptions
-    process.once('uncaughtException', handleFatalError);
+    process.on('uncaughtException', handleFatalError);
+    process.on('unhandledRejection', handleFatalError);
   }
 
   async exit() {
@@ -199,7 +200,7 @@ export default class Bot {
       Logger.info('You are using wechaty-puppet-padplus');
     }
 
-    let wechat = new Wechaty({ puppet, name: `leavewechat_${Number.parseInt(`${Math.random() * 100000}`)}` });
+    let wechat = new Wechaty({ puppet, name: `telegram_${ctx.chat.id})}` });
     let client: Client = {
       wechat,
       msgs: new Map(),
