@@ -30,12 +30,21 @@ if (require.main === module) {
     })();
   }
 
+  const exit = process.exit;
+  const hookExit = (code?: number) => {
+    Logger.error(`process.exit called with code: ${code}`);
+    bot.handleFatalError('SIGABRT');
+    return exit(code);
+  };
+
+  process.exit = hookExit;
+
   //catches uncaught exceptions
   process.on('uncaughtException', bot.handleFatalError);
   process.on('unhandledRejection', bot.handleFatalError);
 
   // https://blog.heroku.com/best-practices-nodejs-errors
-  process.on('beforeExit', bot.handleFatalError);
+  process.once('beforeExit', bot.handleFatalError);
 
   // catches "kill pid" (for example: nodemon restart)
   process.on('SIGUSR1', bot.handleFatalError);
