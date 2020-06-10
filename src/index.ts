@@ -23,23 +23,23 @@ if (require.main === module) {
         let { token } = (await inquirer.prompt({ name: 'token', message: 'Bot Token:', type: 'input' })) as { token: string };
         bot = new Bot({ token: token.trim() });
         bot.launch();
-
-        //catches uncaught exceptions
-        process.on('uncaughtException', bot.handleFatalError);
-        process.on('unhandledRejection', bot.handleFatalError);
-
-        // https://blog.heroku.com/best-practices-nodejs-errors
-        process.on('beforeExit', bot.handleFatalError);
-
-        // catches "kill pid" (for example: nodemon restart)
-        process.on('SIGUSR1', bot.handleFatalError);
-        process.on('SIGUSR2', bot.handleFatalError);
       } catch (error) {
         Logger.error(error.message);
         process.exit(1);
       }
     })();
   }
+
+  //catches uncaught exceptions
+  process.on('uncaughtException', bot.handleFatalError);
+  process.on('unhandledRejection', bot.handleFatalError);
+
+  // https://blog.heroku.com/best-practices-nodejs-errors
+  process.on('beforeExit', bot.handleFatalError);
+
+  // catches "kill pid" (for example: nodemon restart)
+  process.on('SIGUSR1', bot.handleFatalError);
+  process.on('SIGUSR2', bot.handleFatalError);
 }
 
 export { Bot, Logger, BotOptions };
