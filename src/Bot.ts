@@ -134,28 +134,17 @@ export default class Bot {
     });
   }
 
+  handleFatalError = async (err: Error | number | NodeJS.Signals) => {
+    Logger.error(`Bot Alert: ${err}`);
+
+    for (let [id, client] of this.clients) {
+      await this.bot.telegram.sendMessage(id, `[Bot Alert] \n\n Fatal error happened:\n\n ${JSON.stringify(err)}\n\n Try to restart...`);
+    }
+  };
+
   launch() {
     this.bot.on('message', (ctx: TelegrafContext, n: Function) => this.checkUser(ctx, n), this.handleTelegramMessage);
     this.bot.launch().then(() => Logger.info(`Bot is running`));
-
-    const handleFatalError = async (err: Error | number | NodeJS.Signals) => {
-      for (let [id, _] of this.clients) {
-        await this.bot.telegram.sendMessage(id, `Fatal error happened:\n\n ${JSON.stringify(err)}\n\n Trying to restart...`);
-      }
-    };
-
-    process.on('exit', handleFatalError);
-
-    //catches ctrl+c event
-    process.on('SIGINT', handleFatalError);
-
-    // catches "kill pid" (for example: nodemon restart)
-    process.on('SIGUSR1', handleFatalError);
-    process.on('SIGUSR2', handleFatalError);
-
-    //catches uncaught exceptions
-    process.on('uncaughtException', handleFatalError);
-    process.on('unhandledRejection', handleFatalError);
   }
 
   async exit() {
