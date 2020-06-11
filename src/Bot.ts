@@ -268,6 +268,7 @@ export default class Bot {
 
     const client = this.createClient(id);
     const { wechat } = client;
+    wechat.removeAllListeners(); // clear all listeners if it is a recovered session
 
     let loginTimer: NodeJS.Timeout;
 
@@ -359,7 +360,8 @@ export default class Bot {
 
     client.initialized = true;
 
-    if (client.wechatId) { // check whether this wechat session has been logined
+    if (client.wechatId) {
+      // check whether this wechat session has been logined
       ctx.reply(lang.login.contextBound);
       return;
     }
