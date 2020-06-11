@@ -55,6 +55,7 @@ export default class Bot {
   protected msgui: MessageUI;
   protected keeyMsgs: number;
   private token: string;
+  private recoverWechats = new Map<number, Wechaty>();
 
   protected beforeCheckUserList: ((ctx?: TelegrafContext) => Promise<boolean>)[] = [];
   protected pendingFriends = new Map<string, Friendship>();
@@ -150,6 +151,7 @@ export default class Bot {
 
   async launch() {
     this.bot.on('message', (ctx: TelegrafContext, n: Function) => this.checkUser(ctx, n), this.handleTelegramMessage);
+
     await this.bot.launch();
     Logger.info(`Bot is running`);
 
@@ -165,10 +167,43 @@ export default class Bot {
 
     Logger.info(`Recovering ${ids.length} sessions...`);
 
-    for (let chatId of ids) {
-      const loginMessage = { update_id: 0, message: { chat: { id: chatId } } } as TT.Update;
-      const ctx = new TelegrafContext(loginMessage, this.bot.telegram, this.bot.options);
-      await this.handleLogin(ctx);
+    for (let chatid of ids) {
+      const client = this.createClient(chatid);
+      const { wechat } = client;
+
+      wechat.once('login', async user => {
+        client.wechatId = user.id;
+
+        const alert = HTMLTemplates.message({
+          nickname: `[Bot Alert]`,
+          message: `Your last wechat session is recovered. But you should link the context with /login again.`
+        });
+
+        await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
+        this.recoverWechats.delete(chatid);
+      });
+
+      const deleteWechaty = async (deleteTmpFile?: boolean) => {
+        wechat.removeAllListeners();
+        this.clients.delete(chatid);
+        this.recoverWechats.delete(chatid);
+
+        const alert = HTMLTemplates.message({
+          nickname: `[Bot Alert]`,
+          message: `Last wechat session can't be recoverd.`
+        });
+
+        await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
+        await wechat.stop();
+
+        if (deleteTmpFile) await MiscHelper.deleteTmpFile(`leavexchat.${chatid}`);
+      };
+
+      wechat.once('scan', async _ => await deleteWechaty());
+      wechat.once('error', async _ => await deleteWechaty());
+
+      await wechat.start();
+      this.recoverWechats.set(chatid, wechat);
     }
   }
 
@@ -183,6 +218,22 @@ export default class Bot {
     await ctx.reply(lang.welcome).catch();
     await ctx.reply(lang.help);
   };
+
+  private createClient(chatid: number) {
+    if (this.clients.has(chatid)) return this.clients.get(chatid);
+
+    let wechat = this.recoverWechats.get(chatid) || new Wechaty({ name: `telegram_${chatid})}` });
+    let client: Client = {
+      wechat,
+      msgs: new Map(),
+      receiveGroups: true,
+      receiveOfficialAccount: true
+    };
+
+    this.clients.set(chatid, client);
+
+    return client;
+  }
 
   protected async handleLogin(ctx: TelegrafContext) {
     for (let c of this.beforeCheckUserList) {
@@ -204,15 +255,9 @@ export default class Bot {
 
     ctx.reply(lang.login.request);
 
-    let wechat = new Wechaty({ name: `telegram_${id})}` });
-    let client: Client = {
-      wechat,
-      msgs: new Map(),
-      receiveGroups: true,
-      receiveOfficialAccount: true
-    };
+    const client = this.createClient(id);
+    const { wechat } = client;
 
-    this.clients.set(id, client);
     let loginTimer: NodeJS.Timeout;
 
     let qrMessage: TT.MessagePhoto | void = undefined;
@@ -294,6 +339,8 @@ export default class Bot {
     });
 
     wechat?.on('message', msg => this.handleWechatMessage(msg, ctx));
+
+    if (client.wechatId) return; // returns If wechat has logined
 
     await wechat?.start();
   }
