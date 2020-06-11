@@ -508,13 +508,12 @@ export default class Bot {
 
     let alias = await from.alias();
     let nickname = from.name() + (alias ? ` (${alias})` : '');
-    let caption = nickname + (room ? ` [${await room.topic()}]` : '');
+    nickname = nickname + (room ? ` [${await room.topic()}]` : '');
     let sent: TT.Message;
 
     switch (type) {
       case MessageType.Text:
         if (!text) break;
-        nickname = `${nickname}` + (room ? ` [${await room.topic()}]` : '');
         sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: text }));
         break;
 
@@ -534,19 +533,19 @@ export default class Bot {
       case MessageType.Audio:
         let audio = await msg.toFileBox();
         let duration = audio.metadata['duration'] as number;
-        sent = (await ctx.replyWithVoice({ source: await audio.toStream() }, { caption, duration })) as TT.Message;
+        sent = (await ctx.replyWithVoice({ source: await audio.toStream() }, { caption: nickname, duration })) as TT.Message;
         break;
 
       case MessageType.Image:
         let image = await msg.toFileBox();
         // sent = (image.mimeType || '').toLowerCase().includes('gif') ? await ctx.replyWithVideo({ source: await image.toStream() }) : await ctx.replyWithPhoto({ source: await image.toStream() }, { caption });
-        sent = await ctx.replyWithPhoto({ source: await image.toStream() }, { caption });
+        sent = await ctx.replyWithPhoto({ source: await image.toStream() }, { caption: nickname });
         break;
 
       case MessageType.Video:
         let video = await msg.toFileBox();
         sent = await ctx.replyWithVideo({ source: await video.toStream() }, {
-          caption
+          caption: nickname
         } as any);
         break;
 
