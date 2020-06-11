@@ -599,9 +599,9 @@ export default class Bot {
 
         break;
 
-      case MessageType.RedEnvelope:
-        sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: lang.message.money }));
-        break;
+      // case MessageType.RedEnvelope:
+      //   sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: lang.message.redpacket }));
+      //   break;
 
       case MessageType.Audio:
         let audio = await msg.toFileBox();
