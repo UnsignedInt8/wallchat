@@ -16,6 +16,7 @@ import Logger from './lib/Logger';
 import * as XMLParser from './lib/XmlParser';
 import { AllHtmlEntities } from 'html-entities';
 import { TelegrafContext } from 'telegraf/typings/context';
+import MiscHelper from './lib/MiscHelper';
 
 const html = new AllHtmlEntities();
 
@@ -164,7 +165,7 @@ export default class Bot {
       if (!(await c(ctx))) return;
     }
 
-    let id = ctx.chat.id;
+    const id = ctx.chat.id;
     let qrcodeCache = '';
     if (this.clients.has(id)) {
       let user = this.clients.get(id);
@@ -189,30 +190,30 @@ export default class Bot {
       Logger.info('You are using wechaty-puppet-padplus');
     }
 
-    let wechat = new Wechaty({ puppet, name: `telegram_${ctx.chat.id})}` });
+    let wechat = new Wechaty({ puppet, name: `telegram_${id})}` });
     let client: Client = {
       wechat,
       msgs: new Map(),
       receiveGroups: true,
       receiveOfficialAccount: true
     };
-    this.clients.set(ctx.chat.id, client);
+    this.clients.set(id, client);
     let loginTimer: NodeJS.Timeout;
 
     let qrMessage: TT.MessagePhoto | void = undefined;
 
     const removeQRMessage = async () => {
       if (!qrMessage) return;
-      await this.bot.telegram.deleteMessage(ctx.chat.id, qrMessage.message_id);
+      await this.bot.telegram.deleteMessage(id, qrMessage.message_id);
       qrMessage = undefined;
     };
 
     const deleteWechat = async () => {
-      Logger.info('login timeout');
       this.clients.delete(id);
       wechat?.removeAllListeners();
       await wechat?.stop().catch();
       await removeQRMessage();
+      await MiscHelper.deleteTmpFile(`leavexchat.${id}`);
     };
 
     const handleQrcode = async (qrcode: string) => {
@@ -241,6 +242,9 @@ export default class Bot {
       clearTimeout(loginTimer);
       wechat?.removeListener('scan', handleQrcode);
       await removeQRMessage();
+
+      // create chat tmp id
+      await MiscHelper.createTmpFile(`leavexchat.${id}`);
     });
 
     wechat?.on('friendship', async req => {
@@ -273,11 +277,6 @@ export default class Bot {
       ctx.reply(lang.message.error);
       await deleteWechat();
     });
-
-    // wechat?.puppet.on('error', async () => {
-    //     ctx.reply(lang.message.error);
-    //     await deleteWechat();
-    // });
 
     wechat?.on('message', msg => this.handleWechatMessage(msg, ctx));
 
@@ -509,9 +508,9 @@ export default class Bot {
 
         break;
 
-      // case MessageType.Money:
-      //     sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: lang.message.money }));
-      //     break;
+      case MessageType.RedEnvelope:
+        sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: lang.message.money }));
+        break;
 
       case MessageType.Audio:
         let audio = await msg.toFileBox();

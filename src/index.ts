@@ -32,8 +32,7 @@ if (require.main === module) {
 
   const exit = process.exit;
   const hookExit: any = async (code?: number) => {
-    Logger.error(`process.exit called with code: ${code}`);
-    await bot.handleFatalError('SIGABRT');
+    await bot.handleFatalError('EXIT' as any);
     return exit(code);
   };
 
