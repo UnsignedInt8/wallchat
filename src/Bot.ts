@@ -15,8 +15,8 @@ import HTMLTemplates from './lib/HTMLTemplates';
 import Logger from './lib/Logger';
 import * as XMLParser from './lib/XmlParser';
 import { AllHtmlEntities } from 'html-entities';
-import TelegrafContext from 'telegraf/context';
 import MiscHelper from './lib/MiscHelper';
+import { TelegrafContext } from 'telegraf/typings/context';
 
 const html = new AllHtmlEntities();
 
@@ -254,8 +254,6 @@ export default class Bot {
       return;
     }
 
-    ctx.reply(lang.login.request);
-
     const client = this.createClient(id);
     const { wechat } = client;
 
@@ -340,9 +338,11 @@ export default class Bot {
     });
 
     wechat?.on('message', msg => this.handleWechatMessage(msg, ctx));
-    
+
     client.initialized = true;
     if (client.wechatId) return; // returns If wechat has logined
+
+    ctx.reply(lang.login.request);
 
     await wechat?.start();
   }
