@@ -15,7 +15,7 @@ import HTMLTemplates from './lib/HTMLTemplates';
 import Logger from './lib/Logger';
 import * as XMLParser from './lib/XmlParser';
 import { AllHtmlEntities } from 'html-entities';
-import { TelegrafContext } from 'telegraf/typings/context';
+import TelegrafContext from 'telegraf/context';
 import MiscHelper from './lib/MiscHelper';
 
 const html = new AllHtmlEntities();
@@ -55,14 +55,13 @@ export default class Bot {
   protected msgui: MessageUI;
   protected keeyMsgs: number;
   private token: string;
-  private wechatyToken?: string;
+
   protected beforeCheckUserList: ((ctx?: TelegrafContext) => Promise<boolean>)[] = [];
   protected pendingFriends = new Map<string, Friendship>();
   protected lastRoomInvitation: RoomInvitation = null;
 
-  constructor({ token, socks5Proxy, msgui, keepMsgs, wechatyToken }: BotOptions) {
+  constructor({ token, socks5Proxy, msgui, keepMsgs }: BotOptions) {
     this.token = token;
-    this.wechatyToken = wechatyToken;
     this.msgui = msgui;
     this.keeyMsgs = keepMsgs === undefined ? 200 : Math.max(keepMsgs, 100) || 200;
 
@@ -151,7 +150,8 @@ export default class Bot {
 
   async launch() {
     this.bot.on('message', (ctx: TelegrafContext, n: Function) => this.checkUser(ctx, n), this.handleTelegramMessage);
-    this.bot.launch().then(() => Logger.info(`Bot is running`));
+    await this.bot.launch();
+    Logger.info(`Bot is running`);
 
     await this.recoverSessions();
   }
