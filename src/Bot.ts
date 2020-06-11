@@ -167,44 +167,46 @@ export default class Bot {
 
     Logger.info(`Recovering ${ids.length} sessions...`);
 
-    for (let chatid of ids) {
-      const client = this.createClient(chatid);
-      const { wechat } = client;
+    await Promise.all(
+      ids.map(async chatid => {
+        const client = this.createClient(chatid);
+        const { wechat } = client;
 
-      wechat.once('login', async user => {
-        client.wechatId = user.id;
+        wechat.once('login', async user => {
+          client.wechatId = user.id;
 
-        const alert = HTMLTemplates.message({
-          nickname: `[Bot Alert]`,
-          message: `Your last wechat session is recovered. But you should link the context with /login again.`
+          const alert = HTMLTemplates.message({
+            nickname: `[Bot Alert]`,
+            message: `Your last wechat session is recovered. But you should link the context with /login again.`
+          });
+
+          await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
+          this.recoverWechats.delete(chatid);
         });
 
-        await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
-        this.recoverWechats.delete(chatid);
-      });
+        const deleteWechaty = async () => {
+          wechat.removeAllListeners();
+          this.clients.delete(chatid);
+          this.recoverWechats.delete(chatid);
 
-      const deleteWechaty = async () => {
-        wechat.removeAllListeners();
-        this.clients.delete(chatid);
-        this.recoverWechats.delete(chatid);
+          const alert = HTMLTemplates.message({
+            nickname: `[Bot Alert]`,
+            message: `Last wechat session can't be recoverd. You have to /login again.`
+          });
 
-        const alert = HTMLTemplates.message({
-          nickname: `[Bot Alert]`,
-          message: `Last wechat session can't be recoverd. You have to /login again.`
-        });
+          await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
+          await wechat.stop();
 
-        await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
-        await wechat.stop();
+          await MiscHelper.deleteTmpFile(`leavexchat.${chatid}`);
+        };
 
-        await MiscHelper.deleteTmpFile(`leavexchat.${chatid}`);
-      };
+        wechat.once('scan', async _ => await deleteWechaty());
+        wechat.once('error', async _ => await deleteWechaty());
 
-      wechat.once('scan', async _ => await deleteWechaty());
-      wechat.once('error', async _ => await deleteWechaty());
-
-      this.recoverWechats.set(chatid, wechat);
-      await wechat.start();
-    }
+        this.recoverWechats.set(chatid, wechat);
+        await wechat.start();
+      })
+    );
   }
 
   async exit() {
@@ -340,7 +342,7 @@ export default class Bot {
 
     client.initialized = true;
     if (client.wechatId) {
-      ctx.reply(lang.login.contextBound)
+      ctx.reply(lang.login.contextBound);
       return; // returns If wechat has logined
     }
 
