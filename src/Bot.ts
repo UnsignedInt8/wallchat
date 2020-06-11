@@ -191,7 +191,7 @@ export default class Bot {
 
         const alert = HTMLTemplates.message({
           nickname: `[Bot Alert]`,
-          message: `Last wechat session can't be recoverd.`
+          message: `Last wechat session can't be recoverd. You have to /login again.`
         });
 
         await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
@@ -203,8 +203,8 @@ export default class Bot {
       wechat.once('scan', async _ => await deleteWechaty());
       wechat.once('error', async _ => await deleteWechaty());
 
-      await wechat.start();
       this.recoverWechats.set(chatid, wechat);
+      await wechat.start();
     }
   }
 
