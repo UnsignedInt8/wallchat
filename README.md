@@ -11,7 +11,9 @@
 
 ## 快速开始
 
-CentOS
+Linux 使用前需要安装如下依赖:
+
+CentOS 7
 ```
 yum install pango.x86_64 libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_64 libXext.x86_64 libXi.x86_64 libXtst.x86_64 cups-libs.x86_64 libXScrnSaver.x86_64 libXrandr.x86_64 GConf2.x86_64 alsa-lib.x86_64 atk.x86_64 gtk3.x86_64 ipa-gothic-fonts xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x11-utils xorg-x11-fonts-cyrillic xorg-x11-fonts-Type1 xorg-x11-fonts-misc -y
 ```
@@ -26,6 +28,8 @@ apt-get update && \
      libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \ 
      libnss3 
 ```
+
+开始:
 
 ```bash
 $> npm i -g leavexchat-bot
@@ -56,6 +60,23 @@ $> 输入 token, Done!
 # 使用配置文件方式
 $> node build/main/index.js -c config.json
 ```
+
+## 作者的用法
+
+bot 已经加入了 wechat 会话恢复功能。要发挥该特性，就需要进程守护，推荐使用 forever
+
+```
+$> npm i -g forever
+
+$> git clone https://github.com/UnsignedInt8/leavexchat-bot.git  
+$> cd leavexchat-bot  
+$> npm i 
+$> npm run build 
+
+$> forever build/main/index.js -c config.json
+```
+
+这样可以大幅降低扫码登录的频次
 
 ## Bot 命令
 
