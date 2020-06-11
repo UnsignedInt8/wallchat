@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 export default class Logger {
   static info(...msg: any[]) {
     this.log('info', ...msg);
@@ -13,6 +15,6 @@ export default class Logger {
 
   static log(level: string, ...msg: any[]) {
     let info = msg.join(' ');
-    console.log(`${new Date().toLocaleTimeString().padStart(8, '0')} ${level.toUpperCase()} ${info}`);
+    console.log(`${dayjs().format('HH:mm:ss')} ${level.toUpperCase()} ${info}`);
   }
 }
