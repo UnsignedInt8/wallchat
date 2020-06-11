@@ -1,7 +1,6 @@
 import Telegraph from 'telegraf';
 import SocksAgent from 'socks5-https-client/lib/Agent';
 import { Wechaty, Message, Contact, Room, FileBox, Friendship, RoomInvitation } from 'wechaty';
-import { PuppetPadplus } from 'wechaty-puppet-padplus';
 import qr from 'qr-image';
 import lang from './strings';
 import { ContactType, FriendshipType, MessageType } from 'wechaty-puppet';
