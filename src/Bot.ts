@@ -53,7 +53,7 @@ export default class Bot {
   protected bot: Telegraph<TelegrafContext>;
   protected clients: Map<number, Client> = new Map(); // chat id => client
   protected msgui: MessageUI;
-  protected keeyMsgs: number;
+  protected keepMsgs: number;
   private token: string;
   private recoverWechats = new Map<number, Wechaty>(); // tg chatid => wechaty
   private cacheMessages = new Map<number, Message[]>(); // tg chatid => messages[]
@@ -65,7 +65,7 @@ export default class Bot {
   constructor({ token, socks5Proxy, msgui, keepMsgs }: BotOptions) {
     this.token = token;
     this.msgui = msgui;
-    this.keeyMsgs = keepMsgs === undefined ? 200 : Math.max(keepMsgs, 100) || 200;
+    this.keepMsgs = keepMsgs === undefined ? 200 : Math.max(keepMsgs, 100) || 200;
 
     let agent = socks5Proxy
       ? new SocksAgent({
@@ -632,8 +632,8 @@ export default class Bot {
     if (!user.contactLocked) user.currentContact = room || from;
 
     // The bot just knows recent messages
-    if (sent.message_id < this.keeyMsgs) return;
-    let countToDelete = sent.message_id - this.keeyMsgs;
+    if (sent.message_id < this.keepMsgs) return;
+    let countToDelete = sent.message_id - this.keepMsgs;
 
     do {
       user.msgs.delete(countToDelete);
