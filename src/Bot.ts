@@ -138,14 +138,38 @@ export default class Bot {
   handleFatalError = async (err: Error | number | NodeJS.Signals) => {
     Logger.error(`Bot Alert: ${err}`);
 
+    const alert = HTMLTemplates.message({
+      nickname: `[Bot Alert]`,
+      message: `Fatal error happened:\n\n ${JSON.stringify(err)}\n\n Try to restart...`
+    });
+
     for (let [id, client] of this.clients) {
-      await this.bot.telegram.sendMessage(id, `[Bot Alert] \n\n Fatal error happened:\n\n ${JSON.stringify(err)}\n\n Try to restart...`);
+      // await this.bot.telegram.sendMessage(id, `[Bot Alert] \n\n Fatal error happened:\n\n ${JSON.stringify(err)}\n\n Try to restart...`);
+      await this.bot.telegram.sendMessage(id, alert, { parse_mode: 'HTML' });
     }
   };
 
-  launch() {
+  async launch() {
     this.bot.on('message', (ctx: TelegrafContext, n: Function) => this.checkUser(ctx, n), this.handleTelegramMessage);
     this.bot.launch().then(() => Logger.info(`Bot is running`));
+
+    await this.recoverSessions();
+  }
+
+  async recoverSessions() {
+    const files = await MiscHelper.listTmpFile(`leavexchat.`);
+    const ids = files
+      .map(f => f.split('.')[1])
+      .filter(s => s)
+      .map(s => Number.parseInt(s));
+
+    Logger.info(`Recovering ${ids.length} sessions...`);
+
+    for (let chatId of ids) {
+      const loginMessage = { update_id: 0, message: { chat: { id: chatId } } } as TT.Update;
+      const ctx = new TelegrafContext(loginMessage, this.bot.telegram, this.bot.options);
+      await this.handleLogin(ctx);
+    }
   }
 
   async exit() {
@@ -180,23 +204,14 @@ export default class Bot {
 
     ctx.reply(lang.login.request);
 
-    let puppet: any = this.wechatyToken
-      ? new PuppetPadplus({
-          token: this.wechatyToken
-        })
-      : undefined;
-
-    if (puppet) {
-      Logger.info('You are using wechaty-puppet-padplus');
-    }
-
-    let wechat = new Wechaty({ puppet, name: `telegram_${id})}` });
+    let wechat = new Wechaty({ name: `telegram_${id})}` });
     let client: Client = {
       wechat,
       msgs: new Map(),
       receiveGroups: true,
       receiveOfficialAccount: true
     };
+
     this.clients.set(id, client);
     let loginTimer: NodeJS.Timeout;
 

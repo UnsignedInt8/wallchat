@@ -32,7 +32,8 @@ if (require.main === module) {
 
   const exit = process.exit;
   const hookExit: any = async (code?: number) => {
-    await bot.handleFatalError('EXIT' as any);
+    // await bot.handleFatalError('EXIT' as any);
+    await new Promise(resolve => setTimeout(resolve, 1500));
     return exit(code);
   };
 
