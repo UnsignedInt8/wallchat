@@ -340,7 +340,10 @@ export default class Bot {
     wechat?.on('message', msg => this.handleWechatMessage(msg, ctx));
 
     client.initialized = true;
-    if (client.wechatId) return; // returns If wechat has logined
+    if (client.wechatId) {
+      ctx.reply(lang.login.contextBound)
+      return; // returns If wechat has logined
+    }
 
     ctx.reply(lang.login.request);
 

@@ -1,31 +1,32 @@
 export default {
-    welcome: `欢迎使用`,
-    login: {
-        request: `正在请求 WeChat 登录二维码，请稍等`,
-        logined: (name: string) => `${name} 已经登录`,
-        logouted: (name: string) => `${name} 已登出`,
-        retry: `请扫描二维码`,
-        bye: 'Bye',
-    },
-    message: {
-        redpacket: '发送了一个红包',
-        money: '向你转了一笔账',
-        contactNotFound: '未找到联系人',
-        contactFound: (name: string) => `${name} 已是当前联系人`,
-        contactLocked: (name: string) => `${name} 已锁定`,
-        contactUnlocked: (name: string) => `${name} 已取消锁定`,
-        noCurrentContact: '无当前联系人',
-        current: (name: string) => `当前联系人 ${name}`,
-        timeout: '登录超时，Bye',
-        error: 'WeChat 遇到错误，请重试',
-        inviteRoom: (inviter: string, room: string) => `${inviter} 邀请你加入: ${room}`,
-    },
-    commands: {
-        find: '/find 昵称|备注',
-        agree: '/agree 名称',
-        disagree: '/disagreee 名称',
-    },
-    help: `命令说明:
+  welcome: `欢迎使用`,
+  login: {
+    request: `正在请求 WeChat 登录二维码，请稍等`,
+    logined: (name: string) => `${name} 已经登录`,
+    logouted: (name: string) => `${name} 已登出`,
+    retry: `请扫描二维码`,
+    bye: 'Bye',
+    contextBound: 'Telegram Context 已绑定',
+  },
+  message: {
+    redpacket: '发送了一个红包',
+    money: '向你转了一笔账',
+    contactNotFound: '未找到联系人',
+    contactFound: (name: string) => `${name} 已是当前联系人`,
+    contactLocked: (name: string) => `${name} 已锁定`,
+    contactUnlocked: (name: string) => `${name} 已取消锁定`,
+    noCurrentContact: '无当前联系人',
+    current: (name: string) => `当前联系人 ${name}`,
+    timeout: '登录超时，Bye',
+    error: 'WeChat 遇到错误，请重试',
+    inviteRoom: (inviter: string, room: string) => `${inviter} 邀请你加入: ${room}`
+  },
+  commands: {
+    find: '/find 昵称|备注',
+    agree: '/agree 名称',
+    disagree: '/disagreee 名称'
+  },
+  help: `命令说明:
 /start - 启动会话
 /login - 请求登录
 /logout - 登出WeChat
@@ -44,5 +45,5 @@ export default {
 /current - 显示当前联系人
 /agree - 同意好友请求
 /disagree - 忽略好友请求
-/help - 显示帮助`,
-}
+/help - 显示帮助`
+};
