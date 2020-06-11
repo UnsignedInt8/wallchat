@@ -1,18 +1,18 @@
 export default class Logger {
-    static info(...msg: any[]) {
-        this.log('info', ...msg);
-    }
+  static info(...msg: any[]) {
+    this.log('info', ...msg);
+  }
 
-    static warn(...objs: any[]) {
-        this.log('warn', ...objs);
-    }
+  static warn(...objs: any[]) {
+    this.log('warn', ...objs);
+  }
 
-    static error(...objs: any[]) {
-        this.log('error', ...objs);
-    }
-    
-    static log(level: string, ...msg: any[]) {
-        let info = msg.join(' ');
-        console.log(`${new Date().toLocaleTimeString()} ${level.toUpperCase()} ${info}`);
-    }
+  static error(...objs: any[]) {
+    this.log('error', ...objs);
+  }
+
+  static log(level: string, ...msg: any[]) {
+    let info = msg.join(' ');
+    console.log(`${new Date().toLocaleTimeString().padStart(8, '0')} ${level.toUpperCase()} ${info}`);
+  }
 }

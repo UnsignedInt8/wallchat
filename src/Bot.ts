@@ -47,6 +47,7 @@ interface Client {
   currentContact?: Room | Contact;
   contactLocked?: boolean;
   wechatId?: string;
+  initialized?: boolean;
 }
 
 export default class Bot {
@@ -242,7 +243,7 @@ export default class Bot {
 
     const id = ctx.chat.id;
     let qrcodeCache = '';
-    if (this.clients.has(id)) {
+    if (this.clients.has(id) && this.clients.get(id)?.initialized) {
       let user = this.clients.get(id);
       if (user.wechatId) {
         ctx.reply(lang.login.logined(user.wechat?.userSelf().name()));
@@ -339,7 +340,8 @@ export default class Bot {
     });
 
     wechat?.on('message', msg => this.handleWechatMessage(msg, ctx));
-
+    
+    client.initialized = true;
     if (client.wechatId) return; // returns If wechat has logined
 
     await wechat?.start();
