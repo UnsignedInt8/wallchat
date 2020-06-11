@@ -184,7 +184,7 @@ export default class Bot {
         this.recoverWechats.delete(chatid);
       });
 
-      const deleteWechaty = async (deleteTmpFile?: boolean) => {
+      const deleteWechaty = async () => {
         wechat.removeAllListeners();
         this.clients.delete(chatid);
         this.recoverWechats.delete(chatid);
@@ -197,7 +197,7 @@ export default class Bot {
         await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
         await wechat.stop();
 
-        if (deleteTmpFile) await MiscHelper.deleteTmpFile(`leavexchat.${chatid}`);
+        await MiscHelper.deleteTmpFile(`leavexchat.${chatid}`);
       };
 
       wechat.once('scan', async _ => await deleteWechaty());
