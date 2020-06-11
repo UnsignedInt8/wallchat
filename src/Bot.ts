@@ -55,7 +55,8 @@ export default class Bot {
   protected msgui: MessageUI;
   protected keeyMsgs: number;
   private token: string;
-  private recoverWechats = new Map<number, Wechaty>();
+  private recoverWechats = new Map<number, Wechaty>(); // tg chatid => wechaty
+  private cacheMessages = new Map<number, Message[]>(); // tg chatid => messages[]
 
   protected beforeCheckUserList: ((ctx?: TelegrafContext) => Promise<boolean>)[] = [];
   protected pendingFriends = new Map<string, Friendship>();
@@ -203,6 +204,16 @@ export default class Bot {
         wechat.once('scan', async _ => await deleteWechaty());
         wechat.once('error', async _ => await deleteWechaty());
 
+        wechat.on('message', msg => {
+          let cache = this.cacheMessages.get(chatid);
+          if (!cache) {
+            cache = [];
+            this.cacheMessages.set(chatid, cache);
+          }
+
+          cache.push(msg);
+        });
+
         this.recoverWechats.set(chatid, wechat);
         await wechat.start();
       })
@@ -334,16 +345,23 @@ export default class Bot {
 
     wechat?.on('error', async error => {
       Logger.warn(error.message);
-      ctx.reply(lang.message.error);
+      await ctx.reply(lang.message.error);
       await deleteWechat();
     });
 
     wechat?.on('message', msg => this.handleWechatMessage(msg, ctx));
 
+    const msgs = this.cacheMessages.get(id) || [];
+    for (let msg of msgs) {
+      await this.handleWechatMessage(msg, ctx);
+    }
+    this.cacheMessages.delete(id);
+
     client.initialized = true;
-    if (client.wechatId) {
+
+    if (client.wechatId) { // check whether this wechat session has been logined
       ctx.reply(lang.login.contextBound);
-      return; // returns If wechat has logined
+      return;
     }
 
     ctx.reply(lang.login.request);
