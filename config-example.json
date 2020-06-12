@@ -1,10 +1,7 @@
 {
     "token": "", // telegram bot token
-    "wechatyToken": "", // wechaty puppet token
     "socks5Proxy": {
         "host": "localhost",
-        "port": 1080,
-        "username": "",
-        "password": ""
+        "port": 1080
     }
 }

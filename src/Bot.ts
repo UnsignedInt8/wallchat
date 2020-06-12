@@ -1,5 +1,5 @@
 import Telegraph from 'telegraf';
-import SocksAgent from 'socks5-https-client/lib/Agent';
+import { SocksProxyAgent } from 'socks-proxy-agent';
 import { Wechaty, Message, Contact, Room, FileBox, Friendship, RoomInvitation } from 'wechaty';
 import qr from 'qr-image';
 import lang from './strings';
@@ -59,14 +59,7 @@ export default class Bot {
     this.token = token;
     this.keepMsgs = keepMsgs === undefined ? 200 : Math.max(keepMsgs, 100) || 200;
 
-    let agent = socks5Proxy
-      ? new SocksAgent({
-          socksHost: socks5Proxy.host,
-          socksPort: socks5Proxy.port,
-          socksUsername: socks5Proxy.username,
-          socksPassword: socks5Proxy.password
-        })
-      : undefined;
+    const agent = socks5Proxy ? (new SocksProxyAgent(`socks5://${socks5Proxy.host}:${socks5Proxy.port}`) as any) : undefined;
 
     this.bot = new Telegraph(token, {
       telegram: { agent }
