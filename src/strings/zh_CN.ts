@@ -6,7 +6,6 @@ export default {
     logouted: (name: string) => `${name} 已登出`,
     retry: `请扫描二维码`,
     bye: 'Bye',
-    contextBound: 'Telegram Context 已绑定',
   },
   message: {
     redpacket: '发送了一个红包',

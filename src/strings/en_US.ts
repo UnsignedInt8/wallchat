@@ -6,7 +6,6 @@ export default {
     logouted: (name: string) => `${name} has logouted`,
     retry: `Please scan the QRCode and try again`,
     bye: 'Bye',
-    context: 'Telegram context has been bound.'
   },
   message: {
     redpacket: 'A red packet',

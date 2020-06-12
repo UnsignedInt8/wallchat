@@ -349,13 +349,9 @@ export default class Bot {
     client.initialized = true;
 
     // check whether the user has logined
-    if (client.wechatId) {
-      ctx.reply(lang.login.contextBound);
-      return;
-    }
+    if (client.wechatId) return;
 
-    ctx.reply(lang.login.request);
-
+    await ctx.reply(lang.login.request);
     await wechat?.start();
   }
 
