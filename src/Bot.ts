@@ -57,7 +57,6 @@ export default class Bot {
   protected keepMsgs: number;
   private token: string;
   private recoverWechats = new Map<number, Wechaty>(); // tg chatid => wechaty
-  private cacheMessages = new Map<number, Message[]>(); // tg chatid => messages[]
 
   protected beforeCheckUserList: ((ctx?: TelegrafContext) => Promise<boolean>)[] = [];
   protected pendingFriends = new Map<string, Friendship>();
@@ -142,15 +141,12 @@ export default class Bot {
 
     const alert = HTMLTemplates.message({
       nickname: `[Bot Alert]`,
-      message: `Fatal error happened:\n\n ${JSON.stringify(err)}\n\n Try to restart...`
+      message: `Fatal error happened:\n\n ${JSON.stringify(err)}\n\n Trying to recover...`
     });
 
-    const pending: Promise<TT.Message>[] = [];
-    for (let [id, client] of this.clients) {
-      pending.push(this.bot.telegram.sendMessage(id, alert, { parse_mode: 'HTML' }));
+    for (let [id, _] of this.clients) {
+      await this.bot.telegram.sendMessage(id, alert, { parse_mode: 'HTML' });
     }
-
-    await Promise.all(pending);
   };
 
   async launch() {
@@ -181,7 +177,7 @@ export default class Bot {
 
           const alert = HTMLTemplates.message({
             nickname: `[Bot Info]`,
-            message: `Your last wechat session is recovered. 😉`
+            message: `Your last wechat session has been recovered. 😉`
           });
 
           await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
@@ -192,21 +188,8 @@ export default class Bot {
           this.recoverWechats.delete(chatid);
         });
 
-        const pushHistoryMessages = async () => {
-          const cache = this.cacheMessages.get(chatid);
-          if (!cache) return;
-
-          while (cache.length > 0) {
-            const msg = cache.shift();
-
-            const ctx = new TelegramContext({ message: { chat: { id: chatid } } } as TT.Update, this.bot.telegram);
-            await this.handleWechatMessage(msg, ctx);
-          }
-        };
-
         const deleteWechaty = async () => {
           wechat.removeAllListeners();
-          await pushHistoryMessages();
 
           this.clients.delete(chatid);
           this.recoverWechats.delete(chatid);
@@ -224,28 +207,6 @@ export default class Bot {
 
         wechat.once('scan', async _ => await deleteWechaty());
         wechat.once('error', async _ => await deleteWechaty());
-
-        // test handleLogin
-        // wechat.on('message', async msg => {
-        //   let cache = this.cacheMessages.get(chatid);
-        //   if (!cache) {
-        //     cache = [];
-        //     this.cacheMessages.set(chatid, cache);
-        //   }
-
-        //   cache.push(msg);
-
-        //   if (cache.length < 5) return;
-
-        //   await pushHistoryMessages();
-
-        //   const alert = HTMLTemplates.message({
-        //     nickname: `[Bot Alert]`,
-        //     message: `Bot just pushed 5 history messages to you. But you should link the context with /login again.`
-        //   });
-
-        //   await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
-        // });
 
         this.recoverWechats.set(chatid, wechat);
         await wechat.start();
@@ -385,16 +346,10 @@ export default class Bot {
 
     wechat?.on('message', msg => this.handleWechatMessage(msg, ctx));
 
-    const msgs = this.cacheMessages.get(id) || [];
-    for (let msg of msgs) {
-      await this.handleWechatMessage(msg, ctx);
-    }
-    this.cacheMessages.delete(id);
-
     client.initialized = true;
 
+    // check whether the user has logined
     if (client.wechatId) {
-      // check whether this wechat session has been logined
       ctx.reply(lang.login.contextBound);
       return;
     }
