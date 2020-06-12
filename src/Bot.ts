@@ -46,8 +46,8 @@ interface Client {
   msgs: Map<number, Contact | Room>;
   currentContact?: Room | Contact;
   contactLocked?: boolean;
-  wechatId?: string;
-  initialized?: boolean;
+  wechatId?: string; // a flag to inidcate wechat client has logined
+  initialized?: boolean; // a flag to indicate wechat event listeners have been hooked
 }
 
 export default class Bot {
@@ -180,11 +180,15 @@ export default class Bot {
           client.wechatId = user.id;
 
           const alert = HTMLTemplates.message({
-            nickname: `[Bot Alert]`,
-            message: `Your last wechat session is recovered. But you should link the context with /login again.`
+            nickname: `[Bot Info]`,
+            message: `Your last wechat session is recovered. 😉`
           });
 
           await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
+
+          const ctx = new TelegramContext({ message: { chat: { id: chatid } } } as TT.Update, this.bot.telegram);
+          await this.handleLogin(ctx);
+
           this.recoverWechats.delete(chatid);
         });
 
@@ -221,26 +225,27 @@ export default class Bot {
         wechat.once('scan', async _ => await deleteWechaty());
         wechat.once('error', async _ => await deleteWechaty());
 
-        wechat.on('message', async msg => {
-          let cache = this.cacheMessages.get(chatid);
-          if (!cache) {
-            cache = [];
-            this.cacheMessages.set(chatid, cache);
-          }
+        // test handleLogin
+        // wechat.on('message', async msg => {
+        //   let cache = this.cacheMessages.get(chatid);
+        //   if (!cache) {
+        //     cache = [];
+        //     this.cacheMessages.set(chatid, cache);
+        //   }
 
-          cache.push(msg);
+        //   cache.push(msg);
 
-          if (cache.length < 5) return;
+        //   if (cache.length < 5) return;
 
-          await pushHistoryMessages();
+        //   await pushHistoryMessages();
 
-          const alert = HTMLTemplates.message({
-            nickname: `[Bot Alert]`,
-            message: `Bot just pushed 5 history messages to you. But you should link the context with /login again.`
-          });
+        //   const alert = HTMLTemplates.message({
+        //     nickname: `[Bot Alert]`,
+        //     message: `Bot just pushed 5 history messages to you. But you should link the context with /login again.`
+        //   });
 
-          await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
-        });
+        //   await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
+        // });
 
         this.recoverWechats.set(chatid, wechat);
         await wechat.start();
