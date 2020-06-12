@@ -113,7 +113,7 @@
     "tslint-config-prettier": "^1.17.0",
     "tslint-immutable": "^5.0.0",
     "typedoc": "^0.13.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.5"
   },
   "ava": {
     "failFast": true,
