@@ -16,6 +16,7 @@ import * as XMLParser from './lib/XmlParser';
 import { AllHtmlEntities } from 'html-entities';
 import MiscHelper from './lib/MiscHelper';
 import { TelegrafContext } from 'telegraf/typings/context';
+import TelegramContext from 'telegraf/context';
 
 const html = new AllHtmlEntities();
 
@@ -144,10 +145,12 @@ export default class Bot {
       message: `Fatal error happened:\n\n ${JSON.stringify(err)}\n\n Try to restart...`
     });
 
+    const pending: Promise<TT.Message>[] = [];
     for (let [id, client] of this.clients) {
-      // await this.bot.telegram.sendMessage(id, `[Bot Alert] \n\n Fatal error happened:\n\n ${JSON.stringify(err)}\n\n Try to restart...`);
-      await this.bot.telegram.sendMessage(id, alert, { parse_mode: 'HTML' });
+      pending.push(this.bot.telegram.sendMessage(id, alert, { parse_mode: 'HTML' }));
     }
+
+    await Promise.all(pending);
   };
 
   async launch() {
@@ -204,14 +207,17 @@ export default class Bot {
         wechat.once('scan', async _ => await deleteWechaty());
         wechat.once('error', async _ => await deleteWechaty());
 
-        wechat.on('message', msg => {
-          let cache = this.cacheMessages.get(chatid);
-          if (!cache) {
-            cache = [];
-            this.cacheMessages.set(chatid, cache);
-          }
+        wechat.on('message', async msg => {
+          // let cache = this.cacheMessages.get(chatid);
+          // if (!cache) {
+          //   cache = [];
+          //   this.cacheMessages.set(chatid, cache);
+          // }
 
-          cache.push(msg);
+          // cache.push(msg);
+
+          const ctx = new TelegramContext({ message: { chat: { id: chatid } } } as TT.Update, this.bot.telegram);
+          await this.handleWechatMessage(msg, ctx);
         });
 
         this.recoverWechats.set(chatid, wechat);
