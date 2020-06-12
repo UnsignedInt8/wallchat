@@ -63,7 +63,7 @@ $> node build/main/index.js -c config.json
 
 ## 作者的用法
 
-bot 已经加入了 wechat 会话恢复功能。要发挥该特性，就需要进程守护，推荐使用 forever
+2.0 版本已经加入了 wechat **会话恢复**功能。要发挥该特性，就需要进程守护，推荐使用 forever
 
 ```
 $> npm i -g forever

@@ -12,7 +12,7 @@
     "leavexchat-bot": "build/main/index.js",
     "wechat-bot": "build/main/index.js"
   },
-  "keywords": [],
+  "keywords": ["telegram", "wechat", "bot"],
   "scripts": {
     "describe": "npm-scripts-info",
     "build": "scripts/wechaty && run-s clean && run-p build:*",

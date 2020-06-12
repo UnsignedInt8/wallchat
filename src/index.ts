@@ -49,6 +49,8 @@ if (require.main === module) {
   // catches "kill pid" (for example: nodemon restart)
   process.on('SIGUSR1', bot.handleFatalError);
   process.on('SIGUSR2', bot.handleFatalError);
+
+  process.title = 'leavexchat';
 }
 
 export { Bot, Logger, BotOptions };
