@@ -188,8 +188,22 @@ export default class Bot {
           this.recoverWechats.delete(chatid);
         });
 
+        const pushHistoryMessages = async () => {
+          const cache = this.cacheMessages.get(chatid);
+          if (!cache) return;
+
+          while (cache.length > 0) {
+            const msg = cache.shift();
+
+            const ctx = new TelegramContext({ message: { chat: { id: chatid } } } as TT.Update, this.bot.telegram);
+            await this.handleWechatMessage(msg, ctx);
+          }
+        };
+
         const deleteWechaty = async () => {
           wechat.removeAllListeners();
+          await pushHistoryMessages();
+
           this.clients.delete(chatid);
           this.recoverWechats.delete(chatid);
 
@@ -208,16 +222,24 @@ export default class Bot {
         wechat.once('error', async _ => await deleteWechaty());
 
         wechat.on('message', async msg => {
-          // let cache = this.cacheMessages.get(chatid);
-          // if (!cache) {
-          //   cache = [];
-          //   this.cacheMessages.set(chatid, cache);
-          // }
+          let cache = this.cacheMessages.get(chatid);
+          if (!cache) {
+            cache = [];
+            this.cacheMessages.set(chatid, cache);
+          }
 
-          // cache.push(msg);
+          cache.push(msg);
 
-          const ctx = new TelegramContext({ message: { chat: { id: chatid } } } as TT.Update, this.bot.telegram);
-          await this.handleWechatMessage(msg, ctx);
+          if (cache.length < 5) return;
+
+          await pushHistoryMessages();
+
+          const alert = HTMLTemplates.message({
+            nickname: `[Bot Alert]`,
+            message: `Bot just pushed 5 history messages to you. But you should link the context with /login again.`
+          });
+
+          await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
         });
 
         this.recoverWechats.set(chatid, wechat);
