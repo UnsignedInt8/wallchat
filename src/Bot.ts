@@ -20,11 +20,6 @@ import TelegramContext from 'telegraf/context';
 
 const html = new AllHtmlEntities();
 
-interface MessageUI {
-  url: string;
-  avatarDir: string;
-}
-
 export interface BotOptions {
   token: string;
   wechatyToken?: string;
@@ -34,7 +29,6 @@ export interface BotOptions {
     username?: string;
     password?: string;
   };
-  msgui?: MessageUI;
   keepMsgs?: number;
 }
 
@@ -53,7 +47,6 @@ interface Client {
 export default class Bot {
   protected bot: Telegraph<TelegrafContext>;
   protected clients: Map<number, Client> = new Map(); // chat id => client
-  protected msgui: MessageUI;
   protected keepMsgs: number;
   private token: string;
   private recoverWechats = new Map<number, Wechaty>(); // tg chatid => wechaty
@@ -62,9 +55,8 @@ export default class Bot {
   protected pendingFriends = new Map<string, Friendship>();
   protected lastRoomInvitation: RoomInvitation = null;
 
-  constructor({ token, socks5Proxy, msgui, keepMsgs }: BotOptions) {
+  constructor({ token, socks5Proxy, keepMsgs }: BotOptions) {
     this.token = token;
-    this.msgui = msgui;
     this.keepMsgs = keepMsgs === undefined ? 200 : Math.max(keepMsgs, 100) || 200;
 
     let agent = socks5Proxy
@@ -401,10 +393,7 @@ export default class Bot {
     let found: Contact | Room | undefined;
     let foundName = '';
     try {
-      found =
-        (await user.wechat?.Contact.find({ name: regexp })) ||
-        (await user.wechat?.Contact.find({ alias: regexp })) ||
-        (await user.wechat?.Contact.find({ id: name }));
+      found = (await user.wechat?.Contact.find({ name: regexp })) || (await user.wechat?.Contact.find({ alias: regexp }));
 
       const alias = await found?.alias();
       foundName = alias ? `${found?.name()} (${alias})` : found?.name();
