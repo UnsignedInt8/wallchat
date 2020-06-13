@@ -5,7 +5,7 @@ export default {
     logined: (name: string) => `Congratulations! ${name} has logined`,
     logouted: (name: string) => `${name} has logouted`,
     retry: `Please scan the QRCode and try again`,
-    bye: 'Bye',
+    bye: 'Bye'
   },
   message: {
     redpacket: 'A red packet',
@@ -19,6 +19,17 @@ export default {
     timeout: 'Login timeout, bye',
     error: 'Some errors happen, try again please',
     inviteRoom: (inviter: string, room: string) => `${inviter} invites you to join: ${room}`
+  },
+  contact: {
+    card: 'Contact Card',
+    nickname: 'Nickname',
+    gender: 'Gender',
+    city: 'City',
+    province: 'Province',
+    wechatid: 'Wechat ID',
+    1: 'Male',
+    2: 'Female',
+    0: 'Unknown'
   },
   commands: {
     find: '/find name|alias',

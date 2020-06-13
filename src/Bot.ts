@@ -522,7 +522,6 @@ export default class Bot {
         // Not available on default puppet
 
         await contact.say(FileBox.fromFile(distFile));
-        
       } catch (error) {
         Logger.error(error.message);
       }
@@ -557,7 +556,13 @@ export default class Bot {
     switch (type) {
       case MessageType.Text:
         if (!text) break;
-        sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: text }));
+        let isXml = text.startsWith(`&lt;?xml version="1.0"?&gt;`);
+
+        if (isXml) {
+          if (await this.handleContactXml(text, nickname, ctx)) break;
+        } else {
+          sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: text }));
+        }
         break;
 
       case MessageType.Attachment:
@@ -565,18 +570,24 @@ export default class Bot {
           let xml = html.decode(msg.text());
           let markdown = from.type() === ContactType.Official ? XMLParser.parseOffical(xml) : XMLParser.parseAttach(xml);
           sent = await ctx.replyWithMarkdown(HTMLTemplates.markdown({ nickname, content: markdown }));
-        } catch (error) {}
+        } catch (error) {
+          Logger.error(error.message);
+        }
 
         break;
 
+      case MessageType.Contact:
+        await this.handleContactXml(text, nickname, ctx);
+        break;
       // case MessageType.RedEnvelope:
       //   sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: lang.message.redpacket }));
       //   break;
 
       case MessageType.Audio:
         let audio = await msg.toFileBox();
-        let duration = audio.metadata['duration'] as number;
-        sent = (await ctx.replyWithVoice({ source: await audio.toStream() }, { caption: nickname, duration })) as TT.Message;
+        let source = await audio.toBuffer();
+        let duration = source.byteLength / (2.95 * 1024);
+        sent = (await ctx.replyWithVoice({ source }, { caption: nickname, duration })) as TT.Message;
         break;
 
       case MessageType.Image:
@@ -611,5 +622,33 @@ export default class Bot {
       user.msgs.delete(countToDelete);
       countToDelete--;
     } while (countToDelete > 0);
+  }
+
+  private async handleContactXml(text: string, from: string, ctx: TelegrafContext) {
+    try {
+      const xml = html.decode(text);
+      const c = XMLParser.parseContact(xml);
+      if (!c.wechatid && !c.nickname && !c.headerUrl) return false;
+
+      const caption = `
+[${lang.contact.card}]
+
+${lang.contact.nickname}: ${c.nickname}
+${lang.contact.gender}: ${lang.contact[c.sex]}
+${lang.contact.province}: ${c.province}
+${lang.contact.city}: ${c.city}
+${lang.contact.wechatid}: ${c.wechatid}
+--------------
+${from}`;
+
+      const header = await download(c.headerUrl);
+      await ctx.replyWithPhoto({ source: header }, { caption });
+
+      return true;
+    } catch (error) {
+      Logger.error(error.message);
+    }
+
+    return false;
   }
 }

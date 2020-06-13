@@ -5,7 +5,7 @@ export default {
     logined: (name: string) => `${name} 已经登录`,
     logouted: (name: string) => `${name} 已登出`,
     retry: `请扫描二维码`,
-    bye: 'Bye',
+    bye: 'Bye'
   },
   message: {
     redpacket: '发送了一个红包',
@@ -19,6 +19,17 @@ export default {
     timeout: '登录超时，Bye',
     error: 'WeChat 遇到错误，请重试',
     inviteRoom: (inviter: string, room: string) => `${inviter} 邀请你加入: ${room}`
+  },
+  contact: {
+    card: '联系人卡片',
+    nickname: '昵称',
+    gender: '性别',
+    city: '城市',
+    province: '省份',
+    wechatid: '微信号',
+    1: '男',
+    2: '女',
+    0: '未知'
   },
   commands: {
     find: '/find 昵称|备注',
