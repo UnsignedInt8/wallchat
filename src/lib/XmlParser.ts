@@ -38,7 +38,7 @@ export function parseAttach(rawXml: string) {
 export function parseContact(rawXml: string) {
   const msg = xml.parse(rawXml, { ignoreAttributes: false, attributeNamePrefix: '' });
   const content = msg['msg'];
-  const headerUrl: string = content['bigheadimgurl'];
+  const headerUrl: string = content['bigheadimgurl'] || content['smallheadimgurl'];
   const nickname: string = content['nickname'];
   const province: string = content['province'];
   const city: string = content['city'];
