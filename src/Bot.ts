@@ -162,7 +162,7 @@ export default class Bot {
 
           const alert = HTMLTemplates.message({
             nickname: `[Bot Info]`,
-            message: `Your last wechat session has been recovered. 😉`
+            message: lang.login.sessionOK
           });
 
           await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
@@ -181,7 +181,7 @@ export default class Bot {
 
           const alert = HTMLTemplates.message({
             nickname: `[Bot Alert]`,
-            message: `Last wechat session can't be recoverd. You have to /login again.`
+            message: lang.login.sessionLost
           });
 
           await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
@@ -638,7 +638,7 @@ ${lang.contact.gender}: ${lang.contact[c.sex]}
 ${lang.contact.province}: ${c.province}
 ${lang.contact.city}: ${c.city}
 ${lang.contact.wechatid}: ${c.wechatid}
---------------
+----------------------------
 ${from}`;
 
       const header = await download(c.headerUrl);

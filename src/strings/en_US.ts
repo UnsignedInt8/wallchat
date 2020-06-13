@@ -5,7 +5,9 @@ export default {
     logined: (name: string) => `Congratulations! ${name} has logined`,
     logouted: (name: string) => `${name} has logouted`,
     retry: `Please scan the QRCode and try again`,
-    bye: 'Bye'
+    bye: 'Bye',
+    sessionOK: 'Your last wechat session has been recovered. 📨',
+    sessionLost: `Last wechat session can't be recoverd. You have to /login again.`
   },
   message: {
     redpacket: 'A red packet',
