@@ -20,7 +20,8 @@ export default {
     current: (name: string) => `当前联系人 ${name}`,
     timeout: '登录超时，Bye',
     error: 'WeChat 遇到错误，请重试',
-    inviteRoom: (inviter: string, room: string) => `${inviter} 邀请你加入: ${room}`
+    inviteRoom: (inviter: string, room: string) => `${inviter} 邀请你加入: ${room}`,
+    sendFileFailed: `文件发送失败，Bot 尝试自动重发...`
   },
   contact: {
     card: '联系人卡片',
