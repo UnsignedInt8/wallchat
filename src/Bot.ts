@@ -259,12 +259,12 @@ export default class Bot {
       qrMessage = undefined;
     };
 
-    const deleteWechat = async () => {
+    const deleteWechat = async ({ clean }: { clean: boolean } = { clean: true }) => {
       this.clients.delete(id);
       wechat?.removeAllListeners();
       await wechat?.stop().catch();
       await removeQRMessage();
-      await MiscHelper.deleteTmpFile(`leavexchat.${id}`);
+      if (clean) await MiscHelper.deleteTmpFile(`leavexchat.${id}`);
     };
 
     const handleQrcode = async (qrcode: string) => {
@@ -326,7 +326,7 @@ export default class Bot {
     wechat?.on('error', async error => {
       Logger.warn(error.message);
       await ctx.reply(lang.message.error);
-      await deleteWechat();
+      await deleteWechat({ clean: false });
       await this.handleLogin(ctx);
     });
 
