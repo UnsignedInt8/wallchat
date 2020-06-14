@@ -1,7 +1,11 @@
 {
-    "token": "", // telegram bot token
-    "socks5Proxy": {
-        "host": "localhost",
-        "port": 1080
-    }
+  "token": "", // telegram bot token
+  "socks5Proxy": {
+    "host": "127.0.0.1",
+    "port": 1080
+  },
+  "httpProxy": {
+    "host": "127.0.0.1",
+    "port": 1081
+  }
 }

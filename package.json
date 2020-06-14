@@ -1,6 +1,6 @@
 {
   "name": "leavexchat-bot",
-  "version": "2.0.4",
+  "version": "2.1.0",
   "description": "WeChat via Telegram",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
@@ -12,7 +12,11 @@
     "leavexchat-bot": "build/main/index.js",
     "wechat-bot": "build/main/index.js"
   },
-  "keywords": ["telegram", "wechat", "bot"],
+  "keywords": [
+    "telegram",
+    "wechat",
+    "bot"
+  ],
   "scripts": {
     "describe": "npm-scripts-info",
     "build": "scripts/wechaty && run-s clean && run-p build:*",
@@ -66,6 +70,7 @@
     "got": "^9.6.0",
     "h2m": "^0.7.0",
     "html-entities": "^1.2.1",
+    "https-proxy-agent": "^5.0.0",
     "inquirer": "^6.5.2",
     "marked": "^0.8.2",
     "node-html-parser": "^1.2.14",

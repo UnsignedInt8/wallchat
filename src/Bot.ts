@@ -21,6 +21,10 @@ export interface BotOptions {
     username?: string;
     password?: string;
   };
+  httpProxy?: {
+    host: string;
+    port: number;
+  };
   keepMsgs?: number;
 }
 
@@ -37,16 +41,20 @@ export interface Client {
 }
 
 export default class Bot {
-  protected bot: Telegraph<TelegrafContext>;
   clients: Map<number, Client> = new Map(); // chat id => client
   keepMsgs: number;
-  private recoverWechats = new Map<number, Wechaty>(); // tg chatid => wechaty
+  options: BotOptions;
 
+  protected bot: Telegraph<TelegrafContext>;
   protected beforeCheckUserList: ((ctx?: TelegrafContext) => Promise<boolean>)[] = [];
   protected pendingFriends = new Map<string, Friendship>();
   protected lastRoomInvitation: RoomInvitation = null;
+  private recoverWechats = new Map<number, Wechaty>(); // tg chatid => wechaty
 
-  constructor({ token, socks5Proxy, keepMsgs }: BotOptions) {
+  constructor(options: BotOptions) {
+    this.options = options;
+
+    const { token, socks5Proxy, keepMsgs } = options;
     this.keepMsgs = keepMsgs === undefined ? 200 : Math.max(keepMsgs, 100) || 200;
 
     const agent = socks5Proxy ? (new SocksProxyAgent(`socks5://${socks5Proxy.host}:${socks5Proxy.port}`) as any) : undefined;
@@ -405,6 +413,6 @@ export default class Bot {
   protected handleLock = handleLock;
   protected handleUnlock = handleUnlock;
   protected handleCurrent = handleCurrent;
-  protected handleTelegramMessage = handleTelegramMessage;
+  protected handleTelegramMessage = (ctx: TelegrafContext) => handleTelegramMessage(ctx, this.options);
   protected handleWechatMessage = (msg: Message, ctx: TelegrafContext) => handleWechatMessage(this, msg, ctx);
 }
