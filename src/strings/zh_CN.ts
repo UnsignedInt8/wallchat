@@ -12,6 +12,8 @@ export default {
   message: {
     redpacket: '发送了一个红包',
     money: '向你转了一笔账',
+    noQuoteMessage: '请先引用一条微信消息',
+    msgForward: (name: string) => `消息已转发给: ${name}`,
     contactNotFound: '未找到联系人',
     contactFound: (name: string) => `${name} 已是当前联系人`,
     contactLocked: (name: string) => `${name} 已锁定`,

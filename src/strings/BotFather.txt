@@ -37,4 +37,5 @@ current - 显示当前联系人
 agree - 同意好友请求 [/agree reqid]
 disagree - 忽略好友请求 [/disagree reqid]
 acceptroom - 接受群邀请
+forward - 转发微信消息 [/forward (昵称｜备注，可选。不指定，则转发给当前联系人)]
 help - 显示帮助

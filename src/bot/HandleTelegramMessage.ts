@@ -18,7 +18,7 @@ export default async (ctx: TelegrafContext, { token, httpProxy }: BotOptions) =>
 
   let contact = user.currentContact;
   if (msg.reply_to_message) {
-    contact = user.msgs.get(msg.reply_to_message.message_id);
+    contact = user.msgs.get(msg.reply_to_message.message_id)?.contact;
   }
 
   if (!contact) return;

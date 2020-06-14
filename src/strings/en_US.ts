@@ -12,6 +12,8 @@ export default {
   message: {
     redpacket: 'A red packet',
     money: 'Transferred some money to you',
+    noQuoteMessage: 'Please quote a wechat message at first.',
+    msgForward: (name: string) => `The quote message has been forwarded to: ${name}`,
     contactNotFound: 'Contact not found',
     contactFound: (name: string) => `${name} is current contact`,
     contactLocked: (name: string) => `${name} is locked`,
@@ -22,7 +24,7 @@ export default {
     error: 'Some errors happen, try again please',
     inviteRoom: (inviter: string, room: string) => `${inviter} invites you to join: ${room}`,
     trySendingFile: `Sending file failed, bot is trying to resend...`,
-    sendingFileFailed: 'Sending file failed.',
+    sendingFileFailed: 'Sending file failed.'
   },
   contact: {
     card: 'Contact Card',

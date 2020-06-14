@@ -33,7 +33,7 @@ export interface Client {
   receiveGroups?: boolean;
   receiveOfficialAccount?: boolean;
   receiveSelf?: boolean;
-  msgs: Map<number, Contact | Room>;
+  msgs: Map<number, { contact: Contact | Room; wxmsg: Message }>; // telegram msgid => wx msg/contact
   currentContact?: Room | Contact;
   contactLocked?: boolean;
   wechatId?: string; // a flag to inidcate wechat client has logined
@@ -111,6 +111,7 @@ export default class Bot {
     this.bot.command('agree', checkUser, this.handleAgreeFriendship);
     this.bot.command('disagree', checkUser, this.handleDisagreeFriendship);
     this.bot.command('acceptroom', checkUser);
+    // this.bot.command('forwardto', checkUser, this.handleForwardTo);
     this.bot.command('logout', checkUser, this.handleLogout);
     this.bot.help(ctx => ctx.reply(lang.help));
 

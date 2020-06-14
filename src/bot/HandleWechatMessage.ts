@@ -91,7 +91,7 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
     return;
   }
 
-  user.msgs.set(sent.message_id, room || from);
+  user.msgs.set(sent.message_id, { contact: room || from, wxmsg: msg });
   if (!user.contactLocked) user.currentContact = room || from;
 
   // The bot just knows recent messages
