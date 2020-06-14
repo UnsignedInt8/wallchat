@@ -8,12 +8,13 @@ import * as TT from 'telegraf/typings/telegram-types';
 import { ContactType, MessageType } from 'wechaty-puppet';
 import { AllHtmlEntities } from 'html-entities';
 import lang from '../strings';
+import Bot from '../Bot';
 
 const html = new AllHtmlEntities();
 
-export default async (msg: Message, ctx: TelegrafContext) => {
+export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
   let id = ctx.chat.id;
-  let user = this.clients.get(id);
+  let user = self.clients.get(id);
 
   let from = msg.from();
   let room = msg.room();
@@ -94,8 +95,8 @@ export default async (msg: Message, ctx: TelegrafContext) => {
   if (!user.contactLocked) user.currentContact = room || from;
 
   // The bot just knows recent messages
-  if (sent.message_id < this.keepMsgs) return;
-  let countToDelete = sent.message_id - this.keepMsgs;
+  if (sent.message_id < self.keepMsgs) return;
+  let countToDelete = sent.message_id - self.keepMsgs;
 
   do {
     user.msgs.delete(countToDelete);

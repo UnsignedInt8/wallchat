@@ -1,6 +1,6 @@
 import Telegraph from 'telegraf';
 import { SocksProxyAgent } from 'socks-proxy-agent';
-import { Wechaty, Contact, Room, Friendship, RoomInvitation } from 'wechaty';
+import { Wechaty, Contact, Room, Friendship, RoomInvitation, Message } from 'wechaty';
 import qr from 'qr-image';
 import lang from './strings';
 import { FriendshipType } from 'wechaty-puppet';
@@ -38,8 +38,8 @@ export interface Client {
 
 export default class Bot {
   protected bot: Telegraph<TelegrafContext>;
-  protected clients: Map<number, Client> = new Map(); // chat id => client
-  protected keepMsgs: number;
+  clients: Map<number, Client> = new Map(); // chat id => client
+  keepMsgs: number;
   private recoverWechats = new Map<number, Wechaty>(); // tg chatid => wechaty
 
   protected beforeCheckUserList: ((ctx?: TelegrafContext) => Promise<boolean>)[] = [];
@@ -108,7 +108,6 @@ export default class Bot {
 
     this.bot.catch(err => {
       Logger.error('Ooops', err.message);
-      process.exit(1);
     });
   }
 
@@ -407,5 +406,5 @@ export default class Bot {
   protected handleUnlock = handleUnlock;
   protected handleCurrent = handleCurrent;
   protected handleTelegramMessage = handleTelegramMessage;
-  protected handleWechatMessage = handleWechatMessage;
+  protected handleWechatMessage = (msg: Message, ctx: TelegrafContext) => handleWechatMessage(this, msg, ctx);
 }
