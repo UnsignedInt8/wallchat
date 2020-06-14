@@ -7,13 +7,13 @@ officialon - Receive official account messages
 officialoff - Stop receiving official account messages
 selfon - Receive self messages
 selfoff - Stop receiving self messages
-find - Find a contact and set as current contact (Case sensitive) [/find name]
+find - Find a contact and set as current contact [/find name]
 lock - Lock current contact
 unlock - Unlock current contact
-findandlock - Find and lock contact (Case sensitive) [/find name]
+findandlock - Find and lock contact [/find name]
 current - Show current contact
-agree - Agree with current friendship request [/agree reqid]
-disagree - Disagree with current friendship request [/disagree reqid]
+agree - Agree with current friendship request [/agree name]
+disagree - Disagree with current friendship request [/disagree name]
 acceptroom - Accept chatroom invitation
 help - Show this help page
 

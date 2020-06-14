@@ -46,18 +46,17 @@ export default {
 /logout - 登出WeChat
 /groupon - 开启接收群消息
 /groupoff - 关闭接收群消息
-/officialon - 开启接收公众号消息（不推荐）
+/officialon - 开启接收公众号消息
 /officialoff - 关闭接收公众号消息
 /selfon - 开启接收自己的消息
 /selfoff - 关闭接收自己的消息
-/texton - 启用文本模式
-/textoff - 关闭文本模式（需要服务器端支持） 
-/find - 查找联系人并设置为当前联系人（区分大小写） [/find 昵称|备注]
+/find - 查找并设置为当前联系人 [/find 昵称|备注]
 /lock - 锁定当前联系人
 /unlock - 取消锁定当前联系人
-/findandlock - 查找并锁定为当前联系人（区分大小写） [/find 昵称|备注]
+/findandlock - 查找并锁定为当前联系人 [/find 昵称|备注]
 /current - 显示当前联系人
-/agree - 同意好友请求
-/disagree - 忽略好友请求
+/agree - 同意好友请求 [/agree reqid]
+/disagree - 忽略好友请求 [/disagree reqid]
+/acceptroom - 接受群邀请
 /help - 显示帮助`
 };
