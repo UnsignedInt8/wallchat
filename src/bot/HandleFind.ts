@@ -8,7 +8,7 @@ export default async (ctx: TelegrafContext, next: Function) => {
   let contents = ctx.message.text.split(' ');
   contents.shift();
 
-  let name = contents.reduce((p, c) => `${p} ${c}`, '');
+  let name = contents.reduce((p, c) => `${p} ${c}`, '').trim();
   if (!name) {
     ctx.reply(lang.commands.find);
     return;
