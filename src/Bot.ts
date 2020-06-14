@@ -327,6 +327,7 @@ export default class Bot {
       Logger.warn(error.message);
       await ctx.reply(lang.message.error);
       await deleteWechat();
+      await this.handleLogin(ctx);
     });
 
     wechat?.on('message', msg => this.handleWechatMessage(msg, ctx));
