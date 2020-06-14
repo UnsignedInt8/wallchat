@@ -21,7 +21,8 @@ export default {
     timeout: 'Login timeout, bye',
     error: 'Some errors happen, try again please',
     inviteRoom: (inviter: string, room: string) => `${inviter} invites you to join: ${room}`,
-    fileFailed: `Sending file failed, bot is trying to resend...`
+    trySendingFile: `Sending file failed, bot is trying to resend...`,
+    sendingFileFailed: 'Sending file failed.',
   },
   contact: {
     card: 'Contact Card',

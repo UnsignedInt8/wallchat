@@ -47,7 +47,7 @@ export default async (ctx: TelegrafContext, { token, httpProxy }: BotOptions) =>
 
         return;
       } catch (error) {
-        await contact.say(lang.message.sendFileFailed);
+        await contact.say(tries > 0 ? lang.message.trySendingFile : lang.message.sendingFileFailed);
         Logger.error(error.message);
       }
     } while (tries > 0);
