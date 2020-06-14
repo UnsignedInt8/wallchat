@@ -6,8 +6,8 @@ export default {
     logouted: (name: string) => `${name} 已登出`,
     retry: `请扫描二维码`,
     bye: 'Bye',
-    sessionOK: '您的最近一次微信会话已经恢复 🥳',
-    sessionLost: '无法恢复上次微信会话，请重新登录 /login'
+    sessionOK: '您的微信会话已经恢复 🥳',
+    sessionLost: '无法恢复微信会话，请重新登录 /login'
   },
   message: {
     redpacket: '发送了一个红包',
