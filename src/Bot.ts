@@ -1,24 +1,16 @@
 import Telegraph from 'telegraf';
 import { SocksProxyAgent } from 'socks-proxy-agent';
-import { Wechaty, Message, Contact, Room, FileBox, Friendship, RoomInvitation } from 'wechaty';
+import { Wechaty, Contact, Room, Friendship, RoomInvitation } from 'wechaty';
 import qr from 'qr-image';
 import lang from './strings';
-import { ContactType, FriendshipType, MessageType } from 'wechaty-puppet';
+import { FriendshipType } from 'wechaty-puppet';
 import * as TT from 'telegraf/typings/telegram-types';
-import axios from 'axios';
-import download from 'download';
-import fs from 'fs';
-import path from 'path';
-import tempfile from 'tempfile';
 import HTMLTemplates from './lib/HTMLTemplates';
 import Logger from './lib/Logger';
-import * as XMLParser from './lib/XmlParser';
-import { AllHtmlEntities } from 'html-entities';
 import MiscHelper from './lib/MiscHelper';
 import { TelegrafContext } from 'telegraf/typings/context';
 import TelegramContext from 'telegraf/context';
-
-const html = new AllHtmlEntities();
+import { handleFind, handleLock, handleUnlock, handleCurrent, handleTelegramMessage, handleWechatMessage } from './bot/index';
 
 export interface BotOptions {
   token: string;
@@ -32,7 +24,7 @@ export interface BotOptions {
   keepMsgs?: number;
 }
 
-interface Client {
+export interface Client {
   wechat?: Wechaty;
   receiveGroups?: boolean;
   receiveOfficialAccount?: boolean;
@@ -48,7 +40,6 @@ export default class Bot {
   protected bot: Telegraph<TelegrafContext>;
   protected clients: Map<number, Client> = new Map(); // chat id => client
   protected keepMsgs: number;
-  private token: string;
   private recoverWechats = new Map<number, Wechaty>(); // tg chatid => wechaty
 
   protected beforeCheckUserList: ((ctx?: TelegrafContext) => Promise<boolean>)[] = [];
@@ -56,7 +47,6 @@ export default class Bot {
   protected lastRoomInvitation: RoomInvitation = null;
 
   constructor({ token, socks5Proxy, keepMsgs }: BotOptions) {
-    this.token = token;
     this.keepMsgs = keepMsgs === undefined ? 200 : Math.max(keepMsgs, 100) || 200;
 
     const agent = socks5Proxy ? (new SocksProxyAgent(`socks5://${socks5Proxy.host}:${socks5Proxy.port}`) as any) : undefined;
@@ -118,6 +108,7 @@ export default class Bot {
 
     this.bot.catch(err => {
       Logger.error('Ooops', err.message);
+      process.exit(1);
     });
   }
 
@@ -370,91 +361,13 @@ export default class Bot {
     ctx.reply(lang.login.bye);
   };
 
-  protected handleFind = async (ctx: TelegrafContext, next: Function) => {
-    let contents = ctx.message.text.split(' ');
-    contents.shift();
-
-    let name = contents.reduce((p, c) => `${p} ${c}`);
-    if (!name) {
-      ctx.reply(lang.commands.find);
-      return;
-    }
-
-    name = name.trim();
-    const regexp = new RegExp(name, 'ig');
-    let user = ctx['user'] as Client;
-
-    let found: Contact | Room | undefined;
-    let foundName = '';
-    try {
-      found = (await user.wechat?.Contact.find({ name: regexp })) || (await user.wechat?.Contact.find({ alias: regexp }));
-
-      const alias = await found?.alias();
-      foundName = alias ? `${found?.name()} (${alias})` : found?.name();
-    } catch (error) {
-      Logger.error(error.message);
-      return;
-    }
-
-    if (!found) {
-      found = await user.wechat?.Room.find({ topic: regexp });
-      foundName = await found?.topic();
-    }
-
-    if (!found) {
-      ctx.reply(lang.message.contactNotFound);
-      return;
-    }
-
-    let info = user.contactLocked ? ` [${lang.message.contactLocked('').trim()}]` : '';
-    await ctx.reply(lang.message.contactFound(`${foundName}`) + info).catch();
-    user.currentContact = found;
-
-    if (next) next();
-  };
-
-  protected handleLock = async (ctx: TelegrafContext) => {
-    let user = ctx['user'] as Client;
-    if (!user.currentContact) return;
-    if (user.contactLocked) return;
-    user.contactLocked = true;
-    ctx.reply(lang.message.contactLocked((user.currentContact as Contact).name()));
-  };
-
-  protected handleUnlock = async (ctx: TelegrafContext) => {
-    let user = ctx['user'] as Client;
-    if (!user.currentContact) return;
-    if (!user.contactLocked) return;
-    user.contactLocked = false;
-    ctx.reply(lang.message.contactUnlocked((user.currentContact as Contact).name()));
-  };
-
-  protected handleCurrent = async (ctx: TelegrafContext) => {
-    let user = ctx['user'] as Client;
-    if (!user.currentContact) {
-      ctx.reply(lang.message.noCurrentContact);
-      return;
-    }
-
-    let name: string;
-    try {
-      name = (user.currentContact as Contact).name();
-    } catch (error) {
-      name = await (user.currentContact as Room).topic();
-    }
-
-    let info = user.contactLocked ? ` [${lang.message.contactLocked('').trim()}]` : '';
-
-    ctx.reply(lang.message.current(name) + info);
-  };
-
-  protected handleAcceptRoomInvitation = async (ctx: TelegrafContext) => {
+  protected handleAcceptRoomInvitation = async () => {
     this.lastRoomInvitation?.accept();
     this.lastRoomInvitation = null;
   };
 
   protected handleAgreeFriendship = async (ctx: TelegrafContext) => {
-    let [_, id] = ctx.message.text.split(' ');
+    let [, id] = ctx.message.text.split(' ');
 
     if (this.pendingFriends.size === 1) {
       for (let [key, req] of this.pendingFriends) {
@@ -479,7 +392,7 @@ export default class Bot {
   };
 
   protected handleDisagreeFriendship = async (ctx: TelegrafContext) => {
-    let [_, id] = ctx.message.text.split(' ');
+    let [, id] = ctx.message.text.split(' ');
     if (!id) {
       await ctx.reply(lang.commands.disagree);
       return;
@@ -489,167 +402,10 @@ export default class Bot {
     await ctx.reply('OK');
   };
 
-  protected handleTelegramMessage = async (ctx: TelegrafContext) => {
-    let msg = ctx.message;
-    let user = ctx['user'] as Client;
-    if (msg.text && msg.text.startsWith('/find')) return;
-
-    let contact = user.currentContact;
-    if (msg.reply_to_message) {
-      contact = user.msgs.get(msg.reply_to_message.message_id);
-    }
-
-    if (!contact) return;
-
-    let file = msg.audio || msg.video || (msg.photo && msg.photo[0]);
-    if (file && file.file_size <= 50 * 1024 * 1024) {
-      return;
-      try {
-        let url = `https://api.telegram.org/bot${this.token}/getFile?file_id=${file.file_id}`;
-        let resp = await axios.get(url);
-        if (!resp.data || !resp.data.ok) return;
-
-        let filePath = resp.data.result.file_path;
-        url = `https://api.telegram.org/file/bot${this.token}/${filePath}`;
-        let ext = path.extname(filePath);
-        let distFile = tempfile(ext);
-
-        await new Promise(async resolve => {
-          fs.writeFile(distFile, await download(url), () => {
-            resolve();
-          });
-        });
-
-        // Not available on default puppet
-
-        await contact.say(FileBox.fromFile(distFile));
-      } catch (error) {
-        Logger.error(error.message);
-      }
-      return;
-    }
-
-    if (msg.text) await contact.say(msg.text);
-    if (!user.contactLocked) user.currentContact = contact;
-  };
-
-  protected async handleWechatMessage(msg: Message, ctx: TelegrafContext) {
-    let id = ctx.chat.id;
-    let user = this.clients.get(id);
-
-    let from = msg.from();
-    let room = msg.room();
-    let type = msg.type() as any;
-    let text = msg
-      .text()
-      .replace(/\<br\/\>/g, ' \n')
-      .replace(/<[^>]*>?/gm, '');
-
-    if (user.wechatId === from.id && !user.receiveSelf) return;
-    if (!user.receiveOfficialAccount && from.type() === ContactType.Official) return;
-    if (!user.receiveGroups && room) return;
-
-    let alias = await from.alias();
-    let nickname = from.name() + (alias ? ` (${alias})` : '');
-    nickname = nickname + (room ? ` [${await room.topic()}]` : '');
-    let sent: TT.Message;
-
-    switch (type) {
-      case MessageType.Text:
-        if (!text) break;
-        let isXml = text.startsWith(`&lt;?xml version="1.0"?&gt;`);
-
-        if (isXml) {
-          if (await this.handleContactXml(text, nickname, ctx)) break;
-        } else {
-          sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: text }));
-        }
-        break;
-
-      case MessageType.Attachment:
-        try {
-          let xml = html.decode(msg.text());
-          let markdown = from.type() === ContactType.Official ? XMLParser.parseOffical(xml) : XMLParser.parseAttach(xml);
-          sent = await ctx.replyWithMarkdown(HTMLTemplates.markdown({ nickname, content: markdown }));
-        } catch (error) {
-          Logger.error(error.message);
-        }
-
-        break;
-
-      case MessageType.Contact:
-        await this.handleContactXml(text, nickname, ctx);
-        break;
-      // case MessageType.RedEnvelope:
-      //   sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: lang.message.redpacket }));
-      //   break;
-
-      case MessageType.Audio:
-        let audio = await msg.toFileBox();
-        let source = await audio.toBuffer();
-        let duration = source.byteLength / (2.95 * 1024);
-        sent = (await ctx.replyWithVoice({ source }, { caption: nickname, duration })) as TT.Message;
-        break;
-
-      case MessageType.Image:
-        let image = await msg.toFileBox();
-        // sent = (image.mimeType || '').toLowerCase().includes('gif') ? await ctx.replyWithVideo({ source: await image.toStream() }) : await ctx.replyWithPhoto({ source: await image.toStream() }, { caption });
-        sent = await ctx.replyWithPhoto({ source: await image.toStream() }, { caption: nickname });
-        break;
-
-      case MessageType.Video:
-        let video = await msg.toFileBox();
-        sent = await ctx.replyWithVideo({ source: await video.toStream() }, {
-          caption: nickname
-        } as any);
-        break;
-
-      default:
-        break;
-    }
-
-    if (!sent) {
-      return;
-    }
-
-    user.msgs.set(sent.message_id, room || from);
-    if (!user.contactLocked) user.currentContact = room || from;
-
-    // The bot just knows recent messages
-    if (sent.message_id < this.keepMsgs) return;
-    let countToDelete = sent.message_id - this.keepMsgs;
-
-    do {
-      user.msgs.delete(countToDelete);
-      countToDelete--;
-    } while (countToDelete > 0);
-  }
-
-  private async handleContactXml(text: string, from: string, ctx: TelegrafContext) {
-    try {
-      const xml = html.decode(text);
-      const c = XMLParser.parseContact(xml);
-      if (!c.wechatid && !c.nickname && !c.headerUrl) return false;
-
-      const caption = `
-[${lang.contact.card}]
-
-${lang.contact.nickname}: ${c.nickname}
-${lang.contact.gender}: ${lang.contact[c.sex]}
-${lang.contact.province}: ${c.province}
-${lang.contact.city}: ${c.city}
-${lang.contact.wechatid}: ${c.wechatid}
-----------------------------
-${from}`;
-
-      const header = await download(c.headerUrl);
-      await ctx.replyWithPhoto({ source: header }, { caption });
-
-      return true;
-    } catch (error) {
-      Logger.error(error.message);
-    }
-
-    return false;
-  }
+  protected handleFind = handleFind;
+  protected handleLock = handleLock;
+  protected handleUnlock = handleUnlock;
+  protected handleCurrent = handleCurrent;
+  protected handleTelegramMessage = handleTelegramMessage;
+  protected handleWechatMessage = handleWechatMessage;
 }
