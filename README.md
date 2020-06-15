@@ -2,7 +2,7 @@
 
 [![Powered by Wechaty](https://img.shields.io/badge/Powered%20By-Wechaty-blue.svg)](https://github.com/Wechaty/wechaty)
 
-使用 Telegram Bot 收发 WeChat 文字、语音（仅接收）、图片、视频、Telegram 贴纸等消息
+使用 Telegram Bot 收发 WeChat 文字、语音（仅接收）、图片、视频、Telegram 静态贴纸等消息
 
 ## 安装准备
 
@@ -112,7 +112,7 @@ $> forever build/main/index.js -c config.json
 
 3. 直接在 Telegram 里回复消息的对象**默认**是最近收到消息的发送者（个人或群），如果担心回复错了，请手动指定回复某条消息（最近 200 条以内）。可以手动 /lock /unlock 锁定当前联系人
 
-4. 2.1.0 版本已经支持发送图片、视频、文档，但不支持发送可被 Wechat 自动识别为音频的消息
+4. 2.1.0 以上版本已经支持发送图片、视频、文档，但不支持发送可被 Wechat 自动识别为音频的消息
 
 5. 如果使用 VPS，WeChat 会检测到异地登陆，并发出提示。可以在本地运行该 bot，只需在配置文件里填写好 socks5, http 代理信息即可
 
