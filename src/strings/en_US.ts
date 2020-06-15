@@ -24,7 +24,8 @@ export default {
     error: 'Some errors happen, try again please',
     inviteRoom: (inviter: string, room: string) => `${inviter} invites you to join: ${room}`,
     trySendingFile: `Sending file failed, bot is trying to resend...`,
-    sendingFileFailed: 'Sending file failed.'
+    sendingFileFailed: 'Sending file failed.',
+    msgNotSupported: 'This msg type is not supported.'
   },
   contact: {
     card: 'Contact Card',

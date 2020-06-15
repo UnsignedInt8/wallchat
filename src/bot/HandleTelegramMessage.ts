@@ -11,6 +11,7 @@ import { BotOptions } from '../Bot';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import lang from '../strings';
 import MiscHelper from '../lib/MiscHelper';
+import sharp from 'sharp';
 
 export default async (ctx: TelegrafContext, { token, httpProxy }: BotOptions) => {
   let msg = ctx.message;
@@ -24,7 +25,7 @@ export default async (ctx: TelegrafContext, { token, httpProxy }: BotOptions) =>
 
   if (!contact) return;
 
-  let file = msg.audio || msg.video || (msg.photo && msg.photo[0]) || msg.voice || msg.document;
+  let file = msg.audio || msg.video || (msg.photo && msg.photo[0]) || msg.voice || msg.document || msg.sticker;
   if (file && file.file_size <= 50 * 1024 * 1024) {
     let tries = 3;
     do {
@@ -40,8 +41,21 @@ export default async (ctx: TelegrafContext, { token, httpProxy }: BotOptions) =>
         url = `https://api.telegram.org/file/bot${token}/${filePath}`;
         let ext = path.extname(filePath);
         let distFile = tempfile(ext);
+        if (ext === '.tgs') {
+          await ctx.reply(lang.message.msgNotSupported);
+          return;
+        }
 
         await new Promise(async resolve => fs.writeFile(distFile, await download(url), () => resolve()));
+
+        if (distFile.endsWith('.webp')) {
+          const pngfile = tempfile('.png');
+          await sharp(distFile)
+            .toFormat('png')
+            .toFile(pngfile);
+
+          distFile = pngfile;
+        }
 
         await contact.say(FileBox.fromFile(distFile));
         if (!user.contactLocked) user.currentContact = contact;
@@ -49,7 +63,7 @@ export default async (ctx: TelegrafContext, { token, httpProxy }: BotOptions) =>
         MiscHelper.deleteFile(distFile);
         return;
       } catch (error) {
-        await contact.say(tries > 0 ? lang.message.trySendingFile : lang.message.sendingFileFailed);
+        await ctx.reply(tries > 0 ? lang.message.trySendingFile : lang.message.sendingFileFailed);
         Logger.error(error.message);
       }
     } while (tries > 0);
