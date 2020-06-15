@@ -10,6 +10,7 @@ import { FileBox } from 'wechaty';
 import { BotOptions } from '../Bot';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import lang from '../strings';
+import MiscHelper from '../lib/MiscHelper';
 
 export default async (ctx: TelegrafContext, { token, httpProxy }: BotOptions) => {
   let msg = ctx.message;
@@ -45,6 +46,7 @@ export default async (ctx: TelegrafContext, { token, httpProxy }: BotOptions) =>
         await contact.say(FileBox.fromFile(distFile));
         if (!user.contactLocked) user.currentContact = contact;
 
+        MiscHelper.deleteFile(distFile);
         return;
       } catch (error) {
         await contact.say(tries > 0 ? lang.message.trySendingFile : lang.message.sendingFileFailed);

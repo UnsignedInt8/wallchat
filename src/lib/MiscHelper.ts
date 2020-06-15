@@ -22,9 +22,7 @@ export default class MiscHelper {
   }
 
   static async deleteFile(path: string) {
-    return new Promise(resolve => {
-      fs.unlink(path, err => resolve());
-    });
+    return new Promise(resolve => fs.unlink(path, _ => resolve()));
   }
 
   static async createTmpFile(filename: string) {
