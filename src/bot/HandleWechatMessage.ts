@@ -11,6 +11,15 @@ import lang from '../strings';
 import Bot from '../Bot';
 
 const html = new AllHtmlEntities();
+const groupNotifications = [
+  '分享的二维码加入群聊',
+  '加入了群聊',
+  'with anyone else in this group chat',
+  'joined the group chat via',
+  'to the group chat',
+  'invited you to a group chat with flow',
+  '邀请你加入了群聊，群聊参与人还有'
+];
 
 export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
   let id = ctx.chat.id;
@@ -40,6 +49,9 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
 
       if (isXml) {
         if (await handleContactXml(text, nickname, ctx)) break;
+      } else if (room && groupNotifications.some(n => text.includes(n))) {
+        // junk info
+        break;
       } else {
         sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: text }));
       }

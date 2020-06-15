@@ -42,13 +42,6 @@ if (require.main === module) {
   process.on('uncaughtException', bot.handleFatalError);
   process.on('unhandledRejection', bot.handleFatalError);
 
-  // https://blog.heroku.com/best-practices-nodejs-errors
-  process.once('beforeExit', bot.handleFatalError);
-
-  // catches "kill pid" (for example: nodemon restart)
-  process.on('SIGUSR1', bot.handleFatalError);
-  process.on('SIGUSR2', bot.handleFatalError);
-
   process.title = 'leavexchat';
 }
 
