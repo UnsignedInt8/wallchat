@@ -120,12 +120,12 @@ export default class Bot {
     });
   }
 
-  handleFatalError = async (err: Error | number | NodeJS.Signals) => {
-    Logger.error(`Bot Alert: ${err}`);
+  handleFatalError = async (err: Error | number | NodeJS.Signals) => Logger.error(`Bot Alert: ${err}`);
 
+  sendSystemMessage = async (msg: string) => {
     const alert = HTMLTemplates.message({
       nickname: `[Bot Alert]`,
-      message: `Fatal error happened:\n\n ${JSON.stringify(err)}\n\n Trying to recover...`
+      message: msg
     });
 
     for (let [id, _] of this.clients) {

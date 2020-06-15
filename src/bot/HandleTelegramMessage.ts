@@ -48,10 +48,10 @@ export default async (ctx: TelegrafContext, { token, httpProxy }: BotOptions) =>
 
         await new Promise(async resolve => fs.writeFile(distFile, await download(url), () => resolve()));
 
-        if (distFile.endsWith('.webp')) {
+        if (msg.sticker) {
           const pngfile = tempfile('.png');
           await sharp(distFile)
-            .toFormat('png')
+            .toFormat('png', { palette: true })
             .toFile(pngfile);
 
           distFile = pngfile;
