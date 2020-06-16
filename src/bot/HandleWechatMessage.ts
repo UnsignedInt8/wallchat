@@ -84,8 +84,14 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
 
     case MessageType.Image:
       let image = await msg.toFileBox();
-      // sent = (image.mimeType || '').toLowerCase().includes('gif') ? await ctx.replyWithVideo({ source: await image.toStream() }) : await ctx.replyWithPhoto({ source: await image.toStream() }, { caption });
-      sent = await ctx.replyWithPhoto({ source: await image.toStream() }, { caption: nickname });
+
+      if (image.mimeType === 'image/gif') {
+        const sticker = await ctx.replyWithSticker({ source: await image.toStream() });
+        sent = await ctx.reply(`from: ${nickname}`, { reply_to_message_id: sticker.message_id });
+      } else {
+        sent = await ctx.replyWithPhoto({ source: await image.toStream() }, { caption: nickname });
+      }
+
       break;
 
     case MessageType.Video:

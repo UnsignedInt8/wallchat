@@ -6,7 +6,7 @@ export default {
     logouted: (name: string) => `${name} 已登出`,
     retry: `请扫描二维码`,
     bye: 'Bye',
-    sessionOK: '您的微信会话已经恢复 🥳 \n\n（注意：您的最近联系人和消息引用已被重置）',
+    sessionOK: '您的微信会话已经恢复 🥳 \n\n[注意：您的最近联系人和消息引用已被重置]',
     sessionLost: '无法恢复微信会话，请重新登录 /login'
   },
   message: {
