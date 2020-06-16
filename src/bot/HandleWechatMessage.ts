@@ -9,6 +9,7 @@ import { ContactType, MessageType } from 'wechaty-puppet';
 import { AllHtmlEntities } from 'html-entities';
 import lang from '../strings';
 import Bot from '../Bot';
+import isGif from 'is-gif';
 
 const html = new AllHtmlEntities();
 const groupNotifications = [
@@ -18,7 +19,8 @@ const groupNotifications = [
   'joined the group chat via',
   'to the group chat',
   'invited you to a group chat with flow',
-  '邀请你加入了群聊，群聊参与人还有'
+  '邀请你加入了群聊，群聊参与人还有',
+  '与群里其他人都不是微信朋友关系，请注意隐私安全'
 ];
 
 export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
@@ -86,12 +88,15 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
       let image = await msg.toFileBox();
 
       if (image.mimeType === 'image/gif') {
-        const sticker = await ctx.replyWithSticker({ source: await image.toStream() });
-        sent = await ctx.reply(`from: ${nickname}`, { reply_to_message_id: sticker.message_id });
-      } else {
-        sent = await ctx.replyWithPhoto({ source: await image.toStream() }, { caption: nickname });
+        const buffer = await image.toBuffer();
+        if (isGif(buffer)) {
+          const sticker = await ctx.replyWithSticker({ source: buffer });
+          sent = await ctx.reply(`from: ${nickname}`, { reply_to_message_id: sticker.message_id });
+          break;
+        }
       }
 
+      sent = await ctx.replyWithPhoto({ source: await image.toStream() }, { caption: nickname });
       break;
 
     case MessageType.Video:
