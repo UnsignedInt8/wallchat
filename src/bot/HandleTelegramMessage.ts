@@ -63,7 +63,7 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
         }
 
         await contact.say(FileBox.fromFile(distFile));
-        if (msg.caption && msg.forward_from.id !== bot.id) await contact.say(msg.caption);
+        if (msg.caption && msg.forward_from?.id !== bot.id) await contact.say(msg.caption);
 
         if (!user.contactLocked) user.currentContact = contact;
 
