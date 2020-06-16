@@ -58,6 +58,8 @@ export default async (ctx: TelegrafContext, { token, httpProxy }: BotOptions) =>
         }
 
         await contact.say(FileBox.fromFile(distFile));
+        if (msg.caption) await contact.say(msg.caption);
+
         if (!user.contactLocked) user.currentContact = contact;
 
         MiscHelper.deleteFile(distFile);
