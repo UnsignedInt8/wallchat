@@ -46,6 +46,7 @@ export default class Bot {
   options: BotOptions;
 
   protected bot: Telegraph<TelegrafContext>;
+  protected botSelf: TT.User;
   protected beforeCheckUserList: ((ctx?: TelegrafContext) => Promise<boolean>)[] = [];
   protected pendingFriends = new Map<string, Friendship>();
   protected lastRoomInvitation: RoomInvitation = null;
@@ -137,6 +138,7 @@ export default class Bot {
     this.bot.on('message', (ctx: TelegrafContext, n: Function) => this.checkUser(ctx, n), this.handleTelegramMessage);
 
     await this.bot.launch();
+    this.botSelf = await this.bot.telegram.getMe();
     Logger.info(`Bot is running`);
 
     await this.recoverSessions();
@@ -414,6 +416,6 @@ export default class Bot {
   protected handleLock = handleLock;
   protected handleUnlock = handleUnlock;
   protected handleCurrent = handleCurrent;
-  protected handleTelegramMessage = (ctx: TelegrafContext) => handleTelegramMessage(ctx, this.options);
+  protected handleTelegramMessage = (ctx: TelegrafContext) => handleTelegramMessage(ctx, { ...this.options, bot: this.botSelf });
   protected handleWechatMessage = (msg: Message, ctx: TelegrafContext) => handleWechatMessage(this, msg, ctx);
 }

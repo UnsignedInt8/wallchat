@@ -12,8 +12,13 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
 import lang from '../strings';
 import MiscHelper from '../lib/MiscHelper';
 import sharp from 'sharp';
+import * as TT from 'telegraf/typings/telegram-types';
 
-export default async (ctx: TelegrafContext, { token, httpProxy }: BotOptions) => {
+interface IHandleTelegramMessage extends BotOptions {
+  bot: TT.User;
+}
+
+export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTelegramMessage) => {
   let msg = ctx.message;
   let user = ctx['user'] as Client;
   if (msg.text && msg.text.startsWith('/find')) return;
@@ -58,7 +63,7 @@ export default async (ctx: TelegrafContext, { token, httpProxy }: BotOptions) =>
         }
 
         await contact.say(FileBox.fromFile(distFile));
-        if (msg.caption) await contact.say(msg.caption);
+        if (msg.caption && msg.forward_from.id !== bot.id) await contact.say(msg.caption);
 
         if (!user.contactLocked) user.currentContact = contact;
 
