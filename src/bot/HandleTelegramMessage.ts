@@ -63,7 +63,7 @@ export default async (ctx: TelegrafContext, { token, httpProxy }: BotOptions) =>
         MiscHelper.deleteFile(distFile);
         return;
       } catch (error) {
-        await ctx.reply(tries > 0 ? lang.message.trySendingFile : lang.message.sendingFileFailed);
+        await ctx.reply(tries > 0 ? lang.message.trySendingFile : lang.message.sendingFileFailed, { reply_to_message_id: msg.message_id });
         Logger.error(error.message);
       }
     } while (tries > 0);
