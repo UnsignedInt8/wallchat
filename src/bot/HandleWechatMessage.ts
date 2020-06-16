@@ -50,6 +50,7 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
       let isXml = text.startsWith(`&lt;?xml version="1.0"?&gt;`);
 
       if (isXml) {
+        if (await handleFriendApplyingXml(text, ctx)) break;
         if (await handleContactXml(text, nickname, ctx)) break;
       } else if (room && groupNotifications.some(n => text.includes(n))) {
         // junk info
@@ -146,6 +147,33 @@ ${from}`;
 
     const header = await download(c.headerUrl);
     await ctx.replyWithPhoto({ source: header }, { caption });
+
+    return true;
+  } catch (error) {
+    Logger.error(error.message);
+  }
+
+  return false;
+}
+
+async function handleFriendApplyingXml(text: string, ctx: TelegrafContext) {
+  try {
+    const xml = html.decode(text);
+    const c = XMLParser.parseFriendApplying(xml);
+    if (!c.applyingMsg) return false;
+
+    const reply = `
+[${lang.contact.card}]
+
+${lang.contact.nickname}: ${c.nickname}
+${lang.contact.gender}: ${lang.contact[c.sex]}
+${lang.contact.applying}: ${c.applyingMsg}
+${lang.contact.wechatid}: ${c.wechatid}
+----------------------------
+${lang.contact.friend}`;
+
+    const header = await download(c.headerUrl);
+    await ctx.replyWithPhoto({ source: header }, { caption: reply });
 
     return true;
   } catch (error) {

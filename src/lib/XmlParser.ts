@@ -40,13 +40,26 @@ export function parseContact(rawXml: string) {
   const content = msg['msg'];
   const headerUrl: string = content['bigheadimgurl'] || content['smallheadimgurl'];
   const nickname: string = content['nickname'];
-  const province: string = content['province'];
-  const city: string = content['city'];
+  const province: string = content['province'] || '';
+  const city: string = content['city'] || '';
   const wechatid: string = content['alias'] || content['username'];
   const imagestatus = Number.parseInt(content['imagestatus']);
   const sex = Number.parseInt(content['sex']);
 
   return { headerUrl, nickname, province, city, wechatid, imagestatus, sex };
+}
+
+export function parseFriendApplying(rawXml: string) {
+  const msg = xml.parse(rawXml, { ignoreAttributes: false, attributeNamePrefix: '' });
+  const content = msg['msg'];
+  const nickname: string = content['fromnickname'];
+  const applyingMsg: string = content['content'];
+  const wechatid: string = content['alias'] || content['username'];
+  const headerUrl: string = content['bigheadimgurl'] || content['smallheadimgurl'];
+  const sex = Number.parseInt(content['sex']);
+  const sign: string = content['sign'];
+
+  return { nickname, applyingMsg, wechatid, headerUrl, sex, sign };
 }
 
 export async function convertXmlToTelegraphMarkdown(rawXml: string, token: string = '4a1c7c544a7f2e9c146240e92ad4dc9e2e14e3e8a0ec01665ddbc80fbba3') {
@@ -106,8 +119,13 @@ function testContact() {
   console.log(parseContact(xml));
 }
 
-// testContact();
+function testFriendApplying() {
+  const xml = `<msg fromusername="wxid_sszwios8dd9711" encryptusername="v1_27d6514b78dad48241d7db28d31d65ddf1e9229588a6851efde6df04309037c4d2179e88a19051841318422561687749@stranger" fromnickname="游人@PW DeFi" content="我是群聊&quot;DeFi 市值重回 10 亿美元&quot;的游人@PW DeFi"  shortpy="YRPWDEFI" imagestatus="3" scene="14" country="SG" province="" city="" sign="专注互联网  0投资项目 " percard="1" sex="1" alias="fcc199299" weibo="" albumflag="3" albumstyle="0" albumbgimgid="913350565298176_913350565298176" snsflag="433" snsbgimgid="http://szmmsns.qpic.cn/mmsns/bSHDrzBibeN8oricMDKUeCSTumav19fw9kY35zibFgGqkjFU8Saic70Hx1pcOGUzIcCV1w6LNZXT3Ao/0" snsbgobjectid="13216836968078061747" mhash="8f77f6504b731611e017c11b624d9f84" mfullhash="8f77f6504b731611e017c11b624d9f84" bigheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/8w6ounbEkKsf8gh7LrgZ4Y1D0t59MXBKTBownE6PAPibLJuSpBJaOjkhBH5dpYHLjPxQZ47V45GgfibeiarH8gukquGgSZvV9Px5Uhr4AdEW0E/0" smallheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/8w6ounbEkKsf8gh7LrgZ4Y1D0t59MXBKTBownE6PAPibLJuSpBJaOjkhBH5dpYHLjPxQZ47V45GgfibeiarH8gukquGgSZvV9Px5Uhr4AdEW0E/132" ticket="v4_000b708f0b040000010000000000741ca182764cc07b52b3da49e85e1000000050ded0b020927e3c97896a09d47e6e9ea458531600f1d484619e74176d9bc286f765a268b353238d09e576dcd99b93e357ed2a1a9a81d687b527e678bf576f4d733560956677ea4b61a1eb317d538ba6b86c78bd02cf6ab8c9e0e9dc6f22be6a9a363f38e0fed00e5950b82d7337d395bec20c6d40@stranger" opcode="2" googlecontact="" qrticket="" chatroomusername="22388091580@chatroom" sourceusername="" sourcenickname="" sharecardusername="" sharecardnickname="" cardversion=""><brandlist count="0" ver="740984737"></brandlist></msg>`;
+  console.log(parseFriendApplying(xml));
+}
 
+// testContact();
+// testFriendApplying();
 // testOffical();
 // testAttach();
 // testPic();

@@ -29,11 +29,13 @@ export default {
   },
   contact: {
     card: '联系人卡片',
+    friend: '新好友申请',
     nickname: '昵称',
     gender: '性别',
     city: '城市',
     province: '省份',
     wechatid: '微信号',
+    applying: '申请消息',
     1: '男',
     2: '女',
     0: '未知'

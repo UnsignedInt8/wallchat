@@ -29,11 +29,13 @@ export default {
   },
   contact: {
     card: 'Contact Card',
+    friend: 'Friend recommendation',
     nickname: 'Nickname',
     gender: 'Gender',
     city: 'City',
     province: 'Province',
     wechatid: 'Wechat ID',
+    applying: 'Applying',
     1: 'Male',
     2: 'Female',
     0: 'Unknown'
