@@ -13,6 +13,7 @@ import lang from '../strings';
 import MiscHelper from '../lib/MiscHelper';
 import sharp from 'sharp';
 import * as TT from 'telegraf/typings/telegram-types';
+import HTMLTemplates from '../lib/HTMLTemplates';
 
 interface IHandleTelegramMessage extends BotOptions {
   bot: TT.User;
@@ -70,7 +71,12 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
         MiscHelper.deleteFile(distFile);
         return;
       } catch (error) {
-        await ctx.reply(tries > 0 ? lang.message.trySendingFile : lang.message.sendingFileFailed, { reply_to_message_id: msg.message_id });
+        const alert = HTMLTemplates.message({
+          nickname: `[Bot Alert]`,
+          message: tries > 0 ? lang.message.trySendingFile : lang.message.sendingFileFailed
+        });
+
+        await ctx.replyWithHTML(alert, { reply_to_message_id: msg.message_id });
         Logger.error(error.message);
       }
     } while (tries > 0);

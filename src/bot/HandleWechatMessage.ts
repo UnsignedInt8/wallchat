@@ -15,6 +15,7 @@ const html = new AllHtmlEntities();
 const groupNotifications = [
   '分享的二维码加入群聊',
   '加入了群聊',
+  `" 拍了拍 "`,
   'with anyone else in this group chat',
   'joined the group chat via',
   'to the group chat',
@@ -50,7 +51,11 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
       let isXml = text.startsWith(`&lt;?xml version="1.0"?&gt;`);
 
       if (isXml) {
-        if (await handleFriendApplyingXml(text, ctx)) break;
+        if (nickname.toLowerCase() === 'friend recommendation message') {
+          await handleFriendApplyingXml(text, ctx);
+          break;
+        }
+
         if (await handleContactXml(text, nickname, ctx)) break;
       } else if (room && groupNotifications.some(n => text.includes(n))) {
         // junk info
@@ -93,7 +98,7 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
         if (isGif(buffer)) {
           const sticker = await ctx.replyWithSticker({ source: buffer });
           user.msgs.set(sticker.message_id, { contact: room || from, wxmsg: msg });
-          
+
           sent = await ctx.reply(`from: ${nickname}`, { reply_to_message_id: sticker.message_id });
           break;
         }
