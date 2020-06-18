@@ -10,14 +10,16 @@ export default async (ctx: TelegrafContext) => {
     return;
   }
 
-  let name: string;
-  try {
-    name = (user.currentContact as Contact).name();
-  } catch (error) {
-    name = await (user.currentContact as Room).topic();
+  let name = '';
+  if (user.currentContact instanceof Contact) {
+    const alias = await user.currentContact.alias();
+    name = user.currentContact.name();
+    name = alias ? `${name} (${alias})` : name;
+  } else if (user.currentContact instanceof Room) {
+    name = await user.currentContact.topic();
   }
 
   let info = user.contactLocked ? ` [${lang.message.contactLocked('').trim()}]` : '';
 
-  ctx.reply(lang.message.current(name) + info);
+  await ctx.reply(lang.message.current(name) + info);
 };

@@ -11,7 +11,9 @@ export default async (ctx: TelegrafContext) => {
 
   let name = '';
   if (user.currentContact instanceof Contact) {
+    const alias = await user.currentContact.alias();
     name = user.currentContact.name();
+    name = alias ? `${name} (${alias})` : name;
   } else if (user.currentContact instanceof Room) {
     name = await user.currentContact.topic();
   }
