@@ -66,9 +66,8 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
         await contact.say(FileBox.fromFile(distFile));
         if (msg.caption && msg.forward_from?.id !== bot.id) await contact.say(msg.caption);
 
-        const info = HTMLTemplates.message({ nickname: '[Bot Info]', message: lang.message.sendingSucceed });
-        await ctx.replyWithHTML(info, { reply_to_message_id: msg.message_id });
-        
+        await ctx.reply(lang.message.sendingSucceed, { reply_to_message_id: msg.message_id });
+
         if (!user.contactLocked) user.currentContact = contact;
 
         MiscHelper.deleteFile(distFile);

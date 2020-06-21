@@ -41,8 +41,10 @@ export default async (ctx: TelegrafContext, next: Function) => {
   }
 
   let info = user.contactLocked ? ` [${lang.message.contactLocked('').trim()}]` : '';
-  await ctx.reply(lang.message.contactFound(`${foundName}`) + info).catch();
+  let sent = await ctx.reply(lang.message.contactFound(`${foundName}`) + info).catch();
   user.currentContact = found;
+
+  user.msgs.set(sent.message_id, { contact: found, wxmsg: undefined });
 
   if (next) next();
 };
