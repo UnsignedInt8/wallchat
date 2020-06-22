@@ -53,8 +53,11 @@ export default class Bot {
   protected lastRoomInvitation: RoomInvitation = null;
   private recoverWechats = new Map<number, Wechaty>(); // tg chatid => wechaty
 
+  private readonly app: string;
+
   constructor(options: BotOptions) {
     this.options = options;
+    this.app = `leavexchat${options.padplusToken ? '_padplus' : ''}.`;
 
     const { token, socks5Proxy, keepMsgs } = options;
     this.keepMsgs = keepMsgs === undefined ? 200 : Math.max(keepMsgs, 100) || 200;
@@ -146,7 +149,7 @@ export default class Bot {
   }
 
   async recoverSessions() {
-    const files = await MiscHelper.listTmpFile(`leavexchat.`);
+    const files = await MiscHelper.listTmpFile(this.app);
     const ids = files
       .map(f => f.split('.')[1])
       .filter(s => s)
@@ -189,7 +192,7 @@ export default class Bot {
           await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
           await wechat.stop();
 
-          await MiscHelper.deleteTmpFile(`leavexchat.${chatid}`);
+          await MiscHelper.deleteTmpFile(`${this.app}${chatid}`);
         };
 
         wechat.once('scan', async _ => await deleteWechaty());
@@ -271,7 +274,7 @@ export default class Bot {
       wechat?.removeAllListeners();
       await wechat?.stop().catch();
       await removeQRMessage();
-      if (clean) await MiscHelper.deleteTmpFile(`leavexchat.${id}`);
+      if (clean) await MiscHelper.deleteTmpFile(`${this.app}${id}`);
     };
 
     const handleQrcode = async (qrcode: string) => {
@@ -302,7 +305,7 @@ export default class Bot {
       await removeQRMessage();
 
       // create chat tmp id
-      await MiscHelper.createTmpFile(`leavexchat.${id}`);
+      await MiscHelper.createTmpFile(`${this.app}${id}`);
     });
 
     wechat?.on('friendship', async req => {
