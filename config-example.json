@@ -1,5 +1,6 @@
 {
-  "token": "", // telegram bot token
+  "token": "", // required, telegram bot token
+  "padplusToken": "", // optional, wechaty padplus token
   "socks5Proxy": {
     "host": "127.0.0.1",
     "port": 1080

@@ -85,6 +85,7 @@
     "touch": "^3.1.0",
     "wechaty": "^0.40.10",
     "wechaty-puppet": "^0.26.2",
+    "wechaty-puppet-padplus": "^0.6.3",
     "wechaty-puppet-puppeteer": "^0.21.2"
   },
   "devDependencies": {

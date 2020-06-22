@@ -11,10 +11,11 @@ import MiscHelper from './lib/MiscHelper';
 import { TelegrafContext } from 'telegraf/typings/context';
 import TelegramContext from 'telegraf/context';
 import { handleFind, handleLock, handleUnlock, handleCurrent, handleTelegramMessage, handleWechatMessage } from './bot/index';
+import { PuppetPadplus } from 'wechaty-puppet-padplus';
 
 export interface BotOptions {
   token: string;
-  wechatyToken?: string;
+  padplusToken?: string;
   socks5Proxy?: {
     host: string;
     port: number;
@@ -215,7 +216,12 @@ export default class Bot {
   private createClient(chatid: number) {
     if (this.clients.has(chatid)) return this.clients.get(chatid);
 
-    let wechat = this.recoverWechats.get(chatid) || new Wechaty({ name: `telegram_${chatid})}` });
+    let wechat =
+      this.recoverWechats.get(chatid) ||
+      new Wechaty({
+        name: `telegram_${chatid})}`,
+        puppet: this.options.padplusToken ? new PuppetPadplus({ token: this.options.padplusToken }) : undefined
+      });
     let client: Client = {
       wechat,
       msgs: new Map(),
