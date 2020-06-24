@@ -12,6 +12,8 @@ import { TelegrafContext } from 'telegraf/typings/context';
 import TelegramContext from 'telegraf/context';
 import { handleFind, handleLock, handleUnlock, handleCurrent, handleTelegramMessage, handleWechatMessage } from './bot/index';
 import { PuppetPadplus } from 'wechaty-puppet-padplus';
+import crypto from 'crypto';
+import { option } from 'commander';
 
 export interface BotOptions {
   token: string;
@@ -27,6 +29,7 @@ export interface BotOptions {
     port: number;
   };
   keepMsgs?: number;
+  silent?: boolean;
 }
 
 export interface Client {
@@ -57,7 +60,15 @@ export default class Bot {
 
   constructor(options: BotOptions) {
     this.options = options;
-    this.app = `leavexchat${options.padplusToken ? '_padplus' : ''}.`;
+
+    const botid = crypto
+      .createHash('sha256')
+      .update(options.token || options.padplusToken)
+      .digest()
+      .toString('hex')
+      .substring(0, 4);
+
+    this.app = `leavexchat_${botid}.`;
 
     const { token, socks5Proxy, keepMsgs } = options;
     this.keepMsgs = keepMsgs === undefined ? 200 : Math.max(keepMsgs, 100) || 200;
@@ -128,6 +139,8 @@ export default class Bot {
   handleFatalError = async (err: Error | number | NodeJS.Signals) => Logger.error(`Bot Alert: ${err}`);
 
   sendSystemMessage = async (msg: string) => {
+    if (this.options.silent) return;
+    
     const alert = HTMLTemplates.message({
       nickname: `[Bot Alert]`,
       message: msg
