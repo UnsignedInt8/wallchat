@@ -1,6 +1,8 @@
 start - Start bot
 login - Login Wechat
-logout - Logout Wechat
+current - Show current contact
+lock - Lock current contact
+unlock - Unlock current contact
 groupon - Receive group messages
 groupoff - Stop receiving group messages
 officialon - Receive official account messages
@@ -8,13 +10,11 @@ officialoff - Stop receiving official account messages
 selfon - Receive self messages
 selfoff - Stop receiving self messages
 find - Find a contact and set as current contact [/find name]
-lock - Lock current contact
-unlock - Unlock current contact
 findandlock - Find and lock contact [/find name]
-current - Show current contact
 agree - Agree with current friendship request [/agree name]
 disagree - Disagree with current friendship request [/disagree name]
 acceptroom - Accept chatroom invitation
+logout - Logout Wechat
 help - Show this help page
 
 
@@ -22,21 +22,21 @@ help - Show this help page
 
 start - 启动会话
 login - 请求登录
-logout - 登出WeChat
+current - 显示当前联系人
+lock - 锁定当前联系人
+unlock - 取消锁定当前联系人
+selfon - 开启接收自己的消息
+selfoff - 关闭接收自己的消息
 groupon - 开启接收群消息
 groupoff - 关闭接收群消息
 officialon - 开启接收公众号消息
 officialoff - 关闭接收公众号消息
-selfon - 开启接收自己的消息
-selfoff - 关闭接收自己的消息
 find - 查找并设置为当前联系人（支持模糊查找） [/find 昵称|备注]
-lock - 锁定当前联系人
-unlock - 取消锁定当前联系人
 findandlock - 查找并锁定为当前联系人（支持模糊查找） [/find 昵称|备注]
-current - 显示当前联系人
 agree - 同意好友请求 [/agree reqid]
 disagree - 忽略好友请求 [/disagree reqid]
 acceptroom - 接受群邀请
+logout - 登出WeChat
 help - 显示帮助
 
 

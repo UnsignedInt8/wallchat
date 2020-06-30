@@ -21,7 +21,8 @@ const groupNotifications = [
   'to the group chat',
   'invited you to a group chat with flow',
   '邀请你加入了群聊，群聊参与人还有',
-  '与群里其他人都不是微信朋友关系，请注意隐私安全'
+  '与群里其他人都不是微信朋友关系，请注意隐私安全',
+  '你通过扫描二维码加入群聊，群聊参与人还有：'
 ];
 
 export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
