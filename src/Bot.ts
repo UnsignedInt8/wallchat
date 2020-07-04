@@ -13,7 +13,8 @@ import TelegramContext from 'telegraf/context';
 import { handleFind, handleLock, handleUnlock, handleCurrent, handleTelegramMessage, handleWechatMessage } from './bot/index';
 import { PuppetPadplus } from 'wechaty-puppet-padplus';
 import crypto from 'crypto';
-import { option } from 'commander';
+import { readFile } from './bot/UpdateTmpFile';
+import { findContact } from './bot/HandleFindX';
 
 export interface BotOptions {
   token: string;
@@ -56,7 +57,7 @@ export default class Bot {
   protected lastRoomInvitation: RoomInvitation = null;
   private recoverWechats = new Map<number, Wechaty>(); // tg chatid => wechaty
 
-  private readonly app: string;
+  readonly id: string;
 
   constructor(options: BotOptions) {
     this.options = options;
@@ -68,7 +69,7 @@ export default class Bot {
       .toString('hex')
       .substring(0, 4);
 
-    this.app = `leavexchat_${botid}.`;
+    this.id = `leavexchat_${botid}.`;
 
     const { token, socks5Proxy, keepMsgs } = options;
     this.keepMsgs = keepMsgs === undefined ? 200 : Math.max(keepMsgs, 100) || 200;
@@ -140,7 +141,7 @@ export default class Bot {
 
   sendSystemMessage = async (msg: string) => {
     if (this.options.silent) return;
-    
+
     const alert = HTMLTemplates.message({
       nickname: `[Bot Alert]`,
       message: msg
@@ -162,7 +163,7 @@ export default class Bot {
   }
 
   async recoverSessions() {
-    const files = await MiscHelper.listTmpFile(this.app);
+    const files = await MiscHelper.listTmpFile(this.id);
     const ids = files
       .map(f => f.split('.')[1])
       .filter(s => s)
@@ -178,15 +179,23 @@ export default class Bot {
         wechat.once('login', async user => {
           client.wechatId = user.id;
 
-          const alert = HTMLTemplates.message({
-            nickname: `[Bot Info]`,
-            message: lang.login.sessionOK
-          });
-
-          await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
-
           const ctx = new TelegramContext({ message: { chat: { id: chatid } } } as TT.Update, this.bot.telegram);
           await this.handleLogin(ctx);
+
+          const alert = `<code>${lang.login.sessionOK}</code>`;
+          await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
+
+          const lastDump = await readFile(`${this.id}${chatid}`);
+          if (lastDump.recentContact && lastDump.recentContact.name) {
+            const { found, foundName } = await findContact(lastDump.recentContact.name, wechat);
+            const client = ctx['user'] as Client;
+            client.currentContact = found;
+            client.contactLocked = lastDump.recentContact.locked;
+
+            if (found) {
+              await ctx.reply(client.contactLocked ? lang.message.contactLocked(foundName) : lang.message.contactLocked(foundName));
+            }
+          }
 
           this.recoverWechats.delete(chatid);
         });
@@ -205,7 +214,7 @@ export default class Bot {
           await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
           await wechat.stop();
 
-          await MiscHelper.deleteTmpFile(`${this.app}${chatid}`);
+          await MiscHelper.deleteTmpFile(`${this.id}${chatid}`);
         };
 
         wechat.once('scan', async _ => await deleteWechaty());
@@ -287,7 +296,7 @@ export default class Bot {
       wechat?.removeAllListeners();
       await wechat?.stop().catch();
       await removeQRMessage();
-      if (clean) await MiscHelper.deleteTmpFile(`${this.app}${id}`);
+      if (clean) await MiscHelper.deleteTmpFile(`${this.id}${id}`);
     };
 
     const handleQrcode = async (qrcode: string) => {
@@ -318,7 +327,7 @@ export default class Bot {
       await removeQRMessage();
 
       // create chat tmp id
-      await MiscHelper.createTmpFile(`${this.app}${id}`);
+      await MiscHelper.createTmpFile(`${this.id}${id}`);
     });
 
     wechat?.on('friendship', async req => {
@@ -434,8 +443,8 @@ export default class Bot {
     await ctx.reply('OK');
   };
 
-  protected handleFind = handleFind;
-  protected handleLock = handleLock;
+  protected handleFind = (ctx: TelegrafContext, next: Function) => handleFind(this, ctx, next);
+  protected handleLock = (ctx: TelegrafContext) => handleLock(this, ctx);
   protected handleUnlock = handleUnlock;
   protected handleCurrent = handleCurrent;
   protected handleTelegramMessage = (ctx: TelegrafContext) => handleTelegramMessage(ctx, { ...this.options, bot: this.botSelf });

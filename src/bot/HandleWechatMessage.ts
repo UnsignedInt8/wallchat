@@ -10,6 +10,7 @@ import { AllHtmlEntities } from 'html-entities';
 import lang from '../strings';
 import Bot from '../Bot';
 import isGif from 'is-gif';
+import { writeFile } from './UpdateTmpFile';
 
 const html = new AllHtmlEntities();
 const groupNotifications = [
@@ -124,7 +125,14 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
   }
 
   user.msgs.set(sent.message_id, { contact: room || from, wxmsg: msg });
-  if (!user.contactLocked) user.currentContact = room || from;
+
+  if (user.currentContact.id !== (room || from).id) {
+    await writeFile(`${self.id}${id}`, { recentContact: { name: room ? await room.topic() : from.name() } });
+  }
+
+  if (!user.contactLocked) {
+    user.currentContact = room || from;
+  }
 
   // The bot just knows recent messages
   if (sent.message_id < self.keepMsgs) return;

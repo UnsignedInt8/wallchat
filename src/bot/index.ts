@@ -1,4 +1,4 @@
-import handleFind from './HandleFind';
+import handleFind from './HandleFindX';
 import handleLock from './HandleLock';
 import handleUnlock from './HandleUnlock';
 import handleCurrent from './HandleCurrent';
