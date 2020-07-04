@@ -181,7 +181,7 @@ export default class Bot {
 
           const ctx = new TelegramContext({ message: { chat: { id: chatid } } } as TT.Update, this.bot.telegram);
           ctx['user'] = client;
-          
+
           await this.handleLogin(ctx);
 
           const alert = `<code>${lang.login.sessionOK}</code>`;
@@ -194,7 +194,7 @@ export default class Bot {
             client.contactLocked = lastDump.recentContact.locked;
 
             if (found) {
-              await ctx.reply(client.contactLocked ? lang.message.contactLocked(foundName) : lang.message.contactLocked(foundName));
+              await ctx.reply(client.contactLocked ? lang.message.contactLocked(foundName) : lang.message.contactFound(foundName));
             }
           }
 
