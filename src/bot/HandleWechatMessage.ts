@@ -126,7 +126,7 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
 
   user.msgs.set(sent.message_id, { contact: room || from, wxmsg: msg });
 
-  if (user.currentContact.id !== (room || from).id) {
+  if (user.currentContact?.id !== (room || from).id) {
     await writeFile(`${self.id}${id}`, { recentContact: { name: room ? await room.topic() : from.name() } });
   }
 
