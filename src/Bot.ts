@@ -180,6 +180,8 @@ export default class Bot {
           client.wechatId = user.id;
 
           const ctx = new TelegramContext({ message: { chat: { id: chatid } } } as TT.Update, this.bot.telegram);
+          ctx['user'] = client;
+          
           await this.handleLogin(ctx);
 
           const alert = `<code>${lang.login.sessionOK}</code>`;
@@ -188,7 +190,6 @@ export default class Bot {
           const lastDump = await readFile(`${this.id}${chatid}`);
           if (lastDump.recentContact && lastDump.recentContact.name) {
             const { found, foundName } = await findContact(lastDump.recentContact.name, wechat);
-            const client = ctx['user'] as Client;
             client.currentContact = found;
             client.contactLocked = lastDump.recentContact.locked;
 
