@@ -69,7 +69,7 @@ export async function findContact(query: string, wechat: Wechaty) {
     foundName = alias ? `${found?.name()} (${alias})` : found?.name();
   } catch (error) {
     Logger.error(error.message);
-    return undefined;
+    return { found, foundName };
   }
 
   if (!found) {
@@ -78,7 +78,7 @@ export async function findContact(query: string, wechat: Wechaty) {
   }
 
   if (!found) {
-    return undefined;
+    return { found, foundName };
   }
 
   return { found, foundName };
