@@ -10,7 +10,7 @@ import Logger from './lib/Logger';
 import MiscHelper from './lib/MiscHelper';
 import { TelegrafContext } from 'telegraf/typings/context';
 import TelegramContext from 'telegraf/context';
-import { handleFind, handleLock, handleUnlock, handleCurrent, handleTelegramMessage, handleWechatMessage } from './bot/index';
+import { handleFind, handleLock, handleUnlock, handleCurrent, handleTelegramMessage, handleWechatMessage, handleForwardTo } from './bot/index';
 import { PuppetPadplus } from 'wechaty-puppet-padplus';
 import crypto from 'crypto';
 import { readFile } from './bot/UpdateTmpFile';
@@ -128,7 +128,7 @@ export default class Bot {
     this.bot.command('agree', checkUser, this.handleAgreeFriendship);
     this.bot.command('disagree', checkUser, this.handleDisagreeFriendship);
     this.bot.command('acceptroom', checkUser);
-    // this.bot.command('forwardto', checkUser, this.handleForwardTo);
+    this.bot.command('forwardto', checkUser, this.handleForward);
     this.bot.command('logout', checkUser, this.handleLogout);
     this.bot.help(ctx => ctx.reply(lang.help));
 
@@ -446,6 +446,7 @@ export default class Bot {
   protected handleLock = (ctx: TelegrafContext) => handleLock(this, ctx);
   protected handleUnlock = handleUnlock;
   protected handleCurrent = handleCurrent;
+  protected handleForward = handleForwardTo;
   protected handleTelegramMessage = (ctx: TelegrafContext) => handleTelegramMessage(ctx, { ...this.options, bot: this.botSelf });
   protected handleWechatMessage = (msg: Message, ctx: TelegrafContext) => handleWechatMessage(this, msg, ctx);
 }
