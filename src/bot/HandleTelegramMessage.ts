@@ -6,7 +6,7 @@ import tempfile from 'tempfile';
 import Logger from '../lib/Logger';
 import { Client } from '../Bot';
 import { TelegrafContext } from 'telegraf/typings/context';
-import { FileBox } from 'wechaty';
+import { FileBox, Contact, Room } from 'wechaty';
 import { BotOptions } from '../Bot';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import lang from '../strings';
@@ -33,7 +33,7 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
   let file = msg.audio || msg.video || (msg.photo && msg.photo[0]) || msg.voice || msg.document || msg.sticker;
   if (file && file.file_size <= 50 * 1024 * 1024) {
     let tries = 3;
-    
+
     do {
       tries--;
 
@@ -66,7 +66,8 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
         await contact.say(FileBox.fromFile(distFile));
         if (msg.caption && msg.forward_from?.id !== bot.id) await contact.say(msg.caption);
 
-        await ctx.reply(lang.message.sendingSucceed, { reply_to_message_id: msg.message_id });
+        const name = contact instanceof Contact ? contact.name() : contact instanceof Room ? await contact.topic() : '';
+        await ctx.reply(lang.message.sendingSucceed(name), { reply_to_message_id: msg.message_id });
 
         if (!user.contactLocked) user.currentContact = contact;
 
