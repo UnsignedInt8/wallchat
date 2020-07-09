@@ -13,7 +13,7 @@ import isGif from 'is-gif';
 import { writeFile } from './UpdateTmpFile';
 
 const html = new AllHtmlEntities();
-const groupNotifications = [
+const banNotifications = [
   '分享的二维码加入群聊',
   '加入了群聊',
   `" 拍了拍 "`,
@@ -59,7 +59,7 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
         }
 
         if (await handleContactXml(text, nickname, ctx)) break;
-      } else if (room && groupNotifications.some(n => text.includes(n))) {
+      } else if (room && banNotifications.some(n => text.includes(n))) {
         // junk info
         break;
       } else {
