@@ -21,25 +21,6 @@ export default async (self: Bot, ctx: TelegrafContext, next: Function) => {
   let user = ctx['user'] as Client;
   const { found, foundName } = await findContact(name, user.wechat);
 
-  // const regexp = new RegExp(name, 'ig');
-
-  // let found: Contact | Room | undefined;
-  // let foundName = '';
-  // try {
-  //   found = (await user.wechat?.Contact.find({ name: regexp })) || (await user.wechat?.Contact.find({ alias: regexp }));
-
-  //   const alias = await found?.alias();
-  //   foundName = alias ? `${found?.name()} (${alias})` : found?.name();
-  // } catch (error) {
-  //   Logger.error(error.message);
-  //   return;
-  // }
-
-  // if (!found) {
-  //   found = await user.wechat?.Room.find({ topic: regexp });
-  //   foundName = await found?.topic();
-  // }
-
   if (!found) {
     ctx.reply(lang.message.contactNotFound);
     return;
@@ -50,8 +31,9 @@ export default async (self: Bot, ctx: TelegrafContext, next: Function) => {
   user.currentContact = found;
 
   user.msgs.set(sent.message_id, { contact: found, wxmsg: undefined });
+  const wname = found instanceof Contact ? found.name() : await (found as Room)?.topic();
   await writeFile(`${self.id}${ctx.chat.id}`, {
-    recentContact: { name: (found as Contact)?.name() || (await (found as Room)?.topic()), locked: user.contactLocked }
+    recentContact: { name: wname, locked: user.contactLocked }
   });
 
   if (next) next();
