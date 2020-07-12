@@ -24,7 +24,7 @@ export default {
     error: 'WeChat 遇到错误，请重试',
     inviteRoom: (inviter: string, room: string) => `${inviter} 邀请你加入: ${room}`,
     trySendingFile: `文件发送失败，Bot 尝试重发......`,
-    sendingSucceed: (receipt?: string) => `发送成功 🥳 ${receipt ? `[${receipt}]` : ''}`,
+    sendingSucceed: (receipt?: string) => `发送成功 🥳 ${receipt ? `[To: ${receipt}]` : ''}`,
     sendingFileFailed: '发送文件失败，墙太高了 🧱',
     msgNotSupported: '不支持发送该类型消息'
   },
