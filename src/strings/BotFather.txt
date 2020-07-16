@@ -3,6 +3,7 @@ login - Login Wechat
 current - Show current contact
 lock - Lock current contact
 unlock - Unlock current contact
+uptime - Get bot uptime
 groupon - Receive group messages
 groupoff - Stop receiving group messages
 officialon - Receive official account messages
@@ -27,6 +28,7 @@ lock - 锁定当前联系人
 unlock - 取消锁定当前联系人
 selfon - 开启接收自己的消息
 selfoff - 关闭接收自己的消息
+uptime - 查看 Bot 运行时长
 groupon - 开启接收群消息
 groupoff - 关闭接收群消息
 officialon - 开启接收公众号消息

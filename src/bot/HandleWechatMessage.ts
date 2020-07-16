@@ -20,6 +20,7 @@ const banNotifications = [
   'with anyone else in this group chat',
   'joined the group chat via',
   'to the group chat',
+  ' tickled ',
   'invited you to a group chat with',
   '邀请你加入了群聊，群聊参与人还有',
   '与群里其他人都不是微信朋友关系，请注意隐私安全',

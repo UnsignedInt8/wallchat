@@ -124,7 +124,9 @@ export default class Bot {
     const turnSelfOff = (ctx: TelegrafContext, n: Function) => turnSelf(ctx, n, false);
     this.bot.command('selfoff', checkUser, turnSelfOff, replyOk);
 
-    const handleUpTime = (ctx: TelegrafContext) => ctx.reply(`Uptime: ${this.uptime.toISOString()} [${dayjs().from(this.uptime, true)}]`);
+    const handleUpTime = (ctx: TelegrafContext) => {
+      ctx.replyWithHTML(`<code>${this.uptime.toISOString()} [${dayjs().from(this.uptime, true)}]</code>`);
+    };
     this.bot.command('uptime', handleUpTime);
 
     this.bot.command('find', checkUser, this.handleFind);
@@ -451,7 +453,7 @@ export default class Bot {
 
   protected handleFind = (ctx: TelegrafContext, next: Function) => handleFind(this, ctx, next);
   protected handleLock = (ctx: TelegrafContext) => handleLock(this, ctx);
-  protected handleUnlock = handleUnlock;
+  protected handleUnlock = (ctx: TelegrafContext) => handleUnlock(this, ctx);
   protected handleCurrent = handleCurrent;
   protected handleForward = handleForwardTo;
   protected handleTelegramMessage = (ctx: TelegrafContext) => handleTelegramMessage(ctx, { ...this.options, bot: this.botSelf });
