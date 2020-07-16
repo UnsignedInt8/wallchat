@@ -14,6 +14,10 @@ import { handleFind, handleLock, handleUnlock, handleCurrent, handleTelegramMess
 import crypto from 'crypto';
 import { readFile } from './bot/UpdateTmpFile';
 import { findContact } from './bot/HandleFindX';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 export interface BotOptions {
   token: string;
@@ -57,6 +61,7 @@ export default class Bot {
   private recoverWechats = new Map<number, Wechaty>(); // tg chatid => wechaty
 
   readonly id: string;
+  readonly uptime = dayjs();
 
   constructor(options: BotOptions) {
     this.options = options;
@@ -118,6 +123,9 @@ export default class Bot {
 
     const turnSelfOff = (ctx: TelegrafContext, n: Function) => turnSelf(ctx, n, false);
     this.bot.command('selfoff', checkUser, turnSelfOff, replyOk);
+
+    const handleUpTime = (ctx: TelegrafContext) => ctx.reply(`Uptime: ${this.uptime.toISOString()} [${dayjs().from(this.uptime, true)}]`);
+    this.bot.command('uptime', handleUpTime);
 
     this.bot.command('find', checkUser, this.handleFind);
     this.bot.command('lock', checkUser, this.handleLock);

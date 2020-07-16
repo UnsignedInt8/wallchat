@@ -53,7 +53,7 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
       let isXml = text.startsWith(`&lt;?xml version="1.0"?&gt;`);
 
       if (isXml) {
-        if (nickname.toLowerCase() === 'friend recommendation message') {
+        if (nickname.includes('Friend recommendation message')) {
           await handleFriendApplyingXml(text, ctx);
           break;
         }
