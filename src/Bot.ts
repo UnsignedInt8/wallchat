@@ -125,7 +125,7 @@ export default class Bot {
     this.bot.command('selfoff', checkUser, turnSelfOff, replyOk);
 
     const handleUpTime = (ctx: TelegrafContext) => {
-      ctx.replyWithHTML(`<code>${this.uptime.toISOString()} [${dayjs().from(this.uptime, true)}]</code>`);
+      ctx.replyWithHTML(`<code>${this.uptime.toISOString()}  [${dayjs().from(this.uptime, true)}]</code>`);
     };
     this.bot.command('uptime', handleUpTime);
 
