@@ -52,6 +52,7 @@ export default class Bot {
   clients: Map<number, Client> = new Map(); // chat id => client
   keepMsgs: number;
   options: BotOptions;
+  firstMsgId = undefined;
 
   protected bot: Telegraph<TelegrafContext>;
   protected botSelf: TT.User;
@@ -125,7 +126,7 @@ export default class Bot {
     this.bot.command('selfoff', checkUser, turnSelfOff, replyOk);
 
     const handleUpTime = (ctx: TelegrafContext) => {
-      ctx.replyWithHTML(`<code>${this.uptime.toISOString()}  [${dayjs().from(this.uptime, true)}]</code>`);
+      ctx.replyWithHTML(`<code>${this.uptime.toISOString()}  [${dayjs().from(this.uptime, true)}]</code>`, { reply_to_message_id: this.firstMsgId });
     };
     this.bot.command('uptime', handleUpTime);
 

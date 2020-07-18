@@ -125,6 +125,7 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
     return;
   }
 
+  if (!self.firstMsgId) self.firstMsgId = sent.message_id;
   user.msgs.set(sent.message_id, { contact: room || from, wxmsg: msg });
 
   if (!user.contactLocked) {
