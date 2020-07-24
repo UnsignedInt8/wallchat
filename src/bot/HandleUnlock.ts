@@ -3,6 +3,7 @@ import Bot, { Client } from '../Bot';
 import lang from '../strings';
 import { Contact, Room } from 'wechaty';
 import { writeFile } from './UpdateTmpFile';
+import MiscHelper from '../lib/MiscHelper';
 
 export default async (self: Bot, ctx: TelegrafContext) => {
   let user = ctx['user'] as Client;
@@ -10,12 +11,7 @@ export default async (self: Bot, ctx: TelegrafContext) => {
   if (!user.contactLocked) return;
   user.contactLocked = false;
 
-  let name = '';
-  if (user.currentContact instanceof Contact) {
-    name = user.currentContact.name();
-  } else if (user.currentContact instanceof Room) {
-    name = await user.currentContact.topic();
-  }
+  const name = await MiscHelper.getFriendlyName(user.currentContact);
 
   await writeFile(`${self.id}${ctx.chat.id}`, { recentContact: { name, locked: false } });
 

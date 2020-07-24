@@ -1,6 +1,7 @@
 import { TelegrafContext } from 'telegraf/typings/context';
 import { Client } from '../Bot';
 import lang from '../strings';
+import MiscHelper from '../lib/MiscHelper';
 
 export default async (ctx: TelegrafContext) => {
   const msg = ctx.message;
@@ -32,5 +33,7 @@ export default async (ctx: TelegrafContext) => {
   if (!wxmsg) return;
 
   await wxmsg.forward(target);
-  await ctx.reply(lang.message.msgForward(target.toString()));
+
+  const name = await MiscHelper.getFriendlyName(user.currentContact);
+  await ctx.reply(lang.message.msgForward(name));
 };

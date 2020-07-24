@@ -3,6 +3,7 @@ import got from 'got';
 import touch from 'touch';
 import tmpDir from 'temp-dir';
 import path from 'path';
+import { Room, Contact } from 'wechaty';
 
 export default class MiscHelper {
   static async fileExists(path: string) {
@@ -49,5 +50,15 @@ export default class MiscHelper {
   static async deleteTmpFile(filename: string) {
     const filepath = path.join(tmpDir, filename);
     await this.deleteFile(filepath);
+  }
+
+  static async getFriendlyName(contact: Contact | Room) {
+    if (contact instanceof Contact) {
+      return contact.name();
+    } else if (contact instanceof Room) {
+      return await contact.topic();
+    }
+
+    return '';
   }
 }

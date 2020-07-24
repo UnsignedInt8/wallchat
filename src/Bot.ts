@@ -138,7 +138,7 @@ export default class Bot {
     this.bot.command('agree', checkUser, this.handleAgreeFriendship);
     this.bot.command('disagree', checkUser, this.handleDisagreeFriendship);
     this.bot.command('acceptroom', checkUser);
-    this.bot.command('forwardto', checkUser, this.handleForward);
+    this.bot.command('forward', checkUser, this.handleForward);
     this.bot.command('logout', checkUser, this.handleLogout);
     this.bot.help(ctx => ctx.reply(lang.help));
 
