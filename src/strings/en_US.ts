@@ -26,7 +26,9 @@ export default {
     trySendingFile: `Sending file failed, bot is trying to resend...`,
     sendingSucceed: `This message has been sent successfully 🥳`,
     sendingFileFailed: 'Sending file failed.',
-    msgNotSupported: 'This msg type is not supported.'
+    msgNotSupported: 'This msg type is not supported.',
+    muteRoom: (room: string) => `${room} is muted🔇.`,
+    unmuteRoom: (room?: string | string[]) => `${room ? room + ' ' : 'All groups '}enabled`,
   },
   contact: {
     card: 'Contact Card',

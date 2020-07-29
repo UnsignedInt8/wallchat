@@ -25,10 +25,10 @@ login - 请求登录
 current - 显示当前联系人
 lock - 锁定当前联系人
 unlock - 取消锁定当前联系人
+forwardto - 转发微信消息给联系人 [/forward (昵称｜备注。若不指定，则转发给当前联系人)]
 selfon - 开启接收自己的消息
 selfoff - 关闭接收自己的消息
 uptime - 查看 Bot 运行时长
-forward - 转发微信消息给联系人 [/forward (昵称｜备注。若不指定，则转发给当前联系人)]
 groupon - 开启接收群消息
 groupoff - 关闭接收群消息
 officialon - 开启接收公众号消息

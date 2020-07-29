@@ -10,7 +10,17 @@ import Logger from './lib/Logger';
 import MiscHelper from './lib/MiscHelper';
 import { TelegrafContext } from 'telegraf/typings/context';
 import TelegramContext from 'telegraf/context';
-import { handleFind, handleLock, handleUnlock, handleCurrent, handleTelegramMessage, handleWechatMessage, handleForwardTo } from './bot/index';
+import {
+  handleFind,
+  handleLock,
+  handleUnlock,
+  handleCurrent,
+  handleTelegramMessage,
+  handleWechatMessage,
+  handleForwardTo,
+  handleMute,
+  handleUnmute
+} from './bot/index';
 import crypto from 'crypto';
 import { readFile } from './bot/UpdateTmpFile';
 import { findContact } from './bot/HandleFindX';
@@ -53,6 +63,7 @@ export default class Bot {
   keepMsgs: number;
   options: BotOptions;
   firstMsgId = undefined;
+  muteList: string[] = [];
 
   protected bot: Telegraph<TelegrafContext>;
   protected botSelf: TT.User;
@@ -139,6 +150,9 @@ export default class Bot {
     this.bot.command('disagree', checkUser, this.handleDisagreeFriendship);
     this.bot.command('acceptroom', checkUser);
     this.bot.command('forward', checkUser, this.handleForward);
+    this.bot.command('forwardto', checkUser, this.handleForward);
+    this.bot.command('mute', checkUser, this.handleMute);
+    this.bot.command('unmute', checkUser, this.handleUnmute);
     this.bot.command('logout', checkUser, this.handleLogout);
     this.bot.help(ctx => ctx.reply(lang.help));
 
@@ -205,6 +219,8 @@ export default class Bot {
               await ctx.reply(client.contactLocked ? lang.message.contactLocked(foundName) : lang.message.contactFound(foundName));
             }
           }
+
+          this.muteList = lastDump.muteList || [];
 
           this.recoverWechats.delete(chatid);
         });
@@ -455,6 +471,8 @@ export default class Bot {
   protected handleFind = (ctx: TelegrafContext, next: Function) => handleFind(this, ctx, next);
   protected handleLock = (ctx: TelegrafContext) => handleLock(this, ctx);
   protected handleUnlock = (ctx: TelegrafContext) => handleUnlock(this, ctx);
+  protected handleMute = (ctx: TelegrafContext) => handleMute(this, ctx);
+  protected handleUnmute = (ctx: TelegrafContext) => handleUnmute(this, ctx);
   protected handleCurrent = handleCurrent;
   protected handleForward = handleForwardTo;
   protected handleTelegramMessage = (ctx: TelegrafContext) => handleTelegramMessage(ctx, { ...this.options, bot: this.botSelf });

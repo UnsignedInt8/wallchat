@@ -24,7 +24,8 @@ const banNotifications = [
   'invited you to a group chat with',
   '邀请你加入了群聊，群聊参与人还有',
   '与群里其他人都不是微信朋友关系，请注意隐私安全',
-  '你通过扫描二维码加入群聊，群聊参与人还有：'
+  '你通过扫描二维码加入群聊，群聊参与人还有：',
+  '" 拍了拍自己'
 ];
 
 export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
@@ -33,6 +34,13 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
 
   let from = msg.from();
   let room = msg.room();
+
+  if (room) {
+    const topic = await room.topic();
+    self.muteList.includes(topic);
+    return;
+  }
+
   let type = msg.type() as any;
   let text = msg
     .text()
@@ -44,6 +52,15 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
   if (!user.receiveGroups && room) return;
 
   let alias = await from.alias();
+
+  // if (self.muteList.includes(from.name())) {
+  //   return;
+  // }
+
+  // if (alias && self.muteList.includes(alias)) {
+  //   return;
+  // }
+
   let nickname = from.name() + (alias ? ` (${alias})` : '');
   nickname = nickname + (room ? ` [${await room.topic()}]` : '');
   let sent: TT.Message;

@@ -4,13 +4,15 @@ import path from 'path';
 
 interface ITmpFile {
   recentContact?: { name: string; locked?: boolean };
+  muteList?: string[];
 }
 
-export function writeFile(filename: string, content: ITmpFile) {
+export async function writeFile(filename: string, content: ITmpFile) {
   const filepath = path.join(tmpDir, filename);
+  const origin = await readFile(filename);
 
   return new Promise(resolve => {
-    fs.writeFile(filepath, JSON.stringify(content), { encoding: 'utf8' }, () => resolve());
+    fs.writeFile(filepath, JSON.stringify({ ...origin, ...content }), { encoding: 'utf8' }, () => resolve());
   });
 }
 
