@@ -37,8 +37,7 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
 
   if (room) {
     const topic = await room.topic();
-    self.muteList.includes(topic);
-    return;
+    if (self.muteList.includes(topic)) return;
   }
 
   let type = msg.type() as any;
