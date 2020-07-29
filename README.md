@@ -82,25 +82,28 @@ $> forever build/main/index.js -c config.json
 
 ## Bot 命令
 
-| 命令         | 说明                         | 示例              |
-| ------------ | ---------------------------- | ----------------- |
-| /start       | 启动会话                     |
-| /login       | 请求登录                     |
-| /logout      | 登出 WeChat                  |
-| /groupon     | 开启接收群消息               |
-| /groupoff    | 关闭接收群消息               |
-| /officialon  | 开启接收公众号消息           |
-| /officialoff | 关闭接收公众号消息           |
-| /selfon      | 开启接收自己的消息           |
-| /selfoff     | 关闭接收自己的消息           |
-| /find        | 查找联系人并设置为当前联系人 | /find ABC         |
-| /lock        | 锁定当前联系人               |
-| /unlock      | 取消锁定当前联系人           |
-| /findandlock | 查找并锁定为当前联系人       | /findandlock ABC  |
-| /current     | 显示当前联系人               |
-| /agree       | 同意好友请求                 | /agree [reqid]    |
-| /disagree    | 忽略好友请求                 | /disagree [reqid] |
-| /help        | 显示帮助                     |
+| 命令         | 说明                         | 示例                                   |
+| ------------ | ---------------------------- | -------------------------------------- |
+| /start       | 启动会话                     |                                        |
+| /login       | 请求登录                     |                                        |
+| /logout      | 登出 WeChat                  |                                        |
+| /groupon     | 开启接收群消息               |                                        |
+| /groupoff    | 关闭接收群消息               |                                        |
+| /officialon  | 开启接收公众号消息           |                                        |
+| /officialoff | 关闭接收公众号消息           |                                        |
+| /selfon      | 开启接收自己的消息           |                                        |
+| /selfoff     | 关闭接收自己的消息           |                                        |
+| /find        | 查找联系人并设置为当前联系人 | /find ABC                              |
+| /lock        | 锁定当前联系人               |                                        |
+| /unlock      | 取消锁定当前联系人           |                                        |
+| /findandlock | 查找并锁定为当前联系人       | /findandlock ABC                       |
+| /current     | 显示当前联系人               |                                        |
+| /agree       | 同意好友请求                 | /agree [reqid]                         |
+| /disagree    | 忽略好友请求                 | /disagree [reqid]                      |
+| /forwardto   | 转发消息给联系人             | /forwardto [联系人]                    |
+| /mute        | 静音指定群                   | 先引用一条群消息, 再 /mute             |
+| /unmute      | 启用指定群消息               | /unmute 群名[可不填，则启用全部群消息] |
+| /help        | 显示帮助                     |                                        |
 
 除了 `/find` 和 `/findandlock` 必须带有要查找的联系人名字，其它命令均可无参数
 
