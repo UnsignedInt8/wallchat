@@ -1,5 +1,6 @@
 import Telegraph from 'telegraf';
 import { SocksProxyAgent } from 'socks-proxy-agent';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { Wechaty, Contact, Room, Friendship, RoomInvitation, Message } from 'wechaty';
 import qr from 'qr-image';
 import lang from './strings';
@@ -87,13 +88,14 @@ export default class Bot {
 
     this.id = `leavexchat_${botid}.`;
 
-    const { token, socks5Proxy, keepMsgs } = options;
+    const { token, socks5Proxy, keepMsgs, httpProxy } = options;
     this.keepMsgs = keepMsgs === undefined ? 200 : Math.max(keepMsgs, 100) || 200;
 
-    const agent = socks5Proxy ? (new SocksProxyAgent(`socks5://${socks5Proxy.host}:${socks5Proxy.port}`) as any) : undefined;
+    const socks5agent: any = socks5Proxy ? new SocksProxyAgent(`socks5://${socks5Proxy.host}:${socks5Proxy.port}`) : undefined;
+    const agent: any = httpProxy ? new HttpsProxyAgent(`http://${httpProxy.host}:${httpProxy.port}`) : undefined;
 
     this.bot = new Telegraph(token, {
-      telegram: { agent }
+      telegram: { agent: agent || socks5agent }
     });
 
     const checkUser = (ctx: TelegrafContext, n: Function) => this.checkUser(ctx, n);
