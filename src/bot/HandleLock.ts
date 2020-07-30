@@ -4,7 +4,7 @@ import lang from '../strings';
 import { Contact, Room } from 'wechaty';
 import { writeFile } from './UpdateTmpFile';
 
-export default async (self: Bot, ctx: TelegrafContext) => {
+export default async (ctx: TelegrafContext) => {
   let user = ctx['user'] as Client;
   if (!user.currentContact) return;
   if (user.contactLocked) return;
@@ -20,7 +20,7 @@ export default async (self: Bot, ctx: TelegrafContext) => {
     save = name = await user.currentContact.topic();
   }
 
-  await writeFile(`${self.id}${ctx.chat.id}`, { recentContact: { name: save, locked: true } });
+  await writeFile(`${user.botId}${ctx.chat.id}`, { recentContact: { name: save, locked: true } });
 
   await ctx.reply(lang.message.contactLocked(name));
 };
