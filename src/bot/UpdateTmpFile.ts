@@ -7,6 +7,11 @@ interface ITmpFile {
   muteList?: string[];
 }
 
+/**
+ * 
+ * @param filename botId.chatId
+ * @param content 
+ */
 export async function writeFile(filename: string, content: ITmpFile) {
   const filepath = path.join(tmpDir, filename);
   const origin = await readFile(filename);

@@ -37,7 +37,7 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
 
   if (room) {
     const topic = await room.topic();
-    if (self.muteList.includes(topic)) return;
+    if (user.muteList.includes(topic)) return;
   }
 
   let type = msg.type() as any;
@@ -141,7 +141,7 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
     return;
   }
 
-  if (!self.firstMsgId) self.firstMsgId = sent.message_id;
+  if (!user.firstMsgId) user.firstMsgId = sent.message_id;
   user.msgs.set(sent.message_id, { contact: room || from, wxmsg: msg });
 
   if (!user.contactLocked) {

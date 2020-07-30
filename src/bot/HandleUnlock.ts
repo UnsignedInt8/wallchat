@@ -1,11 +1,10 @@
 import { TelegrafContext } from 'telegraf/typings/context';
-import Bot, { Client } from '../Bot';
+import { Client } from '../Bot';
 import lang from '../strings';
-import { Contact, Room } from 'wechaty';
 import { writeFile } from './UpdateTmpFile';
 import MiscHelper from '../lib/MiscHelper';
 
-export default async (self: Bot, ctx: TelegrafContext) => {
+export default async (ctx: TelegrafContext) => {
   let user = ctx['user'] as Client;
   if (!user.currentContact) return;
   if (!user.contactLocked) return;
@@ -13,7 +12,7 @@ export default async (self: Bot, ctx: TelegrafContext) => {
 
   const name = await MiscHelper.getFriendlyName(user.currentContact);
 
-  await writeFile(`${self.id}${ctx.chat.id}`, { recentContact: { name, locked: false } });
+  await writeFile(`${user.botId}${ctx.chat.id}`, { recentContact: { name, locked: false } });
 
   ctx.reply(lang.message.contactUnlocked(name));
 };

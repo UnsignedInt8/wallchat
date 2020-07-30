@@ -3,7 +3,7 @@ import Bot, { Client } from '../Bot';
 import lang from '../strings';
 import { writeFile } from './UpdateTmpFile';
 
-export default async (self: Bot, ctx: TelegrafContext) => {
+export default async (ctx: TelegrafContext) => {
   const msg = ctx.message;
   if (!msg) return;
   if (!msg.reply_to_message) {
@@ -19,12 +19,12 @@ export default async (self: Bot, ctx: TelegrafContext) => {
 
   const room = wxmsg.room();
   const topic = await room.topic();
-  if (self.muteList.includes(topic)) {
+  if (user.muteList.includes(topic)) {
     await ctx.reply(lang.message.muteRoom(topic));
     return;
   }
 
-  self.muteList.push(topic);
+  user.muteList.push(topic);
   await ctx.reply(lang.message.muteRoom(topic));
-  await writeFile(`${self.id}${id}`, { muteList: self.muteList });
+  await writeFile(`${user.botId}${id}`, { muteList: user.muteList });
 };

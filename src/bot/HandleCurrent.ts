@@ -21,5 +21,6 @@ export default async (ctx: TelegrafContext) => {
 
   let info = user.contactLocked ? ` [${lang.message.contactLocked('').trim()}]` : '';
 
-  await ctx.reply(lang.message.current(name) + info);
+  const sent = await ctx.reply(lang.message.current(name) + info);
+  user.msgs.set(sent.message_id, { contact: user.currentContact, wxmsg: undefined });
 };

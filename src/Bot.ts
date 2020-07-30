@@ -57,14 +57,16 @@ export interface Client {
   contactLocked?: boolean;
   wechatId?: string; // a flag to inidcate wechat client has logined
   initialized?: boolean; // a flag to indicate wechat event listeners have been hooked
+
+  botId: string;
+  firstMsgId?: any;
+  muteList: string[];
 }
 
 export default class Bot {
   clients: Map<number, Client> = new Map(); // chat id => client
   keepMsgs: number;
   options: BotOptions;
-  firstMsgId = undefined;
-  muteList: string[] = [];
 
   protected bot: Telegraph<TelegrafContext>;
   protected botSelf: TT.User;
@@ -139,9 +141,11 @@ export default class Bot {
     this.bot.command('selfoff', checkUser, turnSelfOff, replyOk);
 
     const handleUpTime = (ctx: TelegrafContext) => {
-      ctx.replyWithHTML(`<code>${this.uptime.toISOString()}  [${dayjs().from(this.uptime, true)}]</code>`, { reply_to_message_id: this.firstMsgId });
+      ctx.replyWithHTML(`<code>${this.uptime.toISOString()}  [${dayjs().from(this.uptime, true)}]</code>`, {
+        reply_to_message_id: ctx['user'].firstMsgId
+      });
     };
-    this.bot.command('uptime', handleUpTime);
+    this.bot.command('uptime', checkUser, handleUpTime);
 
     this.bot.command('find', checkUser, this.handleFind);
     this.bot.command('lock', checkUser, this.handleLock);
@@ -224,7 +228,7 @@ export default class Bot {
             }
           }
 
-          this.muteList = lastDump.muteList || [];
+          client.muteList = lastDump.muteList || [];
 
           this.recoverWechats.delete(chatid);
         });
@@ -280,7 +284,9 @@ export default class Bot {
       wechat,
       msgs: new Map(),
       receiveGroups: true,
-      receiveOfficialAccount: true
+      receiveOfficialAccount: true,
+      muteList: [],
+      botId: this.id
     };
 
     this.clients.set(chatid, client);
@@ -474,9 +480,9 @@ export default class Bot {
 
   protected handleFind = (ctx: TelegrafContext, next: Function) => handleFind(this, ctx, next);
   protected handleLock = (ctx: TelegrafContext) => handleLock(this, ctx);
-  protected handleUnlock = (ctx: TelegrafContext) => handleUnlock(this, ctx);
-  protected handleMute = (ctx: TelegrafContext) => handleMute(this, ctx);
-  protected handleUnmute = (ctx: TelegrafContext) => handleUnmute(this, ctx);
+  protected handleUnlock = (ctx: TelegrafContext) => handleUnlock(ctx);
+  protected handleMute = (ctx: TelegrafContext) => handleMute(ctx);
+  protected handleUnmute = (ctx: TelegrafContext) => handleUnmute(ctx);
   protected handleCurrent = handleCurrent;
   protected handleForward = handleForwardTo;
   protected handleTelegramMessage = (ctx: TelegrafContext) => handleTelegramMessage(ctx, { ...this.options, bot: this.botSelf });

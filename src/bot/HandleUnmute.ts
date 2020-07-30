@@ -1,13 +1,14 @@
 import { TelegrafContext } from 'telegraf/typings/context';
-import Bot, { Client } from '../Bot';
+import { Client } from '../Bot';
 import lang from '../strings';
 import { writeFile } from './UpdateTmpFile';
 
-export default async (self: Bot, ctx: TelegrafContext) => {
+export default async (ctx: TelegrafContext) => {
   const msg = ctx.message;
   if (!msg) return;
 
   const id = ctx.chat.id;
+  const user = ctx['user'] as Client;
 
   let contents = ctx.message.text.split(' ');
   contents.shift();
@@ -15,19 +16,19 @@ export default async (self: Bot, ctx: TelegrafContext) => {
   let name = contents.reduce((p, c) => `${p} ${c}`, '').trim();
 
   if (name) {
-    const index = self.muteList.indexOf(name);
+    const index = user.muteList.indexOf(name);
 
     if (index === -1) {
       await ctx.reply(lang.message.contactNotFound);
       return;
     }
 
-    self.muteList.splice(index, 1);
+    user.muteList.splice(index, 1);
     await ctx.reply(lang.message.unmuteRoom(name));
   } else {
-    await ctx.reply(lang.message.unmuteRoom(self.muteList));
-    self.muteList = [];
+    await ctx.reply(lang.message.unmuteRoom(user.muteList));
+    user.muteList = [];
   }
 
-  await writeFile(`${self.id}${id}`, { muteList: self.muteList });
+  await writeFile(`${user.botId}${id}`, { muteList: user.muteList });
 };
