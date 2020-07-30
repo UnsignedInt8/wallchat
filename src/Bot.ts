@@ -219,6 +219,8 @@ export default class Bot {
 
             if (found) {
               await ctx.reply(client.contactLocked ? lang.message.contactLocked(foundName) : lang.message.contactFound(foundName));
+            } else {
+              client.contactLocked = false;
             }
           }
 
