@@ -479,7 +479,7 @@ export default class Bot {
   };
 
   protected handleFind = (ctx: TelegrafContext, next: Function) => handleFind(this, ctx, next);
-  protected handleLock = (ctx: TelegrafContext) => handleLock(this, ctx);
+  protected handleLock = (ctx: TelegrafContext) => handleLock(ctx);
   protected handleUnlock = (ctx: TelegrafContext) => handleUnlock(ctx);
   protected handleMute = (ctx: TelegrafContext) => handleMute(ctx);
   protected handleUnmute = (ctx: TelegrafContext) => handleUnmute(ctx);
