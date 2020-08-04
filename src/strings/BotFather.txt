@@ -43,4 +43,5 @@ acceptroom - 接受群邀请
 logout - 登出WeChat
 help - 显示帮助
 start - 启动会话
+shutdown - 关闭
 
