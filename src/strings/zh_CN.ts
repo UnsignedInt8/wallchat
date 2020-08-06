@@ -27,7 +27,7 @@ export default {
     sendingSucceed: (receipt?: string) => `发送成功 🥳 ${receipt ? `[To: ${receipt}]` : ''}`,
     sendingFileFailed: '发送文件失败，墙太高了 🧱',
     msgNotSupported: '不支持发送该类型消息',
-    muteRoom: (room: string) => `${room} 已静音 🔇`,
+    muteRoom: (room: string) => `${room} 已静音`,
     unmuteRoom: (room?: string | string[]) => `${room ? room + ' ' : '全部消息'}已启用`
   },
   contact: {

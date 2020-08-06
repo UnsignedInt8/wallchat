@@ -2,23 +2,24 @@ import { TelegrafContext } from 'telegraf/typings/context';
 import Bot, { Client } from '../Bot';
 import lang from '../strings';
 import { writeFile } from './UpdateTmpFile';
+import { Room } from 'wechaty';
 
 export default async (ctx: TelegrafContext) => {
   const msg = ctx.message;
+  const user = ctx['user'] as Client;
+
   if (!msg) return;
-  if (!msg.reply_to_message) {
+
+  if (!msg.reply_to_message && !user.currentContact) {
     await ctx.reply(lang.message.noQuoteMessage);
     return;
   }
 
   const id = ctx.chat.id;
-  const user = ctx['user'] as Client;
+  const wxmsg = user.msgs.get(msg.reply_to_message?.message_id)?.wxmsg;
 
-  const wxmsg = user.msgs.get(msg.reply_to_message.message_id)?.wxmsg;
-  if (!wxmsg) return;
-
-  const room = wxmsg.room();
-  const topic = await room.topic();
+  const room = wxmsg?.room() ?? user.currentContact;
+  const topic = room instanceof Room ? await room.topic() : room.name();
   if (user.muteList.includes(topic)) {
     await ctx.reply(lang.message.muteRoom(topic));
     return;

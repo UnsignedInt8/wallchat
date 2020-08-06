@@ -160,7 +160,6 @@ export default class Bot {
     this.bot.command('mute', checkUser, this.handleMute);
     this.bot.command('unmute', checkUser, this.handleUnmute);
     this.bot.command('logout', checkUser, this.handleLogout);
-    this.bot.command('shutdown', checkUser, _ => process.exit(-1));
     this.bot.help(ctx => ctx.reply(lang.help));
 
     this.bot.catch(err => {
