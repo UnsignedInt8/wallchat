@@ -6,7 +6,16 @@ import { writeFile } from './UpdateTmpFile';
 
 export default async (ctx: TelegrafContext) => {
   let user = ctx['user'] as Client;
-  if (!user.currentContact) return;
+  if (!user.currentContact) {
+    if (!ctx.message?.reply_to_message) return;
+
+    let wxmsg = user.msgs.get(ctx.message.reply_to_message.message_id);
+    if (!wxmsg) return;
+
+    user.currentContact = wxmsg?.contact;
+    user.contactLocked = false;
+  }
+
   if (user.contactLocked) return;
   user.contactLocked = true;
 
@@ -14,7 +23,8 @@ export default async (ctx: TelegrafContext) => {
   let save = '';
   if (user.currentContact instanceof Contact) {
     const alias = await user.currentContact.alias();
-    save = name = user.currentContact.name();
+    name = user.currentContact.name();
+    save = alias || name;
     name = alias ? `${name} (${alias})` : name;
   } else if (user.currentContact instanceof Room) {
     save = name = await user.currentContact.topic();

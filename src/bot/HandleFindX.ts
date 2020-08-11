@@ -45,7 +45,7 @@ export async function findContact(query: string, wechat: Wechaty) {
   let found: Contact | Room | undefined;
   let foundName = '';
   try {
-    found = (await wechat?.Contact.find({ name: regexp })) || (await wechat?.Contact.find({ alias: regexp }));
+    found = (await wechat?.Contact.find({ alias: regexp })) || (await wechat?.Contact.find({ name: regexp }));
 
     const alias = await found?.alias();
     foundName = alias ? `${found?.name()} (${alias})` : found?.name();
