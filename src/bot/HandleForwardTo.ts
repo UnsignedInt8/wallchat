@@ -34,6 +34,6 @@ export default async (ctx: TelegrafContext) => {
 
   await wxmsg.forward(target);
 
-  const name = await MiscHelper.getFriendlyName(user.currentContact);
+  const name = await MiscHelper.getFriendlyName(target || user.currentContact);
   await ctx.reply(lang.message.msgForward(name), { reply_to_message_id: msg.reply_to_message.message_id });
 };
