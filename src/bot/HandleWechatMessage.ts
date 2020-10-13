@@ -115,10 +115,7 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
       if (image.mimeType === 'image/gif') {
         const buffer = await image.toBuffer();
         if (isGif(buffer)) {
-          const sticker = await ctx.replyWithSticker({ source: buffer });
-          user.msgs.set(sticker.message_id, { contact: room || from, wxmsg: msg });
-
-          sent = await ctx.reply(`from: ${nickname}`, { reply_to_message_id: sticker.message_id });
+          sent = await ctx['replyWithAnimation']({ source: buffer }, { caption: `${nickname}` });
           break;
         }
       }
