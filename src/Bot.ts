@@ -1,31 +1,33 @@
-import Telegraph from 'telegraf';
-import { SocksProxyAgent } from 'socks-proxy-agent';
-import { HttpsProxyAgent } from 'https-proxy-agent';
-import { Wechaty, Contact, Room, Friendship, RoomInvitation, Message } from 'wechaty';
-import qr from 'qr-image';
-import lang from './strings';
-import { FriendshipType } from 'wechaty-puppet';
 import * as TT from 'telegraf/typings/telegram-types';
+
+import { Contact, Friendship, Message, Room, RoomInvitation, Wechaty } from 'wechaty';
+import {
+  handleCurrent,
+  handleFind,
+  handleForwardTo,
+  handleLock,
+  handleMute,
+  handleTelegramMessage,
+  handleUnlock,
+  handleUnmute,
+  handleWechatMessage
+} from './bot/index';
+
+import { FriendshipType } from 'wechaty-puppet';
 import HTMLTemplates from './lib/HTMLTemplates';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import Logger from './lib/Logger';
 import MiscHelper from './lib/MiscHelper';
+import { SocksProxyAgent } from 'socks-proxy-agent';
 import { TelegrafContext } from 'telegraf/typings/context';
 import TelegramContext from 'telegraf/context';
-import {
-  handleFind,
-  handleLock,
-  handleUnlock,
-  handleCurrent,
-  handleTelegramMessage,
-  handleWechatMessage,
-  handleForwardTo,
-  handleMute,
-  handleUnmute
-} from './bot/index';
+import Telegraph from 'telegraf';
 import crypto from 'crypto';
-import { readFile } from './bot/UpdateTmpFile';
-import { findContact } from './bot/HandleFindX';
 import dayjs from 'dayjs';
+import { findContact } from './bot/HandleFindX';
+import lang from './strings';
+import qr from 'qr-image';
+import { readFile } from './bot/UpdateTmpFile';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);
@@ -121,6 +123,7 @@ export default class Bot {
     this.bot.start(this.handleStart);
     this.bot.command('stop', checkUser, this.handleLogout);
     this.bot.command('login', ctx => this.handleLogin(ctx));
+    this.bot.command('shutdown', _ => process.exit(0));
 
     const turnGroupOn = (ctx: TelegrafContext, n: Function) => turnGroup(ctx, n, true);
     this.bot.command('groupon', checkUser, turnGroupOn, replyOk);

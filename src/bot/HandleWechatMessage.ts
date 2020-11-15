@@ -1,15 +1,17 @@
-import download from 'download';
+import * as TT from 'telegraf/typings/telegram-types';
 import * as XMLParser from '../lib/XmlParser';
+
+import { ContactType, MessageType } from 'wechaty-puppet';
+
+import { AllHtmlEntities } from 'html-entities';
+import Bot from '../Bot';
 import HTMLTemplates from '../lib/HTMLTemplates';
 import Logger from '../lib/Logger';
-import { TelegrafContext } from 'telegraf/typings/context';
 import { Message } from 'wechaty';
-import * as TT from 'telegraf/typings/telegram-types';
-import { ContactType, MessageType } from 'wechaty-puppet';
-import { AllHtmlEntities } from 'html-entities';
-import lang from '../strings';
-import Bot from '../Bot';
+import { TelegrafContext } from 'telegraf/typings/context';
+import download from 'download';
 import isGif from 'is-gif';
+import lang from '../strings';
 import { writeFile } from './UpdateTmpFile';
 
 const html = new AllHtmlEntities();
