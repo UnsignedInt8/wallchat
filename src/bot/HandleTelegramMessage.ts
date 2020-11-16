@@ -1,18 +1,20 @@
+import * as TT from 'telegraf/typings/telegram-types';
+
+import { Contact, FileBox, Room } from 'wechaty';
+
+import { BotOptions } from '../Bot';
+import { Client } from '../Bot';
+import { HttpsProxyAgent } from 'https-proxy-agent';
+import Logger from '../lib/Logger';
+import MiscHelper from '../lib/MiscHelper';
+import { TelegrafContext } from 'telegraf/typings/context';
 import axios from 'axios';
 import download from 'download';
 import fs from 'fs';
-import path from 'path';
-import tempfile from 'tempfile';
-import Logger from '../lib/Logger';
-import { Client } from '../Bot';
-import { TelegrafContext } from 'telegraf/typings/context';
-import { FileBox, Contact, Room } from 'wechaty';
-import { BotOptions } from '../Bot';
-import { HttpsProxyAgent } from 'https-proxy-agent';
 import lang from '../strings';
-import MiscHelper from '../lib/MiscHelper';
+import path from 'path';
 import sharp from 'sharp';
-import * as TT from 'telegraf/typings/telegram-types';
+import tempfile from 'tempfile';
 
 interface IHandleTelegramMessage extends BotOptions {
   bot: TT.User;
@@ -40,7 +42,9 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
       try {
         let url = `https://api.telegram.org/bot${token}/getFile?file_id=${file.file_id}`;
         let httpsAgent = httpProxy ? new HttpsProxyAgent(`http://${httpProxy.host}:${httpProxy.port}`) : undefined;
-        let resp = await axios.get(url, { httpsAgent, proxy: false, timeout: 10 * 1000 });
+
+        const proxyAxios = axios.create({ proxy: false, httpsAgent, httpAgent: httpsAgent, timeout: 10 * 1000 });
+        let resp = await proxyAxios.get(url);
         if (!resp.data || !resp.data.ok) return;
 
         let filePath = resp.data.result.file_path;

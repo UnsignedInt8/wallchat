@@ -1,9 +1,9 @@
-import xml from 'fast-xml-parser';
-import h2m from 'h2m';
+import { HTMLElement, parse } from 'node-html-parser';
+
 import Mercury from '@postlight/mercury-parser';
+import h2m from 'h2m';
 import marked from 'marked';
-import axios from 'axios';
-import { parse, HTMLElement } from 'node-html-parser';
+import xml from 'fast-xml-parser';
 
 function replaceMarkdownChars(txt: string | object) {
   let title = (typeof txt === 'string' ? txt : txt['#text']) || '';
