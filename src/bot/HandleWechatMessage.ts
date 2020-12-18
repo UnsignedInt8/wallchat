@@ -1,13 +1,13 @@
 import * as TT from 'telegraf/typings/telegram-types';
 import * as XMLParser from '../lib/XmlParser';
 
+import { Contact, Message } from 'wechaty';
 import { ContactType, MessageType } from 'wechaty-puppet';
 
 import { AllHtmlEntities } from 'html-entities';
 import Bot from '../Bot';
 import HTMLTemplates from '../lib/HTMLTemplates';
 import Logger from '../lib/Logger';
-import { Message } from 'wechaty';
 import { TelegrafContext } from 'telegraf/typings/context';
 import download from 'download';
 import isGif from 'is-gif';
@@ -64,6 +64,16 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
 
   let nickname = from.name() + (alias ? ` (${alias})` : '');
   nickname = nickname + (room ? ` [${await room.topic()}]` : '');
+
+  if (
+    user.contactLocked &&
+    user.currentContact instanceof Contact &&
+    alias === (await (user.currentContact as Contact).alias()) &&
+    from.name() === (user.currentContact as Contact).name()
+  ) {
+    nickname = `${nickname}[${lang.message.contactLocked('').trim()}]`;
+  }
+
   let sent: TT.Message;
 
   switch (type) {
