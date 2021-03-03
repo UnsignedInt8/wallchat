@@ -30,7 +30,10 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
     contact = user.msgs.get(msg.reply_to_message.message_id)?.contact;
   }
 
-  if (!contact) return;
+  if (!contact) {
+    ctx.reply(lang.message.noCurrentContact);
+    return;
+  }
 
   let file = msg.audio || msg.video || (msg.photo && msg.photo[0]) || msg.voice || msg.document || msg.sticker;
   if (file && file.file_size <= 50 * 1024 * 1024) {
