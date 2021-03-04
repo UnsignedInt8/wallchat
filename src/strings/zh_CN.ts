@@ -20,6 +20,7 @@ export default {
     contactUnlocked: (name: string) => `${name} 已取消锁定`,
     noCurrentContact: '无当前联系人',
     current: (name: string) => `当前联系人 ${name}`,
+    notSupportedMsg: '向你发送了一条 Bot 不支持的消息',
     timeout: '登录超时，Bye',
     error: 'WeChat 遇到错误，请重试',
     inviteRoom: (inviter: string, room: string) => `${inviter} 邀请你加入: ${room}`,

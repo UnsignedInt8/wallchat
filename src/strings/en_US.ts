@@ -20,6 +20,7 @@ export default {
     contactUnlocked: (name: string) => `${name} is unlocked`,
     noCurrentContact: `No current contact`,
     current: (name: string) => `Current contact: ${name}`,
+    notSupportedMsg: 'Sent you a not supported message',
     timeout: 'Login timeout, bye',
     error: 'Some errors happen, try again please',
     inviteRoom: (inviter: string, room: string) => `${inviter} invites you to join: ${room}`,
@@ -28,7 +29,7 @@ export default {
     sendingFileFailed: 'Sending file failed.',
     msgNotSupported: 'This msg type is not supported.',
     muteRoom: (room: string) => `${room} is muted🔇.`,
-    unmuteRoom: (room?: string | string[]) => `${room ? room + ' ' : 'All groups '}enabled`,
+    unmuteRoom: (room?: string | string[]) => `${room ? room + ' ' : 'All groups '}enabled`
   },
   contact: {
     card: 'Contact Card',

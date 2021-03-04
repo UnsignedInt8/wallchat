@@ -143,6 +143,7 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
       break;
 
     default:
+      sent = await ctx.replyWithHTML(HTMLTemplates.message({ nickname, message: lang.message.notSupportedMsg }));
       break;
   }
 
