@@ -41,21 +41,6 @@ apt-get update && \
      libnss3
 ```
 
-开始:
-
-```bash
-$> npm i -g leavexchat-bot
-$> leavexchat-bot
-$> 输入 token, Done!
-```
-
-由于中国用户无法直接访问 Telegram，所以需要在配置文件中指定 SOCKS5 代理:
-
-```
-$> leavexchat-bot -c ./config.json
-```
-
-`config.json` 请参照 [config-example.json](./config-example.json) 填写。
 
 ## 自行编译
 
@@ -67,6 +52,10 @@ $> npm run build
 $> node build/main/index.js # 无需配置文件
 $> 输入 token, Done!
 ```
+
+由于中国用户无法直接访问 Telegram，所以需要在配置文件 `config.json` 中指定 SOCKS5 代理:
+
+`config.json` 请参照 [config-example.json](./config-example.json) 填写。
 
 ```bash
 # 使用配置文件方式
