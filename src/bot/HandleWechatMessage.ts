@@ -76,17 +76,17 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
 
   let sent: TT.Message;
 
+  if (nickname.includes('Friend recommendation message')) {
+    await handleFriendApplyingXml(text, ctx);
+    return;
+  }
+
   switch (type) {
     case MessageType.Text:
       if (!text) break;
       let isXml = text.startsWith(`&lt;?xml version="1.0"?&gt;`);
 
       if (isXml) {
-        if (nickname.includes('Friend recommendation message')) {
-          await handleFriendApplyingXml(text, ctx);
-          break;
-        }
-
         if (await handleContactXml(text, nickname, ctx)) break;
       } else if (room && banNotifications.some(n => text.includes(n))) {
         // junk info
