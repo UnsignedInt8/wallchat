@@ -18,7 +18,7 @@ export default {
     contactFound: (name: string) => `${name} 已是当前联系人`,
     contactLocked: (name: string) => `${name} 已锁定`,
     contactUnlocked: (name: string) => `${name} 已取消锁定`,
-    noCurrentContact: '无当前联系人',
+    noCurrentContact: '该消息无对应联系人',
     current: (name: string) => `当前联系人 ${name}`,
     notSupportedMsg: '向你发送了一条 Bot 不支持的消息',
     timeout: '登录超时，Bye',
