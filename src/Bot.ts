@@ -1,6 +1,7 @@
 import * as TT from 'telegraf/typings/telegram-types';
 
 import { Contact, Friendship, Message, Room, RoomInvitation, Wechaty } from 'wechaty';
+import Telegraph, { Markup, Telegraf } from 'telegraf';
 import {
   handleCurrent,
   handleFind,
@@ -21,7 +22,6 @@ import MiscHelper from './lib/MiscHelper';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 import { TelegrafContext } from 'telegraf/typings/context';
 import TelegramContext from 'telegraf/context';
-import Telegraph from 'telegraf';
 import crypto from 'crypto';
 import dayjs from 'dayjs';
 import { findContact } from './bot/HandleFindX';
@@ -164,6 +164,13 @@ export default class Bot {
     this.bot.command('unmute', checkUser, this.handleUnmute);
     this.bot.command('logout', checkUser, this.handleLogout);
     this.bot.help(ctx => ctx.reply(lang.help));
+    this.bot.on('callback_query', checkUser, ctx => {
+      if (ctx.message.text === 'agree') {
+        this.handleAgreeFriendship(ctx);
+      } else {
+        this.handleDisagreeFriendship(ctx);
+      }
+    });
 
     this.bot.catch(err => {
       Logger.error('Ooops', err.message);
@@ -375,7 +382,15 @@ export default class Bot {
 
       if (req.type() === FriendshipType.Receive) {
         let avatar = await (await contact.avatar()).toStream();
-        await ctx.replyWithPhoto({ source: avatar }, { caption: `${hello}, /agree ${name} or /disagree ${name}` });
+
+        const buttons = Markup.inlineKeyboard([[Markup.callbackButton('Agree', 'agree')], [Markup.callbackButton('Ignore', 'disagree')]], {
+          columns: 2
+        });
+
+        await ctx.replyWithPhoto(
+          { source: avatar },
+          { caption: `[${lang.contact.friend}]\n\n${hello}`, parse_mode: 'MarkdownV2', reply_markup: buttons }
+        );
 
         this.pendingFriends.set(name.toLowerCase(), req);
       }
@@ -451,7 +466,6 @@ export default class Bot {
     if (this.pendingFriends.size === 1) {
       for (let [key, req] of this.pendingFriends) {
         await req.accept();
-        await ctx.reply(`${key} OK`);
       }
 
       this.pendingFriends.clear();
@@ -466,12 +480,16 @@ export default class Bot {
     let req = this.pendingFriends.get(id.toLowerCase());
     await req?.accept();
     this.pendingFriends.delete(id.toLowerCase());
-
-    await ctx.reply('OK');
   };
 
   protected handleDisagreeFriendship = async (ctx: TelegrafContext) => {
     let [, id] = ctx.message.text.split(' ');
+
+    if (this.pendingFriends.size === 1) {
+      this.pendingFriends.clear();
+      return;
+    }
+
     if (!id) {
       await ctx.reply(lang.commands.disagree);
       return;
