@@ -14,7 +14,6 @@ import {
   handleWechatMessage
 } from './bot/index';
 
-import { FriendshipType } from 'wechaty-puppet';
 import HTMLTemplates from './lib/HTMLTemplates';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import Logger from './lib/Logger';
@@ -381,7 +380,7 @@ export default class Bot {
       let contact = req.contact();
       let name = contact.name();
 
-      if (req.type() === FriendshipType.Receive) {
+      if (req.type() === 2) {
         let avatar = await (await contact.avatar()).toStream();
 
         const buttons = Markup.inlineKeyboard([[Markup.callbackButton('Agree', 'agree')], [Markup.callbackButton('Ignore', 'disagree')]], {
