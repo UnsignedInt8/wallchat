@@ -1,6 +1,5 @@
 {
   "token": "", // required, telegram bot token
-  "padplusToken": "", // optional, wechaty padplus token [not recommended]
   "silent": false, // silent mode, bot alert
   "httpProxy": {
     "host": "127.0.0.1",
