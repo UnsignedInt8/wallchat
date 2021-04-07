@@ -290,9 +290,9 @@ export default class Bot {
         name: `telegram_${chatid})}`,
         puppet: this.options.padplusToken
           ? require('wechaty-puppet-padplus').PuppetPadplus({ token: this.options.padplusToken })
-          : 'wechaty-puppet-wechat'
+          : undefined
       });
-      
+
     let client: Client = {
       wechat,
       msgs: new Map(),
