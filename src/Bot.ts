@@ -287,7 +287,7 @@ export default class Bot {
       this.recoverWechats.get(chatid) ||
       new Wechaty({
         name: `telegram_${chatid})}`,
-        puppet: undefined
+        puppet: 'wechaty-puppet-puppeteer', // waiting for wechaty >= 0.59
       });
 
     let client: Client = {
