@@ -288,8 +288,11 @@ export default class Bot {
       this.recoverWechats.get(chatid) ||
       new Wechaty({
         name: `telegram_${chatid})}`,
-        puppet: this.options.padplusToken ? require('wechaty-puppet-padplus').PuppetPadplus({ token: this.options.padplusToken }) : undefined
+        puppet: this.options.padplusToken
+          ? require('wechaty-puppet-padplus').PuppetPadplus({ token: this.options.padplusToken })
+          : 'wechaty-puppet-wechat'
       });
+      
     let client: Client = {
       wechat,
       msgs: new Map(),

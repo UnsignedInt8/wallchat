@@ -83,10 +83,7 @@
     "temp-dir": "^2.0.0",
     "tempfile": "^3.0.0",
     "touch": "^3.1.0",
-    "wechaty": "^0.40.10",
-    "wechaty-puppet": "^0.26.2",
-    "wechaty-puppet-padplus": "^0.6.3",
-    "wechaty-puppet-puppeteer": "^0.21.2"
+    "wechaty": "^0.56.6"
   },
   "devDependencies": {
     "@types/download": "^6.2.4",
