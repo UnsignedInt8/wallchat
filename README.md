@@ -49,7 +49,6 @@ $> git clone https://github.com/UnsignedInt8/leavexchat-bot.git
 $> cd leavexchat-bot
 $> npm i
 $> npm run build
-$> export WECHATY_PUPPET=wechaty-puppet-puppeteer
 $> node build/main/index.js # 无需配置文件
 $> 输入 token, Done!
 ```
@@ -74,7 +73,6 @@ $> git clone https://github.com/UnsignedInt8/leavexchat-bot.git
 $> cd leavexchat-bot
 $> npm i
 $> npm run build
-$> export WECHATY_PUPPET=wechaty-puppet-puppeteer
 $> forever build/main/index.js -c config.json
 ```
 
