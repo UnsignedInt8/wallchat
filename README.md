@@ -38,7 +38,7 @@ apt-get update && \
      libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
      libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 \
      libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
-     libnss3 libgbm-dev
+     libnss3 libgbm-dev libxshmfence-dev
 ```
 
 
@@ -49,6 +49,7 @@ $> git clone https://github.com/UnsignedInt8/leavexchat-bot.git
 $> cd leavexchat-bot
 $> npm i
 $> npm run build
+$> export WECHATY_PUPPET=wechaty-puppet-puppeteer
 $> node build/main/index.js # 无需配置文件
 $> 输入 token, Done!
 ```
@@ -66,14 +67,14 @@ $> node build/main/index.js -c config.json
 
 2.0 版本已经加入了 wechat **会话恢复**功能。要发挥该特性，就需要进程守护，推荐使用 forever
 
-```
+```bash
 $> npm i -g forever
 
 $> git clone https://github.com/UnsignedInt8/leavexchat-bot.git
 $> cd leavexchat-bot
 $> npm i
 $> npm run build
-
+$> export WECHATY_PUPPET=wechaty-puppet-puppeteer
 $> forever build/main/index.js -c config.json
 ```
 
