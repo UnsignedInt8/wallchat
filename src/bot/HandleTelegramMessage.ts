@@ -59,7 +59,7 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
           return;
         }
 
-        await new Promise(async resolve => fs.writeFile(distFile, await download(url), () => resolve()));
+        await new Promise<void>(async resolve => fs.writeFile(distFile, await download(url), () => resolve()));
 
         if (msg.sticker) {
           const pngfile = tempfile('.png');
