@@ -7,9 +7,12 @@ import { Room, Contact } from 'wechaty';
 
 export default class MiscHelper {
   static async fileExists(path: string) {
-    return new Promise<boolean>(resolve => {
-      fs.exists(path, exists => resolve(exists));
-    });
+    try {
+      await fs.promises.stat(path);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   static async download(url: string, path: string) {
@@ -23,7 +26,7 @@ export default class MiscHelper {
   }
 
   static async deleteFile(path: string) {
-    return new Promise(resolve => fs.unlink(path, _ => resolve()));
+    return new Promise<void>(resolve => fs.unlink(path, _ => resolve()));
   }
 
   static async createTmpFile(filename: string) {
