@@ -17,6 +17,7 @@ disagree - Disagree with current friendship request [/disagree name]
 acceptroom - Accept chatroom invitation
 logout - Logout Wechat
 help - Show this help page
+version - Show bot version
 
 
 
@@ -43,3 +44,4 @@ acceptroom - 接受群邀请
 logout - 登出WeChat
 help - 显示帮助
 start - 启动会话
+version - 输出版本号

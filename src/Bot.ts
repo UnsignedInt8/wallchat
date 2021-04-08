@@ -28,6 +28,7 @@ import lang from './strings';
 import qr from 'qr-image';
 import { readFile } from './bot/UpdateTmpFile';
 import relativeTime from 'dayjs/plugin/relativeTime';
+const { version } = require('../../package.json');
 
 dayjs.extend(relativeTime);
 
@@ -120,6 +121,7 @@ export default class Bot {
     };
 
     this.bot.start(this.handleStart);
+    this.bot.command('version', ctx => ctx.reply(`Bot version: ${version}`));
     this.bot.command('stop', checkUser, this.handleLogout);
     this.bot.command('login', ctx => this.handleLogin(ctx));
     this.bot.command('shutdown', _ => process.exit(0));
@@ -287,7 +289,7 @@ export default class Bot {
       this.recoverWechats.get(chatid) ||
       new Wechaty({
         name: `telegram_${chatid})}`,
-        puppet: 'wechaty-puppet-puppeteer', // waiting for wechaty >= 0.59
+        puppet: 'wechaty-puppet-puppeteer' // waiting for wechaty >= 0.59
       });
 
     let client: Client = {

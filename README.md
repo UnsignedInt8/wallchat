@@ -41,6 +41,8 @@ apt-get update && \
      libnss3 libgbm-dev libxshmfence-dev
 ```
 
+**`libgbm-dev libxshmfence-dev` 是 2.5.0 版本新需要的依赖**
+
 
 ## 自行编译
 
@@ -61,6 +63,8 @@ $> 输入 token, Done!
 # 使用配置文件方式
 $> node build/main/index.js -c config.json
 ```
+
+** 如果安装遇到问题，清空 node_modules，再重新安装所有依赖 **
 
 ## 作者的用法
 
