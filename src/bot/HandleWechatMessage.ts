@@ -34,7 +34,7 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
   let id = ctx.chat.id;
   let user = self.clients.get(id);
 
-  let from = msg.from();
+  let from = msg.talker();
   let room = msg.room();
 
   if (room) {
