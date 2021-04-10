@@ -71,7 +71,7 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
         }
 
         if (msg.voice) {
-          let newPath = tempfile('.mp3');
+          let newPath = tempfile('.ogg');
           fs.renameSync(distFile, newPath);
           distFile = newPath;
         }
