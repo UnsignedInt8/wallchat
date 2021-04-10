@@ -73,7 +73,9 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
 
         if (msg.voice) {
           const outputFile = tempfile('.mp3');
-          ffmpeg(distFile).output(outputFile);
+          ffmpeg(distFile)
+            .toFormat('mp3')
+            .saveToFile(outputFile);
 
           distFile = outputFile;
         }
