@@ -73,11 +73,11 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
         }
 
         if (msg.voice && ce.sync('ffmpeg') ) {
-          const outputFile = tempfile('.wav');
+          const outputFile = tempfile('.mp3');
 
           await new Promise<void>(resolve => {
             ffmpeg(distFile)
-              .toFormat('wav')
+              .toFormat('mp3')
               .saveToFile(outputFile)
               .on('end', () => resolve());
           });
