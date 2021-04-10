@@ -11,7 +11,7 @@ import { TelegrafContext } from 'telegraf/typings/context';
 import axios from 'axios';
 import download from 'download';
 import fs from 'fs';
-import { getAudioDecoder } from 'audio-file-decoder';
+// import { getAudioDecoder } from 'audio-file-decoder';
 import lang from '../strings';
 import path from 'path';
 import sharp from 'sharp';
@@ -76,10 +76,10 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
           // fs.renameSync(distFile, newPath);
           // distFile = newPath;
 
-          const decoder = await getAudioDecoder(require('audio-file-decoder/decode-audio.wasm'), await FileBox.fromFile(distFile).toBuffer());
-          const samples = decoder.decodeAudioData();
-          await contact.say(FileBox.fromBuffer(Buffer.from(samples), Date.now().toString()));
-          decoder.dispose();
+          // const decoder = await getAudioDecoder(require('audio-file-decoder/decode-audio.wasm'), await FileBox.fromFile(distFile).toBuffer());
+          // const samples = decoder.decodeAudioData();
+          // await contact.say(FileBox.fromBuffer(Buffer.from(samples), Date.now().toString() + '.wav'));
+          // decoder.dispose();
         } else {
           await contact.say(FileBox.fromFile(distFile));
         }
