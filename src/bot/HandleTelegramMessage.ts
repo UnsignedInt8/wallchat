@@ -7,12 +7,13 @@ import { Client } from '../Bot';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import Logger from '../lib/Logger';
 import MiscHelper from '../lib/MiscHelper';
+import { Readable } from 'node:stream';
 import { TelegrafContext } from 'telegraf/typings/context';
 import axios from 'axios';
 import download from 'download';
 import fs from 'fs';
-// import { getAudioDecoder } from 'audio-file-decoder';
 import lang from '../strings';
+import ogg from 'ogg';
 import path from 'path';
 import sharp from 'sharp';
 import tempfile from 'tempfile';
@@ -80,6 +81,10 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
           // const samples = decoder.decodeAudioData();
           // await contact.say(FileBox.fromBuffer(Buffer.from(samples), Date.now().toString() + '.wav'));
           // decoder.dispose();
+
+          const oggDecoder = new ogg.Decoder();
+          const wavStream = (await FileBox.fromFile(distFile).toStream()).pipe(oggDecoder) as Readable;
+          await contact.say(FileBox.fromStream(wavStream, Date.now() + '.wav'));
         } else {
           await contact.say(FileBox.fromFile(distFile));
         }
