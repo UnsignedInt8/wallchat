@@ -4,7 +4,6 @@ import { Contact, FileBox, Room } from 'wechaty';
 
 import { BotOptions } from '../Bot';
 import { Client } from '../Bot';
-import DecodeAudioWasm from 'audio-file-decoder/decode-audio.wasm';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import Logger from '../lib/Logger';
 import MiscHelper from '../lib/MiscHelper';
@@ -76,9 +75,10 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
           // let newPath = tempfile('.ogg');
           // fs.renameSync(distFile, newPath);
           // distFile = newPath;
-          const decoder = await getAudioDecoder(DecodeAudioWasm, distFile);
+
+          const decoder = await getAudioDecoder(require('audio-file-decoder/decode-audio.wasm'), await FileBox.fromFile(distFile).toBuffer());
           const samples = decoder.decodeAudioData();
-          await contact.say(FileBox.fromBuffer(samples, Date.now().toString()));
+          await contact.say(FileBox.fromBuffer(Buffer.from(samples), Date.now().toString()));
           decoder.dispose();
         } else {
           await contact.say(FileBox.fromFile(distFile));
