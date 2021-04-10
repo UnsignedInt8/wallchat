@@ -58,6 +58,7 @@
   "dependencies": {
     "@postlight/mercury-parser": "^2.2.0",
     "axios": "^0.21.1",
+    "command-exists": "^1.2.9",
     "commander": "^5.1.0",
     "dayjs": "^1.10.4",
     "download": "^7.1.0",
@@ -84,6 +85,7 @@
     "wechaty-puppet-wechat": "^0.27.0"
   },
   "devDependencies": {
+    "@types/command-exists": "^1.2.0",
     "@types/download": "^6.2.4",
     "@types/end-of-stream": "^1.4.0",
     "@types/fluent-ffmpeg": "^2.1.17",
