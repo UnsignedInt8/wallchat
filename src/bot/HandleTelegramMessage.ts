@@ -70,6 +70,12 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
           distFile = pngfile;
         }
 
+        if (msg.voice) {
+          let newPath = tempfile('.mp3');
+          fs.renameSync(distFile, newPath);
+          distFile = newPath;
+        }
+
         await contact.say(FileBox.fromFile(distFile));
         if (msg.caption && msg.forward_from?.id !== bot.id) await contact.say(msg.caption);
 
