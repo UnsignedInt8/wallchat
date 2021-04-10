@@ -4,6 +4,7 @@ import { Contact, FileBox, Room } from 'wechaty';
 
 import { BotOptions } from '../Bot';
 import { Client } from '../Bot';
+import DecodeAudioWasm from 'audio-file-decoder/decode-audio.wasm';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import Logger from '../lib/Logger';
 import MiscHelper from '../lib/MiscHelper';
@@ -11,6 +12,7 @@ import { TelegrafContext } from 'telegraf/typings/context';
 import axios from 'axios';
 import download from 'download';
 import fs from 'fs';
+import { getAudioDecoder } from 'audio-file-decoder';
 import lang from '../strings';
 import path from 'path';
 import sharp from 'sharp';
@@ -71,12 +73,17 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
         }
 
         if (msg.voice) {
-          let newPath = tempfile('.ogg');
-          fs.renameSync(distFile, newPath);
-          distFile = newPath;
+          // let newPath = tempfile('.ogg');
+          // fs.renameSync(distFile, newPath);
+          // distFile = newPath;
+          const decoder = await getAudioDecoder(DecodeAudioWasm, distFile);
+          const samples = decoder.decodeAudioData();
+          await contact.say(FileBox.fromBuffer(samples, Date.now().toString()));
+          decoder.dispose();
+        } else {
+          await contact.say(FileBox.fromFile(distFile));
         }
 
-        await contact.say(FileBox.fromFile(distFile));
         if (msg.caption && msg.forward_from?.id !== bot.id) await contact.say(msg.caption);
 
         const name = contact instanceof Contact ? contact.name() : contact instanceof Room ? await contact.topic() : '';

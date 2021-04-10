@@ -80,7 +80,8 @@
     "tempfile": "^3.0.0",
     "touch": "^3.1.0",
     "wechaty": "^0.59.8",
-    "wechaty-puppet-wechat": "^0.27.0"
+    "wechaty-puppet-wechat": "^0.27.0",
+    "audio-file-decoder": "^2.2.1"
   },
   "devDependencies": {
     "@types/download": "^6.2.4",
