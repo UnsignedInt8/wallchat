@@ -63,6 +63,7 @@
     "download": "^7.1.0",
     "fast-xml-parser": "^3.19.0",
     "file-box": "^0.16.8",
+    "fluent-ffmpeg": "^2.1.2",
     "got": "^11.8.2",
     "h2m": "^0.7.0",
     "html-entities": "^1.4.0",
@@ -80,12 +81,12 @@
     "tempfile": "^3.0.0",
     "touch": "^3.1.0",
     "wechaty": "^0.59.8",
-    "wechaty-puppet-wechat": "^0.27.0",
-    "ogg": "^1.2.6"
+    "wechaty-puppet-wechat": "^0.27.0"
   },
   "devDependencies": {
     "@types/download": "^6.2.4",
     "@types/end-of-stream": "^1.4.0",
+    "@types/fluent-ffmpeg": "^2.1.17",
     "@types/got": "^9.6.9",
     "@types/html-entities": "*",
     "@types/inquirer": "^6.5.0",

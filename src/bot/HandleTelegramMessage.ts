@@ -7,13 +7,12 @@ import { Client } from '../Bot';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import Logger from '../lib/Logger';
 import MiscHelper from '../lib/MiscHelper';
-import { Readable } from 'node:stream';
 import { TelegrafContext } from 'telegraf/typings/context';
 import axios from 'axios';
 import download from 'download';
+import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
 import lang from '../strings';
-import ogg from 'ogg';
 import path from 'path';
 import sharp from 'sharp';
 import tempfile from 'tempfile';
@@ -73,22 +72,15 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
         }
 
         if (msg.voice) {
-          // let newPath = tempfile('.ogg');
-          // fs.renameSync(distFile, newPath);
-          // distFile = newPath;
+          const outputFile = tempfile('.mp3');
+          ffmpeg(distFile)
+            .output(outputFile)
+            .run();
 
-          // const decoder = await getAudioDecoder(require('audio-file-decoder/decode-audio.wasm'), await FileBox.fromFile(distFile).toBuffer());
-          // const samples = decoder.decodeAudioData();
-          // await contact.say(FileBox.fromBuffer(Buffer.from(samples), Date.now().toString() + '.wav'));
-          // decoder.dispose();
-
-          const oggDecoder = new ogg.Decoder();
-          const wavStream = (await FileBox.fromFile(distFile).toStream()).pipe(oggDecoder) as Readable;
-          await contact.say(FileBox.fromStream(wavStream, Date.now() + '.wav'));
-        } else {
-          await contact.say(FileBox.fromFile(distFile));
+          distFile = outputFile;
         }
 
+        await contact.say(FileBox.fromFile(distFile));
         if (msg.caption && msg.forward_from?.id !== bot.id) await contact.say(msg.caption);
 
         const name = contact instanceof Contact ? contact.name() : contact instanceof Room ? await contact.topic() : '';
