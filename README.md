@@ -16,7 +16,7 @@ Linux 使用前需要安装如下依赖:
 CentOS 7
 
 ```
-yum install pango.x86_64 libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_64 libXext.x86_64 libXi.x86_64 libXtst.x86_64 cups-libs.x86_64 libXScrnSaver.x86_64 libXrandr.x86_64 GConf2.x86_64 alsa-lib.x86_64 atk.x86_64 gtk3.x86_64 ipa-gothic-fonts xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x11-utils xorg-x11-fonts-cyrillic xorg-x11-fonts-Type1 xorg-x11-fonts-misc -y
+yum install libX11 pango.x86_64 libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_64 libXext.x86_64 libXi.x86_64 libXtst.x86_64 cups-libs.x86_64 libXScrnSaver.x86_64 libXrandr.x86_64 GConf2.x86_64 alsa-lib.x86_64 atk.x86_64 gtk3.x86_64 ipa-gothic-fonts xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x11-utils xorg-x11-fonts-cyrillic xorg-x11-fonts-Type1 xorg-x11-fonts-misc -y
 ```
 
 CentOS 8
@@ -38,9 +38,10 @@ apt-get update && \
      libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
      libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 \
      libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
-     libnss3
+     libnss3 libgbm-dev libxshmfence-dev
 ```
 
+**`libgbm-dev libxshmfence-dev` 是 2.5.0 版本新需要的依赖**
 
 ## 自行编译
 
@@ -62,18 +63,19 @@ $> 输入 token, Done!
 $> node build/main/index.js -c config.json
 ```
 
+** 如果安装遇到问题，清空 node_modules，再重新安装所有依赖 **
+
 ## 作者的用法
 
 2.0 版本已经加入了 wechat **会话恢复**功能。要发挥该特性，就需要进程守护，推荐使用 forever
 
-```
+```bash
 $> npm i -g forever
 
 $> git clone https://github.com/UnsignedInt8/leavexchat-bot.git
 $> cd leavexchat-bot
 $> npm i
 $> npm run build
-
 $> forever build/main/index.js -c config.json
 ```
 

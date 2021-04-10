@@ -14,7 +14,6 @@ import {
   handleWechatMessage
 } from './bot/index';
 
-import { FriendshipType } from 'wechaty-puppet';
 import HTMLTemplates from './lib/HTMLTemplates';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import Logger from './lib/Logger';
@@ -29,6 +28,8 @@ import lang from './strings';
 import qr from 'qr-image';
 import { readFile } from './bot/UpdateTmpFile';
 import relativeTime from 'dayjs/plugin/relativeTime';
+
+const { version } = require('../../package.json');
 
 dayjs.extend(relativeTime);
 
@@ -121,6 +122,7 @@ export default class Bot {
     };
 
     this.bot.start(this.handleStart);
+    this.bot.command('version', ctx => ctx.reply(`Bot version: ${version}`));
     this.bot.command('stop', checkUser, this.handleLogout);
     this.bot.command('login', ctx => this.handleLogin(ctx));
     this.bot.command('shutdown', _ => process.exit(0));
@@ -244,7 +246,7 @@ export default class Bot {
         });
 
         const deleteWechaty = async () => {
-          wechat.removeAllListeners();
+          wechat?.removeAllListeners();
 
           this.clients.delete(chatid);
           this.recoverWechats.delete(chatid);
@@ -255,7 +257,7 @@ export default class Bot {
           });
 
           await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
-          await wechat.stop();
+          await wechat?.stop();
 
           await MiscHelper.deleteTmpFile(`${this.id}${chatid}`);
         };
@@ -288,8 +290,9 @@ export default class Bot {
       this.recoverWechats.get(chatid) ||
       new Wechaty({
         name: `telegram_${chatid})}`,
-        puppet: this.options.padplusToken ? require('wechaty-puppet-padplus').PuppetPadplus({ token: this.options.padplusToken }) : undefined
+        puppet: 'wechaty-puppet-wechat' // waiting for wechaty >= 0.59
       });
+
     let client: Client = {
       wechat,
       msgs: new Map(),
@@ -380,7 +383,7 @@ export default class Bot {
       let contact = req.contact();
       let name = contact.name();
 
-      if (req.type() === FriendshipType.Receive) {
+      if (req.type() === 2) {
         let avatar = await (await contact.avatar()).toStream();
 
         const buttons = Markup.inlineKeyboard([[Markup.callbackButton('Agree', 'agree')], [Markup.callbackButton('Ignore', 'disagree')]], {
