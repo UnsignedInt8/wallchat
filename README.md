@@ -48,8 +48,8 @@ apt-get update && \
 ```bash
 $> git clone https://github.com/UnsignedInt8/leavexchat-bot.git
 $> cd leavexchat-bot
-$> npm i or yarn
-$> npm run build
+$> yarn
+$> yarn build
 $> node build/main/index.js # 无需配置文件
 $> 输入 token, Done!
 ```
@@ -74,8 +74,8 @@ $> npm i -g forever
 
 $> git clone https://github.com/UnsignedInt8/leavexchat-bot.git
 $> cd leavexchat-bot
-$> npm i or yarn
-$> npm run build
+$> yarn
+$> yarn build
 $> forever build/main/index.js -c config.json
 ```
 
