@@ -2,7 +2,7 @@
 
 [![Powered by Wechaty](https://img.shields.io/badge/Powered%20By-Wechaty-blue.svg)](https://github.com/Wechaty/wechaty)
 
-使用 Telegram Bot 收发 WeChat 文字、语音（仅接收）、图片、视频、Telegram 静态贴纸等消息
+使用 Telegram Bot 收发 WeChat 文字、语音、图片、视频、Telegram 静态贴纸等消息
 
 ## 安装准备
 
@@ -48,7 +48,7 @@ apt-get update && \
 ```bash
 $> git clone https://github.com/UnsignedInt8/leavexchat-bot.git
 $> cd leavexchat-bot
-$> npm i
+$> npm i or yarn
 $> npm run build
 $> node build/main/index.js # 无需配置文件
 $> 输入 token, Done!
@@ -74,7 +74,7 @@ $> npm i -g forever
 
 $> git clone https://github.com/UnsignedInt8/leavexchat-bot.git
 $> cd leavexchat-bot
-$> npm i
+$> npm i or yarn
 $> npm run build
 $> forever build/main/index.js -c config.json
 ```
@@ -110,7 +110,7 @@ $> forever build/main/index.js -c config.json
 
 ## 使用注意
 
-1. 根据 Wechaty 说明，2017 年 6 月之后注册的 Wechat 账号无法登陆网页版 Wechat，因此无法使用此 bot 代收消息
+1. ~~根据 Wechaty 说明，2017 年 6 月之后注册的 Wechat 账号无法登陆网页版 Wechat，因此无法使用此 bot 代收消息~~ 已经支持所有wechat账号登陆
 
 2. 为保证安全，bot 只会在自己的聊天记录保留最近 **200** 条消息 (默认 200)
 

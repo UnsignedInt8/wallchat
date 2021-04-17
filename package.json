@@ -1,6 +1,6 @@
 {
   "name": "leavexchat-bot",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "WeChat via Telegram",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
@@ -58,11 +58,13 @@
   "dependencies": {
     "@postlight/mercury-parser": "^2.2.0",
     "axios": "^0.21.1",
+    "command-exists": "^1.2.9",
     "commander": "^5.1.0",
     "dayjs": "^1.10.4",
     "download": "^7.1.0",
     "fast-xml-parser": "^3.19.0",
     "file-box": "^0.16.8",
+    "fluent-ffmpeg": "^2.1.2",
     "got": "^11.8.2",
     "h2m": "^0.7.0",
     "html-entities": "^1.4.0",
@@ -79,12 +81,14 @@
     "temp-dir": "^2.0.0",
     "tempfile": "^3.0.0",
     "touch": "^3.1.0",
-    "wechaty": "^0.59.8",
-    "wechaty-puppet-wechat": "^0.27.0"
+    "wechaty": "^0.60.4",
+    "wechaty-puppet-wechat": "^0.28.1"
   },
   "devDependencies": {
+    "@types/command-exists": "^1.2.0",
     "@types/download": "^6.2.4",
     "@types/end-of-stream": "^1.4.0",
+    "@types/fluent-ffmpeg": "^2.1.17",
     "@types/got": "^9.6.9",
     "@types/html-entities": "*",
     "@types/inquirer": "^6.5.0",
