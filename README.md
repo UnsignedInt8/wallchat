@@ -110,7 +110,7 @@ $> forever build/main/index.js -c config.json
 
 ## 使用注意
 
-1. 根据 Wechaty 说明，2017 年 6 月之后注册的 Wechat 账号无法登陆网页版 Wechat，因此无法使用此 bot 代收消息
+1. ~~根据 Wechaty 说明，2017 年 6 月之后注册的 Wechat 账号无法登陆网页版 Wechat，因此无法使用此 bot 代收消息~~ 已经支持所有wechat账号登陆
 
 2. 为保证安全，bot 只会在自己的聊天记录保留最近 **200** 条消息 (默认 200)
 
