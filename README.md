@@ -6,8 +6,9 @@
 
 ## 安装准备
 
-1. 安装 Node.js 10+ 官网: https://nodejs.org
+1. 安装 Node.js 12+ 官网: https://nodejs.org
 2. 访问 https://t.me/BotFather, 申请你的 `bot token`
+3. 安装 ffmpeg (可选，将 Telegram 语音（oga 文件）转换成 mp3 发送给微信)
 
 ## 快速开始
 
