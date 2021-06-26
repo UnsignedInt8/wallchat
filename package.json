@@ -81,7 +81,7 @@
     "temp-dir": "^2.0.0",
     "tempfile": "^3.0.0",
     "touch": "^3.1.0",
-    "wechaty": "^0.60.4",
+    "wechaty": "^0.62.3",
     "wechaty-puppet-wechat": "^0.28.1"
   },
   "devDependencies": {
