@@ -11,7 +11,7 @@
     "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
     // "strict": true /* Enable all strict type-checking options. */,
     /* Strict Type-Checking Options */
-    // "noImplicitAny": true /* Raise error on expressions and declarations with an implied 'any' type. */,
+    "noImplicitAny": false /* Raise error on expressions and declarations with an implied 'any' type. */,
     // "strictNullChecks": true /* Enable strict null checks. */,
     // "strictFunctionTypes": true /* Enable strict checking of function types. */,
     // "strictPropertyInitialization": true /* Enable strict checking of property initialization in classes. */,
@@ -31,7 +31,7 @@
     // "experimentalDecorators": true /* Enables experimental support for ES7 decorators. */,
     // "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */,
     "downlevelIteration": true,
-    
+
     "lib": [
       "es2017",
       "dom"
