@@ -174,6 +174,19 @@ export default class Bot {
       }
     });
 
+    this.bot.on('inline_query', checkUser, ctx => {
+      const { inlineQuery } =ctx;
+
+      if (inlineQuery.query === 'agree') {
+        this.handleAgreeFriendship(ctx);
+      }else {
+        this.handleDisagreeFriendship(ctx)
+      }
+    })
+
+    this.bot.action('agree', ctx => this.handleAgreeFriendship(ctx));
+    this.bot.action('disagree', this.handleDisagreeFriendship);
+
     this.bot.catch(err => {
       Logger.error('Ooops', err.message);
     });
