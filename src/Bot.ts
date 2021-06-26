@@ -477,7 +477,7 @@ export default class Bot {
   };
 
   protected handleAgreeFriendship = async (ctx: TelegrafContext) => {
-    let [, id] = ctx.message.text.split(' ');
+    let [, id] = ctx.message?.text?.split(' ');
 
     if (this.pendingFriends.size === 1) {
       for (let [key, req] of this.pendingFriends) {
@@ -499,7 +499,7 @@ export default class Bot {
   };
 
   protected handleDisagreeFriendship = async (ctx: TelegrafContext) => {
-    let [, id] = ctx.message.text.split(' ');
+    let [, id] = ctx.message?.text?.split(' ');
 
     if (this.pendingFriends.size === 1) {
       this.pendingFriends.clear();
