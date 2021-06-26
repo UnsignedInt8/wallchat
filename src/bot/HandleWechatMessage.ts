@@ -2,6 +2,7 @@ import * as TT from 'telegraf/typings/telegram-types';
 import * as XMLParser from '../lib/XmlParser';
 
 import { Contact, Message } from 'wechaty';
+// @ts-ignore
 import { ContactType, MessageType } from 'wechaty-puppet';
 
 import { AllHtmlEntities } from 'html-entities';
