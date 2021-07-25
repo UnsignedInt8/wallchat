@@ -13,6 +13,7 @@ import { TelegrafContext } from 'telegraf/typings/context';
 import download from 'download';
 import isGif from 'is-gif';
 import lang from '../strings';
+import prism from 'prism-media';
 import { writeFile } from './UpdateTmpFile';
 
 const html = new AllHtmlEntities();
@@ -117,8 +118,12 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
 
     case MessageType.Audio:
       let audio = await msg.toFileBox();
-      let source = await audio.toBuffer();
-      let duration = source.byteLength / (2.95 * 1024);
+      // let source = await audio.toBuffer();
+      // let duration = source.byteLength / (2.95 * 1024);
+
+      let duration = (await audio.toBuffer()).byteLength / (2.95 * 1024);
+      let source = (await audio.toStream()).pipe(new prism.opus.Decoder()).pipe(new prism.opus.Encoder());
+      // let source = await audio.toBuffer();
       sent = (await ctx.replyWithVoice({ source }, { caption: nickname, duration })) as TT.Message;
       break;
 

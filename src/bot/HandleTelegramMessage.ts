@@ -9,7 +9,7 @@ import Logger from '../lib/Logger';
 import MiscHelper from '../lib/MiscHelper';
 import { TelegrafContext } from 'telegraf/typings/context';
 import axios from 'axios';
-import ce from "command-exists";
+import ce from 'command-exists';
 import download from 'download';
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
@@ -66,13 +66,13 @@ export default async (ctx: TelegrafContext, { token, httpProxy, bot }: IHandleTe
         if (msg.sticker) {
           const pngfile = tempfile('.png');
           await sharp(distFile)
-            .toFormat('png', { palette: true })
+            .toFormat('png')
             .toFile(pngfile);
 
           distFile = pngfile;
         }
 
-        if (msg.voice && ce.sync('ffmpeg') ) {
+        if (msg.voice && ce.sync('ffmpeg')) {
           const outputFile = tempfile('.mp3');
 
           await new Promise<void>(resolve => {
