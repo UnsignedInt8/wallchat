@@ -1,4 +1,5 @@
 #! /bin/bash
 
-rm node_modules/wechaty/src/io-peer/json-rpc-peer.d.ts 
-sed -i -e "/\/\/\/ <reference path=\"..\/..\/src\/io-peer\/json-rpc-peer.d.ts\" \/>/d" node_modules/wechaty/dist/src/config.d.ts
+rm node_modules/wechaty/src/io-peer/json-rpc-peer.d.ts;
+rm node_modules/memory-card/dist/src/memory-card.d.ts;
+sed -i -e "/\/\/\/ <reference path=\"..\/..\/src\/io-peer\/json-rpc-peer.d.ts\" \/>/d" node_modules/wechaty/dist/src/config.d.ts;

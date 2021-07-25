@@ -6,6 +6,7 @@ import { ContactType, MessageType } from 'wechaty-puppet';
 
 import { AllHtmlEntities } from 'html-entities';
 import Bot from '../Bot';
+import { CommonMessageBundle } from 'telegraf/typings/telegram-types';
 import HTMLTemplates from '../lib/HTMLTemplates';
 import Logger from '../lib/Logger';
 import { TelegrafContext } from 'telegraf/typings/context';
@@ -74,7 +75,7 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
     nickname = `${nickname}[${lang.message.contactLocked('').trim()}]`;
   }
 
-  let sent: TT.Message;
+  let sent: CommonMessageBundle;
 
   if (nickname.includes('Friend recommendation message')) {
     await handleFriendApplyingXml(text, ctx);
@@ -127,7 +128,7 @@ export default async (self: Bot, msg: Message, ctx: TelegrafContext) => {
       if (image.mimeType === 'image/gif') {
         const buffer = await image.toBuffer();
         if (isGif(buffer)) {
-          sent = await ctx['replyWithAnimation']({ source: buffer }, { caption: `${nickname}` });
+          sent = await ctx.replyWithAnimation({ source: buffer }, { caption: `${nickname}` });
           break;
         }
       }
