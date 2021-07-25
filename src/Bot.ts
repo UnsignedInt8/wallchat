@@ -175,14 +175,14 @@ export default class Bot {
     });
 
     this.bot.on('inline_query', checkUser, ctx => {
-      const { inlineQuery } =ctx;
+      const { inlineQuery } = ctx;
 
       if (inlineQuery.query === 'agree') {
         this.handleAgreeFriendship(ctx);
-      }else {
-        this.handleDisagreeFriendship(ctx)
+      } else {
+        this.handleDisagreeFriendship(ctx);
       }
-    })
+    });
 
     this.bot.action('agree', ctx => this.handleAgreeFriendship(ctx));
     this.bot.action('disagree', this.handleDisagreeFriendship);
@@ -399,7 +399,7 @@ export default class Bot {
       if (req.type() === 2) {
         let avatar = await (await contact.avatar()).toStream();
 
-        const buttons = Markup.inlineKeyboard([[Markup.callbackButton('Agree', 'agree')], [Markup.callbackButton('Ignore', 'disagree')]], {
+        const buttons = Markup.inlineKeyboard([Markup.callbackButton('Agree', 'agree'), Markup.callbackButton('Ignore', 'disagree')], {
           columns: 2
         });
 
