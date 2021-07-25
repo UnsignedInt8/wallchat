@@ -33,6 +33,8 @@ alsa-lib.x86_64 atk.x86_64 cups-libs.x86_64 gtk3.x86_64 libXcomposite.x86_64 lib
 
 Ubuntu
 
+推荐官方 Docker https://github.com/wechaty/wechaty/blob/master/Dockerfile
+
 ```
 apt-get update && \
      apt-get install -yq --no-install-recommends \
