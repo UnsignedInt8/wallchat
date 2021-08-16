@@ -157,8 +157,8 @@ export default class Bot {
     this.bot.command('unlock', checkUser, this.handleUnlock);
     this.bot.command('findandlock', checkUser, this.handleFind, this.handleLock);
     this.bot.command('current', checkUser, this.handleCurrent);
-    this.bot.command('agree', checkUser, this.handleAgreeFriendship);
-    this.bot.command('disagree', checkUser, this.handleDisagreeFriendship);
+    // this.bot.command('agree', checkUser, this.handleAgreeFriendship);
+    // this.bot.command('disagree', checkUser, this.handleDisagreeFriendship);
     this.bot.command('acceptroom', checkUser);
     this.bot.command('forward', checkUser, this.handleForward);
     this.bot.command('forwardto', checkUser, this.handleForward);
