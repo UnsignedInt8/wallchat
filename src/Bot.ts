@@ -167,11 +167,13 @@ export default class Bot {
     this.bot.command('logout', checkUser, this.handleLogout);
     this.bot.help(ctx => ctx.reply(lang.help));
     this.bot.on('callback_query', checkUser, ctx => {
-      if (ctx.message.text === 'agree') {
+      if (ctx.callbackQuery.data === 'agree') {
         this.handleAgreeFriendship(ctx);
       } else {
         this.handleDisagreeFriendship(ctx);
       }
+
+      ctx.answerCbQuery('', false);
     });
 
     this.bot.on('inline_query', checkUser, ctx => {
@@ -184,8 +186,8 @@ export default class Bot {
       }
     });
 
-    this.bot.action('agree', ctx => this.handleAgreeFriendship(ctx));
-    this.bot.action('disagree', this.handleDisagreeFriendship);
+    // this.bot.action('agree', ctx => this.handleAgreeFriendship(ctx));
+    // this.bot.action('disagree', this.handleDisagreeFriendship);
 
     this.bot.catch(err => {
       Logger.error('Ooops', err.message);
