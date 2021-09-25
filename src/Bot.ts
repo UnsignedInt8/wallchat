@@ -157,8 +157,8 @@ export default class Bot {
     this.bot.command('unlock', checkUser, this.handleUnlock);
     this.bot.command('findandlock', checkUser, this.handleFind, this.handleLock);
     this.bot.command('current', checkUser, this.handleCurrent);
-    // this.bot.command('agree', checkUser, this.handleAgreeFriendship);
-    // this.bot.command('disagree', checkUser, this.handleDisagreeFriendship);
+    this.bot.command('agree', checkUser, this.handleAgreeFriendship);
+    this.bot.command('disagree', checkUser, this.handleDisagreeFriendship);
     this.bot.command('acceptroom', checkUser);
     this.bot.command('forward', checkUser, this.handleForward);
     this.bot.command('forwardto', checkUser, this.handleForward);
@@ -166,25 +166,29 @@ export default class Bot {
     this.bot.command('unmute', checkUser, this.handleUnmute);
     this.bot.command('logout', checkUser, this.handleLogout);
     this.bot.help(ctx => ctx.reply(lang.help));
-    this.bot.on('callback_query', checkUser, ctx => {
-      if (ctx.callbackQuery.data === 'agree') {
-        this.handleAgreeFriendship(ctx);
-      } else {
-        this.handleDisagreeFriendship(ctx);
-      }
 
-      ctx.answerCbQuery('', false);
-    });
+    this.bot.hears('Agree', this.handleAgreeFriendship);
+    this.bot.hears('Disagree', this.handleDisagreeFriendship);
 
-    this.bot.on('inline_query', checkUser, ctx => {
-      const { inlineQuery } = ctx;
+    // this.bot.on('callback_query', checkUser, ctx => {
+    //   if (ctx.callbackQuery.data === 'agree') {
+    //     this.handleAgreeFriendship(ctx);
+    //   } else {
+    //     this.handleDisagreeFriendship(ctx);
+    //   }
 
-      if (inlineQuery.query === 'agree') {
-        this.handleAgreeFriendship(ctx);
-      } else {
-        this.handleDisagreeFriendship(ctx);
-      }
-    });
+    //   ctx.answerCbQuery('', false);
+    // });
+
+    // this.bot.on('inline_query', checkUser, ctx => {
+    //   const { inlineQuery } = ctx;
+
+    //   if (inlineQuery.query === 'agree') {
+    //     this.handleAgreeFriendship(ctx);
+    //   } else {
+    //     this.handleDisagreeFriendship(ctx);
+    //   }
+    // });
 
     // this.bot.action('agree', ctx => this.handleAgreeFriendship(ctx));
     // this.bot.action('disagree', this.handleDisagreeFriendship);
