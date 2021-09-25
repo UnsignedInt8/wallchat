@@ -167,9 +167,6 @@ export default class Bot {
     this.bot.command('logout', checkUser, this.handleLogout);
     this.bot.help(ctx => ctx.reply(lang.help));
 
-    this.bot.hears('Agree', this.handleAgreeFriendship);
-    this.bot.hears('Disagree', this.handleDisagreeFriendship);
-
     // this.bot.on('callback_query', checkUser, ctx => {
     //   if (ctx.callbackQuery.data === 'agree') {
     //     this.handleAgreeFriendship(ctx);
@@ -405,13 +402,13 @@ export default class Bot {
       if (req.type() === 2) {
         let avatar = await (await contact.avatar()).toStream();
 
-        const buttons = Markup.inlineKeyboard([Markup.callbackButton('Agree', 'agree'), Markup.callbackButton('Ignore', 'disagree')], {
-          columns: 2
-        });
+        // const buttons = Markup.inlineKeyboard([Markup.callbackButton('Agree', 'agree'), Markup.callbackButton('Ignore', 'disagree')], {
+        //   columns: 2
+        // });
 
         await ctx.replyWithPhoto(
           { source: avatar },
-          { caption: `[${lang.contact.friend}]\n\n${hello}`, parse_mode: 'MarkdownV2', reply_markup: buttons }
+          { caption: `[${lang.contact.friend}]\n\n${hello}`, parse_mode: 'MarkdownV2', reply_markup: undefined }
         );
 
         this.pendingFriends.set(name.toLowerCase(), req);
