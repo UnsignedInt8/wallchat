@@ -82,7 +82,7 @@
     "tempfile": "^3.0.0",
     "touch": "^3.1.0",
     "wechaty": "^0.68.1",
-    "wechaty-puppet-wechat": "^0.30.1"
+    "wechaty-puppet-wechat": "^0.28.3"
   },
   "devDependencies": {
     "@types/command-exists": "^1.2.0",
