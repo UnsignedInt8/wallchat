@@ -164,6 +164,7 @@ export default class Bot {
     this.bot.command('forwardto', checkUser, this.handleForward);
     this.bot.command('mute', checkUser, this.handleMute);
     this.bot.command('unmute', checkUser, this.handleUnmute);
+    this.bot.command('quitroom', checkUser, this.handleQuitRoom);
     this.bot.command('logout', checkUser, this.handleLogout);
     this.bot.help(ctx => ctx.reply(lang.help));
 
@@ -472,6 +473,18 @@ export default class Bot {
     await user.wechat?.logout().catch(reason => Logger.error(reason));
     await user.wechat?.stop().catch(reason => Logger.error(reason));
     ctx.reply(lang.login.bye);
+  };
+
+  handleQuitRoom = async (ctx: TelegramContext) => {
+    let user = ctx['user'] as Client;
+    if (!user) return;
+
+    let room = user.currentContact as Room;
+    if (room instanceof Room) {
+      let topic = await room.topic()
+      await room.quit();
+      ctx.reply(`${topic} 👋`);
+    }
   };
 
   protected handleAcceptRoomInvitation = async () => {
