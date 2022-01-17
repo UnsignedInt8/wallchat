@@ -1,4 +1,4 @@
-# LeaveXChat
+# WallChat
 
 [![Powered by Wechaty](https://img.shields.io/badge/Powered%20By-Wechaty-blue.svg)](https://github.com/Wechaty/wechaty)
 
