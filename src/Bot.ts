@@ -1,7 +1,18 @@
-import * as TT from 'telegraf/typings/telegram-types';
-
-import { Contact, Friendship, Message, Room, RoomInvitation, Wechaty } from 'wechaty';
-import Telegraph, { Markup, Telegraf } from 'telegraf';
+import {
+  Contact,
+  Friendship,
+  Message,
+  Room,
+  RoomInvitation,
+  Wechaty,
+  WechatyBuilder,
+} from 'wechaty';
+import { Context, Markup, Telegraf } from 'telegraf';
+import {
+  Message as TTMessage,
+  Update as TTUpdate,
+  UserFromGetMe,
+} from 'telegraf/typings/core/types/typegram';
 import {
   handleCurrent,
   handleFind,
@@ -11,16 +22,15 @@ import {
   handleTelegramMessage,
   handleUnlock,
   handleUnmute,
-  handleWechatMessage
+  handleWechatMessage,
 } from './bot/index';
 
+// import { Context } from 'telegraf/typings/context';
 import HTMLTemplates from './lib/HTMLTemplates';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import Logger from './lib/Logger';
 import MiscHelper from './lib/MiscHelper';
 import { SocksProxyAgent } from 'socks-proxy-agent';
-import { TelegrafContext } from 'telegraf/typings/context';
-import TelegramContext from 'telegraf/context';
 import crypto from 'crypto';
 import dayjs from 'dayjs';
 import { findContact } from './bot/HandleFindX';
@@ -71,9 +81,9 @@ export default class Bot {
   keepMsgs: number;
   options: BotOptions;
 
-  protected bot: Telegraph<TelegrafContext>;
-  protected botSelf: TT.User;
-  protected beforeCheckUserList: ((ctx?: TelegrafContext) => Promise<boolean>)[] = [];
+  protected bot: Telegraf<Context>;
+  protected botSelf: UserFromGetMe;
+  protected beforeCheckUserList: ((ctx?: Context) => Promise<boolean>)[] = [];
   protected pendingFriends = new Map<string, Friendship>();
   protected lastRoomInvitation: RoomInvitation = null;
   private recoverWechats = new Map<number, Wechaty>(); // tg chatid => wechaty
@@ -94,68 +104,87 @@ export default class Bot {
     this.id = `leavexchat_${botid}.`;
 
     const { token, socks5Proxy, keepMsgs, httpProxy } = options;
-    this.keepMsgs = keepMsgs === undefined ? 200 : Math.max(keepMsgs, 100) || 200;
+    this.keepMsgs =
+      keepMsgs === undefined ? 200 : Math.max(keepMsgs, 100) || 200;
 
-    const socks5agent: any = socks5Proxy ? new SocksProxyAgent(`socks5://${socks5Proxy.host}:${socks5Proxy.port}`) : undefined;
-    const agent: any = httpProxy ? new HttpsProxyAgent(`http://${httpProxy.host}:${httpProxy.port}`) : undefined;
+    const socks5agent: any = socks5Proxy
+      ? new SocksProxyAgent(`socks5://${socks5Proxy.host}:${socks5Proxy.port}`)
+      : undefined;
+    const agent: any = httpProxy
+      ? new HttpsProxyAgent(`http://${httpProxy.host}:${httpProxy.port}`)
+      : undefined;
 
-    this.bot = new Telegraph(token, {
-      telegram: { agent: agent || socks5agent }
+    this.bot = new Telegraf(token, {
+      telegram: { agent: agent || socks5agent },
     });
 
-    const checkUser = (ctx: TelegrafContext, n: Function) => this.checkUser(ctx, n);
-    const replyOk = (ctx: TelegrafContext) => ctx.reply('OK');
+    const checkUser = (ctx: Context, n: Function) => this.checkUser(ctx, n);
+    const replyOk = (ctx: Context) => ctx.reply('OK');
 
-    const turnGroup = (ctx: TelegrafContext, n: Function, on: boolean) => {
+    const turnGroup = (ctx: Context, n: Function, on: boolean) => {
       ctx['user'].receiveGroups = on;
       n();
     };
 
-    const turnOfficial = (ctx: TelegrafContext, n: Function, on: boolean) => {
+    const turnOfficial = (ctx: Context, n: Function, on: boolean) => {
       ctx['user'].receiveOfficialAccount = on;
       n();
     };
 
-    const turnSelf = (ctx: TelegrafContext, n: Function, on: boolean) => {
+    const turnSelf = (ctx: Context, n: Function, on: boolean) => {
       ctx['user'].receiveSelf = on;
       n();
     };
 
     this.bot.start(this.handleStart);
-    this.bot.command('version', ctx => ctx.reply(`Bot version: ${version}`));
+    this.bot.command('version', (ctx) => ctx.reply(`Bot version: ${version}`));
     this.bot.command('stop', checkUser, this.handleLogout);
-    this.bot.command('login', ctx => this.handleLogin(ctx));
-    this.bot.command('shutdown', _ => process.exit(0));
+    this.bot.command('login', (ctx) => this.handleLogin(ctx));
+    this.bot.command('shutdown', (_) => process.exit(0));
 
-    const turnGroupOn = (ctx: TelegrafContext, n: Function) => turnGroup(ctx, n, true);
+    const turnGroupOn = (ctx: Context, n: Function) => turnGroup(ctx, n, true);
     this.bot.command('groupon', checkUser, turnGroupOn, replyOk);
 
-    const turnGroupOff = (ctx: TelegrafContext, n: Function) => turnGroup(ctx, n, false);
+    const turnGroupOff = (ctx: Context, n: Function) =>
+      turnGroup(ctx, n, false);
     this.bot.command('groupoff', checkUser, turnGroupOff, replyOk);
 
-    const turnOfficialOn = (ctx: TelegrafContext, n: Function) => turnOfficial(ctx, n, true);
+    const turnOfficialOn = (ctx: Context, n: Function) =>
+      turnOfficial(ctx, n, true);
     this.bot.command('officialon', checkUser, turnOfficialOn, replyOk);
 
-    const turnOfficialOff = (ctx: TelegrafContext, n: Function) => turnOfficial(ctx, n, false);
+    const turnOfficialOff = (ctx: Context, n: Function) =>
+      turnOfficial(ctx, n, false);
     this.bot.command('officialoff', checkUser, turnOfficialOff, replyOk);
 
-    const turnSelfOn = (ctx: TelegrafContext, n: Function) => turnSelf(ctx, n, true);
+    const turnSelfOn = (ctx: Context, n: Function) => turnSelf(ctx, n, true);
     this.bot.command('selfon', checkUser, turnSelfOn, replyOk);
 
-    const turnSelfOff = (ctx: TelegrafContext, n: Function) => turnSelf(ctx, n, false);
+    const turnSelfOff = (ctx: Context, n: Function) => turnSelf(ctx, n, false);
     this.bot.command('selfoff', checkUser, turnSelfOff, replyOk);
 
-    const handleUpTime = (ctx: TelegrafContext) => {
-      ctx.replyWithHTML(`<code>${this.uptime.toISOString()}  [${dayjs().from(this.uptime, true)}]</code>`, {
-        reply_to_message_id: ctx['user'].firstMsgId
-      });
+    const handleUpTime = (ctx: Context) => {
+      ctx.replyWithHTML(
+        `<code>${this.uptime.toISOString()}  [${dayjs().from(
+          this.uptime,
+          true
+        )}]</code>`,
+        {
+          reply_to_message_id: ctx['user'].firstMsgId,
+        }
+      );
     };
     this.bot.command('uptime', checkUser, handleUpTime);
 
     this.bot.command('find', checkUser, this.handleFind);
     this.bot.command('lock', checkUser, this.handleLock);
     this.bot.command('unlock', checkUser, this.handleUnlock);
-    this.bot.command('findandlock', checkUser, this.handleFind, this.handleLock);
+    this.bot.command(
+      'findandlock',
+      checkUser,
+      this.handleFind,
+      this.handleLock
+    );
     this.bot.command('current', checkUser, this.handleCurrent);
     this.bot.command('agree', checkUser, this.handleAgreeFriendship);
     this.bot.command('disagree', checkUser, this.handleDisagreeFriendship);
@@ -166,7 +195,7 @@ export default class Bot {
     this.bot.command('unmute', checkUser, this.handleUnmute);
     this.bot.command('quitroom', checkUser, this.handleQuitRoom);
     this.bot.command('logout', checkUser, this.handleLogout);
-    this.bot.help(ctx => ctx.reply(lang.help));
+    this.bot.help((ctx) => ctx.reply(lang.help));
 
     // this.bot.on('callback_query', checkUser, ctx => {
     //   if (ctx.callbackQuery.data === 'agree') {
@@ -191,19 +220,20 @@ export default class Bot {
     // this.bot.action('agree', ctx => this.handleAgreeFriendship(ctx));
     // this.bot.action('disagree', this.handleDisagreeFriendship);
 
-    this.bot.catch(err => {
-      Logger.error('Ooops', err.message);
+    this.bot.catch((err) => {
+      Logger.error('Ooops', err?.['message']);
     });
   }
 
-  handleFatalError = async (err: Error | number | NodeJS.Signals) => Logger.error(`Bot Alert: ${err}`);
+  handleFatalError = async (err: Error | number | NodeJS.Signals) =>
+    Logger.error(`Bot Alert: ${err}`);
 
   sendSystemMessage = async (msg: string) => {
     if (this.options.silent) return;
 
     const alert = HTMLTemplates.message({
       nickname: `[Bot Alert]`,
-      message: msg
+      message: msg,
     });
 
     for (let [id, _] of this.clients) {
@@ -212,7 +242,11 @@ export default class Bot {
   };
 
   async launch() {
-    this.bot.on('message', (ctx: TelegrafContext, n: Function) => this.checkUser(ctx, n), this.handleTelegramMessage);
+    this.bot.on(
+      'message',
+      (ctx: Context, n: Function) => this.checkUser(ctx, n),
+      this.handleTelegramMessage
+    );
 
     await this.bot.launch();
     this.botSelf = await this.bot.telegram.getMe();
@@ -224,34 +258,47 @@ export default class Bot {
   async recoverSessions() {
     const files = await MiscHelper.listTmpFile(this.id);
     const ids = files
-      .map(f => f.split('.')[1])
-      .filter(s => s)
-      .map(s => Number.parseInt(s));
+      .map((f) => f.split('.')[1])
+      .filter((s) => s)
+      .map((s) => Number.parseInt(s));
 
     Logger.info(`Recovering ${ids.length} sessions...`);
 
     await Promise.all(
-      ids.map(async chatid => {
+      ids.map(async (chatid) => {
         const client = this.createClient(chatid);
         const { wechat } = client;
 
-        wechat.once('login', async user => {
+        wechat.once('login', async (user) => {
           client.wechatId = user.id;
 
-          const ctx = new TelegramContext({ message: { chat: { id: chatid } } } as TT.Update, this.bot.telegram);
+          const ctx = new Context(
+            { message: { chat: { id: chatid } } } as TTUpdate,
+            this.bot.telegram,
+            this.botSelf
+          );
           await this.handleLogin(ctx);
 
           const alert = `<code>${lang.login.sessionOK}</code>`;
-          await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
+          await this.bot.telegram.sendMessage(chatid, alert, {
+            parse_mode: 'HTML',
+          });
 
           const lastDump = await readFile(`${this.id}${chatid}`);
           if (lastDump.recentContact && lastDump.recentContact.name) {
-            const { found, foundName } = await findContact(lastDump.recentContact.name, wechat);
+            const { found, foundName } = await findContact(
+              lastDump.recentContact.name,
+              wechat
+            );
             client.currentContact = found;
             client.contactLocked = lastDump.recentContact.locked;
 
             if (found) {
-              await ctx.reply(client.contactLocked ? lang.message.contactLocked(foundName) : lang.message.contactFound(foundName));
+              await ctx.reply(
+                client.contactLocked
+                  ? lang.message.contactLocked(foundName)
+                  : lang.message.contactFound(foundName)
+              );
             } else {
               client.contactLocked = false;
             }
@@ -263,24 +310,27 @@ export default class Bot {
         });
 
         const deleteWechaty = async () => {
-          wechat?.removeAllListeners();
+          // wechat?.removeAllListeners();
+          wechat.reset();
 
           this.clients.delete(chatid);
           this.recoverWechats.delete(chatid);
 
           const alert = HTMLTemplates.message({
             nickname: `[Bot Alert]`,
-            message: lang.login.sessionLost
+            message: lang.login.sessionLost,
           });
 
-          await this.bot.telegram.sendMessage(chatid, alert, { parse_mode: 'HTML' });
+          await this.bot.telegram.sendMessage(chatid, alert, {
+            parse_mode: 'HTML',
+          });
           await wechat?.stop();
 
           await MiscHelper.deleteTmpFile(`${this.id}${chatid}`);
         };
 
-        wechat.once('scan', async _ => await deleteWechaty());
-        wechat.once('error', async _ => await deleteWechaty());
+        wechat.once('scan', async (_) => await deleteWechaty());
+        wechat.once('error', async (_) => await deleteWechaty());
 
         this.recoverWechats.set(chatid, wechat);
         await wechat.start();
@@ -295,7 +345,7 @@ export default class Bot {
     }
   }
 
-  protected handleStart = async (ctx: TelegrafContext) => {
+  protected handleStart = async (ctx: Context) => {
     await ctx.reply(lang.welcome).catch();
     await ctx.reply(lang.help);
   };
@@ -305,9 +355,9 @@ export default class Bot {
 
     let wechat =
       this.recoverWechats.get(chatid) ||
-      new Wechaty({
+      WechatyBuilder.build({
         name: `telegram_${chatid})}`,
-        puppet: 'wechaty-puppet-wechat' // waiting for wechaty >= 0.59
+        puppet: 'wechaty-puppet-wechat',
       });
 
     let client: Client = {
@@ -316,7 +366,7 @@ export default class Bot {
       receiveGroups: true,
       receiveOfficialAccount: true,
       muteList: [],
-      botId: this.id
+      botId: this.id,
     };
 
     this.clients.set(chatid, client);
@@ -324,7 +374,7 @@ export default class Bot {
     return client;
   }
 
-  protected async handleLogin(ctx: TelegrafContext) {
+  protected async handleLogin(ctx: Context) {
     for (let c of this.beforeCheckUserList) {
       if (!(await c(ctx))) return;
     }
@@ -334,7 +384,7 @@ export default class Bot {
     if (this.clients.has(id) && this.clients.get(id)?.initialized) {
       let user = this.clients.get(id);
       if (user.wechatId) {
-        ctx.reply(lang.login.logined(user.wechat?.userSelf().name()));
+        ctx.reply(lang.login.logined(user.wechat.ContactSelf.name));
         return;
       }
 
@@ -344,11 +394,11 @@ export default class Bot {
 
     const client = this.createClient(id);
     const { wechat } = client;
-    wechat.removeAllListeners(); // clear all listeners if it is a recovered session
+    // wechat.removeAllListeners(); // clear all listeners if it is a recovered session
 
     let loginTimer: NodeJS.Timeout;
 
-    let qrMessage: TT.MessagePhoto | void = undefined;
+    let qrMessage: TTMessage | void = undefined;
 
     const removeQRMessage = async () => {
       if (!qrMessage) return;
@@ -356,9 +406,12 @@ export default class Bot {
       qrMessage = undefined;
     };
 
-    const deleteWechat = async ({ clean }: { clean: boolean } = { clean: true }) => {
+    const deleteWechat = async (
+      { clean }: { clean: boolean } = { clean: true }
+    ) => {
       this.clients.delete(id);
-      wechat?.removeAllListeners();
+      // wechat?.removeAllListeners();
+
       await wechat?.stop().catch();
       await removeQRMessage();
       if (clean) await MiscHelper.deleteTmpFile(`${this.id}${id}`);
@@ -379,23 +432,26 @@ export default class Bot {
       }
 
       await removeQRMessage();
-      qrMessage = await ctx.replyWithPhoto({ source: qr.image(qrcode) }).catch(() => deleteWechat());
+      qrMessage = await ctx
+        .replyWithPhoto({ source: qr.image(qrcode) })
+        .catch(() => deleteWechat());
     };
 
     wechat?.on('scan', handleQrcode);
 
-    wechat?.once('login', async user => {
+    wechat?.once('login', async (user) => {
       this.clients.get(id).wechatId = user.id;
       await ctx.reply(lang.login.logined(user.name()));
       clearTimeout(loginTimer);
-      wechat?.removeListener('scan', handleQrcode);
+      wechat?.off('scan', handleQrcode);
+
       await removeQRMessage();
 
       // create chat tmp id
       await MiscHelper.createTmpFile(`${this.id}${id}`);
     });
 
-    wechat?.on('friendship', async req => {
+    wechat?.on('friendship', async (req) => {
       let hello = req.hello();
       let contact = req.contact();
       let name = contact.name();
@@ -409,33 +465,37 @@ export default class Bot {
 
         await ctx.replyWithPhoto(
           { source: avatar },
-          { caption: `[${lang.contact.friend}]\n\n${hello}`, parse_mode: 'MarkdownV2', reply_markup: undefined }
+          {
+            caption: `[${lang.contact.friend}]\n\n${hello}`,
+            parse_mode: 'MarkdownV2',
+            reply_markup: undefined,
+          }
         );
 
         this.pendingFriends.set(name.toLowerCase(), req);
       }
     });
 
-    wechat?.on('room-invite', async invitation => {
+    wechat?.on('room-invite', async (invitation) => {
       let inviter = (await invitation.inviter()).name();
-      let topic = await invitation.roomTopic();
+      let topic = await invitation.topic();
 
       await ctx.reply(`${lang.message.inviteRoom(inviter, topic)} /acceptroom`);
     });
 
-    wechat?.on('logout', async user => {
+    wechat?.on('logout', async (user) => {
       await deleteWechat();
       await ctx.reply(lang.login.logouted(user.name()));
     });
 
-    wechat?.on('error', async error => {
+    wechat?.on('error', async (error) => {
       Logger.warn(error.message);
       await ctx.reply(lang.message.error);
       await deleteWechat({ clean: false });
       await this.handleLogin(ctx);
     });
 
-    wechat?.on('message', msg => this.handleWechatMessage(msg, ctx));
+    wechat?.on('message', (msg) => this.handleWechatMessage(msg, ctx));
 
     client.initialized = true;
 
@@ -446,7 +506,7 @@ export default class Bot {
     await wechat?.start();
   }
 
-  protected async checkUser(ctx: TelegrafContext, next: Function) {
+  protected async checkUser(ctx: Context, next: Function) {
     for (let c of this.beforeCheckUserList) {
       if (!(await c(ctx))) return;
     }
@@ -461,30 +521,28 @@ export default class Bot {
     next(ctx);
   }
 
-  protected handleLogout = async (ctx: TelegrafContext) => {
+  protected handleLogout = async (ctx: Context) => {
     let user = ctx['user'] as Client;
     if (!user) return;
 
     try {
       this.clients.delete(ctx.chat.id);
-      user.wechat?.removeAllListeners();
+      user.wechat?.reset();
     } catch (error) {}
 
-    await user.wechat?.logout().catch(reason => Logger.error(reason));
-    await user.wechat?.stop().catch(reason => Logger.error(reason));
+    await user.wechat?.logout().catch((reason) => Logger.error(reason));
+    await user.wechat?.stop().catch((reason) => Logger.error(reason));
     ctx.reply(lang.login.bye);
   };
 
-  handleQuitRoom = async (ctx: TelegramContext) => {
+  handleQuitRoom = async (ctx: Context) => {
     let user = ctx['user'] as Client;
     if (!user) return;
 
     let room = user.currentContact as Room;
-    if (room instanceof Room) {
-      let topic = await room.topic()
-      await room.quit();
-      ctx.reply(`${topic} 👋`);
-    }
+    let topic = await room['topic']?.();
+    await room['quit']?.();
+    ctx.reply(`${topic} 👋`);
   };
 
   protected handleAcceptRoomInvitation = async () => {
@@ -492,52 +550,49 @@ export default class Bot {
     this.lastRoomInvitation = null;
   };
 
-  protected handleAgreeFriendship = async (ctx: TelegrafContext) => {
-    let [, id] = ctx.message?.text?.split(' ');
-
-    if (this.pendingFriends.size === 1) {
-      for (let [key, req] of this.pendingFriends) {
-        await req.accept();
-      }
-
-      this.pendingFriends.clear();
-      return;
+  protected handleAgreeFriendship = async (ctx: Context) => {
+    for (let [key, req] of this.pendingFriends) {
+      await req.accept();
     }
 
-    if (!id) {
-      await ctx.reply(lang.commands.agree);
-      return;
-    }
+    this.pendingFriends.clear();
 
-    let req = this.pendingFriends.get(id.toLowerCase());
-    await req?.accept();
-    this.pendingFriends.delete(id.toLowerCase());
+    // let [, id] = ctx.message?.text?.split(' ');
+
+    // if (!id) {
+    //   await ctx.reply(lang.commands.agree);
+    //   return;
+    // }
+
+    // let req = this.pendingFriends.get(id.toLowerCase());
+    // await req?.accept();
+    // this.pendingFriends.delete(id.toLowerCase());
   };
 
-  protected handleDisagreeFriendship = async (ctx: TelegrafContext) => {
-    let [, id] = ctx.message?.text?.split(' ');
+  protected handleDisagreeFriendship = async (ctx: Context) => {
+    this.pendingFriends.clear();
 
-    if (this.pendingFriends.size === 1) {
-      this.pendingFriends.clear();
-      return;
-    }
+    // let [, id] = ctx.message?.text?.split(' ');
 
-    if (!id) {
-      await ctx.reply(lang.commands.disagree);
-      return;
-    }
+    // if (!id) {
+    //   await ctx.reply(lang.commands.disagree);
+    //   return;
+    // }
 
-    this.pendingFriends.delete(id.toLowerCase());
+    // this.pendingFriends.delete(id.toLowerCase());
     await ctx.reply('OK');
   };
 
-  protected handleFind = (ctx: TelegrafContext, next: Function) => handleFind(this, ctx, next);
-  protected handleLock = (ctx: TelegrafContext) => handleLock(ctx);
-  protected handleUnlock = (ctx: TelegrafContext) => handleUnlock(ctx);
-  protected handleMute = (ctx: TelegrafContext) => handleMute(ctx);
-  protected handleUnmute = (ctx: TelegrafContext) => handleUnmute(ctx);
+  protected handleFind = (ctx: Context, next: Function) =>
+    handleFind(this, ctx, next);
+  protected handleLock = (ctx: Context) => handleLock(ctx);
+  protected handleUnlock = (ctx: Context) => handleUnlock(ctx);
+  protected handleMute = (ctx: Context) => handleMute(ctx);
+  protected handleUnmute = (ctx: Context) => handleUnmute(ctx);
   protected handleCurrent = handleCurrent;
   protected handleForward = handleForwardTo;
-  protected handleTelegramMessage = (ctx: TelegrafContext) => handleTelegramMessage(ctx, { ...this.options, bot: this.botSelf });
-  protected handleWechatMessage = (msg: Message, ctx: TelegrafContext) => handleWechatMessage(this, msg, ctx);
+  protected handleTelegramMessage = (ctx: Context) =>
+    handleTelegramMessage(ctx, { ...this.options, bot: this.botSelf });
+  protected handleWechatMessage = (msg: Message, ctx: Context) =>
+    handleWechatMessage(this, msg, ctx);
 }

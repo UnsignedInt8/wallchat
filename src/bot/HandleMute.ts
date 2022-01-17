@@ -1,11 +1,13 @@
-import { TelegrafContext } from 'telegraf/typings/context';
 import Bot, { Client } from '../Bot';
+import { Contact, Room } from 'wechaty';
+
+import { Context } from 'telegraf/typings/context';
+import { Message } from 'telegraf/typings/core/types/typegram';
 import lang from '../strings';
 import { writeFile } from './UpdateTmpFile';
-import { Room } from 'wechaty';
 
-export default async (ctx: TelegrafContext) => {
-  const msg = ctx.message;
+export default async (ctx: Context) => {
+  const msg = ctx.message as Message.TextMessage;
   const user = ctx['user'] as Client;
 
   if (!msg) return;
@@ -19,7 +21,10 @@ export default async (ctx: TelegrafContext) => {
   const wxmsg = user.msgs.get(msg.reply_to_message?.message_id)?.wxmsg;
 
   const room = wxmsg?.room() ?? user.currentContact;
-  const topic = room instanceof Room ? await room.topic() : room.name();
+
+  const topic =
+    (await (room as Room)['topic']?.()) || (room as Contact)['name']?.();
+
   if (user.muteList.includes(topic)) {
     await ctx.reply(lang.message.muteRoom(topic));
     return;

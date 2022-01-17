@@ -1,26 +1,37 @@
 #!/usr/bin/env node
 
-import commander from 'commander';
-import fs from 'fs';
 import Bot, { BotOptions } from './Bot';
+
+import { Command } from 'commander';
 import Logger from './lib/Logger';
+import fs from 'fs';
 import inquirer from 'inquirer';
 
 // Called directly
 if (require.main === module) {
-  let program = commander.option('-c, --config [path]', 'Configruation File Path', String).parse(process.argv);
+  let program = new Command()
+    .option('-c, --config [path]', 'Configruation File Path', String)
+    .parse(process.argv);
 
   let bot: Bot;
 
-  if (program.config) {
-    let json = fs.readFileSync(program.config, { encoding: 'utf8' });
+  const opts = program.opts();
+
+  if (opts.config) {
+    let json = fs.readFileSync(opts.config, {
+      encoding: 'utf8',
+    });
     let config = JSON.parse(json);
     bot = new Bot(config);
     bot.launch();
   } else {
     (async () => {
       try {
-        let { token } = (await inquirer.prompt({ name: 'token', message: 'Bot Token:', type: 'input' })) as { token: string };
+        let { token } = (await inquirer.prompt({
+          name: 'token',
+          message: 'Bot Token:',
+          type: 'input',
+        })) as { token: string };
         bot = new Bot({ token: token.trim() });
         bot.launch();
       } catch (error) {

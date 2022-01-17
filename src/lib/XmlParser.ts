@@ -1,19 +1,22 @@
 import { HTMLElement, parse } from 'node-html-parser';
 
 import Mercury from '@postlight/mercury-parser';
+import { XMLParser } from 'fast-xml-parser';
 import h2m from 'h2m';
 import marked from 'marked';
-import xml from 'fast-xml-parser';
 
 function replaceMarkdownChars(txt: string | object) {
   let title = (typeof txt === 'string' ? txt : txt['#text']) || '';
   return title.replace(/\[/g, '').replace(/\]/g, '');
 }
 
+const xml = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '' });
 export function parseOffical(rawXml: string): string {
   try {
     const msg = xml.parse(rawXml);
-    const items = msg['msg']['appmsg']['mmreader']['category']['item'] as Array<any>;
+    const items = msg['msg']['appmsg']['mmreader']['category'][
+      'item'
+    ] as Array<any>;
     return items.reduce((prev, curr) => {
       let title = h2m(replaceMarkdownChars(curr['title']));
       let url = (curr['url'] as string).replace('xtrack=1', 'xtrack=0');
@@ -36,9 +39,10 @@ export function parseAttach(rawXml: string) {
 }
 
 export function parseContact(rawXml: string) {
-  const msg = xml.parse(rawXml, { ignoreAttributes: false, attributeNamePrefix: '' });
+  const msg = xml.parse(rawXml);
   const content = msg['msg'];
-  const headerUrl: string = content['bigheadimgurl'] || content['smallheadimgurl'];
+  const headerUrl: string =
+    content['bigheadimgurl'] || content['smallheadimgurl'];
   const nickname: string = content['nickname'];
   const province: string = content['province'] || '';
   const city: string = content['city'] || '';
@@ -50,26 +54,34 @@ export function parseContact(rawXml: string) {
 }
 
 export function parseFriendApplying(rawXml: string) {
-  const msg = xml.parse(rawXml, { ignoreAttributes: false, attributeNamePrefix: '' });
+  const msg = xml.parse(rawXml);
   const content = msg['msg'];
   const nickname: string = content['fromnickname'];
   const applyingMsg: string = content['content'];
   const wechatid: string = content['alias'] || content['username'];
-  const headerUrl: string = content['bigheadimgurl'] || content['smallheadimgurl'];
+  const headerUrl: string =
+    content['bigheadimgurl'] || content['smallheadimgurl'];
   const sex = Number.parseInt(content['sex']);
   const sign: string = content['sign'];
 
   return { nickname, applyingMsg, wechatid, headerUrl, sex, sign };
 }
 
-export async function convertXmlToTelegraphMarkdown(rawXml: string, token: string = '4a1c7c544a7f2e9c146240e92ad4dc9e2e14e3e8a0ec01665ddbc80fbba3') {
+export async function convertXmlToTelegraphMarkdown(
+  rawXml: string,
+  token: string = '4a1c7c544a7f2e9c146240e92ad4dc9e2e14e3e8a0ec01665ddbc80fbba3'
+) {
   const msg = xml.parse(rawXml);
-  const items = msg['msg']['appmsg']['mmreader']['category']['item'] as Array<any>;
-  const urls = items.map(async curr => {
+  const items = msg['msg']['appmsg']['mmreader']['category'][
+    'item'
+  ] as Array<any>;
+  const urls = items.map(async (curr) => {
     // let title = h2m(replaceMarkdownChars(curr['title']))
     let url = (curr['url'] as string).replace('xtrack=1', 'xtrack=0');
 
-    const { title, content, excerpt } = (await Mercury.parse(url, { contentType: 'markdown' })) as {
+    const { title, content, excerpt } = (await Mercury.parse(url, {
+      contentType: 'markdown',
+    })) as {
       title: string;
       content: string;
       excerpt: string;
@@ -82,10 +94,10 @@ export async function convertXmlToTelegraphMarkdown(rawXml: string, token: strin
       if (n.childNodes.length === 0) return;
       convert(n);
     };
-    root.childNodes.map(c => {
+    root.childNodes.map((c) => {
       const n = c as HTMLElement;
       return {
-        tag: n.tagName
+        tag: n.tagName,
       };
     });
 

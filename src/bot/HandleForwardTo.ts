@@ -1,17 +1,18 @@
-import { TelegrafContext } from 'telegraf/typings/context';
 import { Client } from '../Bot';
-import lang from '../strings';
+import { Context } from 'telegraf/typings/context';
+import { Message } from 'telegraf/typings/core/types/typegram';
 import MiscHelper from '../lib/MiscHelper';
+import lang from '../strings';
 
-export default async (ctx: TelegrafContext) => {
-  const msg = ctx.message;
+export default async (ctx: Context) => {
+  const msg = ctx.message as Message.TextMessage;
   if (!msg) return;
   if (!msg.reply_to_message) {
     await ctx.reply(lang.message.noQuoteMessage);
     return;
   }
 
-  const contents = ctx.message.text.split(' ');
+  const contents = msg.text.split(' ');
   contents.shift();
 
   const to = contents.reduce((p, c) => `${p} ${c}`, '').trim();
@@ -21,7 +22,9 @@ export default async (ctx: TelegrafContext) => {
 
   if (to) {
     const regexp = new RegExp(to, 'ig');
-    target = (await user.wechat?.Contact.find({ name: regexp })) || (await user.wechat?.Contact.find({ alias: regexp }));
+    target =
+      (await user.wechat?.Contact.find({ name: regexp })) ||
+      (await user.wechat?.Contact.find({ alias: regexp }));
 
     if (!target) {
       await ctx.reply(lang.message.contactNotFound);
@@ -35,5 +38,7 @@ export default async (ctx: TelegrafContext) => {
   await wxmsg.forward(target);
 
   const name = await MiscHelper.getFriendlyName(target || user.currentContact);
-  await ctx.reply(lang.message.msgForward(name), { reply_to_message_id: msg.reply_to_message.message_id });
+  await ctx.reply(lang.message.msgForward(name), {
+    reply_to_message_id: msg.reply_to_message.message_id,
+  });
 };

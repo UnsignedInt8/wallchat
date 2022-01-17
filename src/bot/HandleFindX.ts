@@ -1,13 +1,15 @@
-import { TelegrafContext } from 'telegraf/typings/context';
-import { Client } from '../Bot';
-import lang from '../strings';
 import { Contact, Room, Wechaty } from 'wechaty';
-import Logger from '../lib/Logger';
-import { writeFile } from './UpdateTmpFile';
-import Bot from '../Bot';
 
-export default async (self: Bot, ctx: TelegrafContext, next: Function) => {
-  let contents = ctx.message.text.split(' ');
+import Bot from '../Bot';
+import { Client } from '../Bot';
+import { Context } from 'telegraf/typings/context';
+import Logger from '../lib/Logger';
+import { Message } from 'telegraf/typings/core/types/typegram';
+import lang from '../strings';
+import { writeFile } from './UpdateTmpFile';
+
+export default async (self: Bot, ctx: Context, next: Function) => {
+  let contents = (ctx.message as Message.TextMessage).text.split(' ');
   contents.shift();
 
   let name = contents.reduce((p, c) => `${p} ${c}`, '').trim();
@@ -26,14 +28,21 @@ export default async (self: Bot, ctx: TelegrafContext, next: Function) => {
     return;
   }
 
-  let info = user.contactLocked ? ` [${lang.message.contactLocked('').trim()}]` : '';
-  let sent = await ctx.reply(lang.message.contactFound(`${foundName}`) + info).catch();
+  let info = user.contactLocked
+    ? ` [${lang.message.contactLocked('').trim()}]`
+    : '';
+  let sent = await ctx
+    .reply(lang.message.contactFound(`${foundName}`) + info)
+    .catch();
   user.currentContact = found;
 
   user.msgs.set(sent.message_id, { contact: found, wxmsg: undefined });
-  const wname = found instanceof Contact ? found.name() : await (found as Room)?.topic();
+
+  const wname =
+    (found as Contact)['name']?.() || (await (found as Room)['topic']?.());
+
   await writeFile(`${self.id}${ctx.chat.id}`, {
-    recentContact: { name: wname, locked: user.contactLocked }
+    recentContact: { name: wname, locked: user.contactLocked },
   });
 
   if (next) next();
@@ -45,7 +54,9 @@ export async function findContact(query: string, wechat: Wechaty) {
   let found: Contact | Room | undefined;
   let foundName = '';
   try {
-    found = (await wechat?.Contact.find({ alias: regexp })) || (await wechat?.Contact.find({ name: regexp }));
+    found =
+      (await wechat?.Contact.find({ alias: regexp })) ||
+      (await wechat?.Contact.find({ name: regexp }));
 
     const alias = await found?.alias();
     foundName = alias ? `${found?.name()} (${alias})` : found?.name();
