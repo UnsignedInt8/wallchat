@@ -8,8 +8,6 @@ coverage
 .nyc_output
 *.log
 
-yarn.lock
-
 *.png
 
 config.json
