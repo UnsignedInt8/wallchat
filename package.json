@@ -1,6 +1,6 @@
 {
   "name": "wallchat",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "wallchat bot",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
@@ -60,6 +60,7 @@
     "@types/sharp": "^0.29.5",
     "@types/touch": "^3.1.2",
     "axios": "^0.24.0",
+    "brolog": "^1.14.2",
     "command-exists": "^1.2.9",
     "commander": "^8.3.0",
     "dayjs": "^1.10.7",
