@@ -311,7 +311,6 @@ export default class Bot {
 
         const deleteWechaty = async () => {
           // wechat?.removeAllListeners();
-          wechat.reset();
 
           this.clients.delete(chatid);
           this.recoverWechats.delete(chatid);
@@ -324,8 +323,8 @@ export default class Bot {
           await this.bot.telegram.sendMessage(chatid, alert, {
             parse_mode: 'HTML',
           });
-          await wechat?.stop();
 
+          await wechat?.stop();
           await MiscHelper.deleteTmpFile(`${this.id}${chatid}`);
         };
 
@@ -491,8 +490,9 @@ export default class Bot {
     wechat?.on('error', async (error) => {
       Logger.warn(error.message);
       await ctx.reply(lang.message.error);
-      await deleteWechat({ clean: false });
-      await this.handleLogin(ctx);
+      // await deleteWechat({ clean: false });
+      // await this.handleLogin(ctx);
+      process.exit(0);
     });
 
     wechat?.on('message', (msg) => this.handleWechatMessage(msg, ctx));
