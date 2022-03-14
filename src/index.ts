@@ -36,7 +36,7 @@ if (require.main === module) {
         bot.launch();
       } catch (error) {
         Logger.error(error.message);
-        process.exit(1);
+        setTimeout(() => process.exit(1), 1000);
       }
     })();
   }
