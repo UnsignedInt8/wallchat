@@ -36,6 +36,8 @@ const banNotifications = [
   '与群里其他人都不是微信朋友关系，请注意隐私安全',
   '你通过扫描二维码加入群聊，群聊参与人还有：',
   '" 拍了拍自己',
+  '确认了一笔转账，当前微信版本不支持展示该内容',
+  '向他人发起了一笔转账，当前微信版本不支持展示该内容',
 ];
 
 export default async (self: Bot, msg: Message, ctx: Context) => {
