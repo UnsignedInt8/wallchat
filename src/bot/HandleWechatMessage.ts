@@ -102,6 +102,13 @@ export default async (self: Bot, msg: Message, ctx: Context) => {
       } else if (room && banNotifications.some((n) => text.includes(n))) {
         // junk info
         break;
+      } else if (room && text.includes('#接龙')) {
+        text = text.substring(text.length - 100, text.length);
+        text = text.length >= 99 ? `\n#接龙\n\n${text}` : text;
+
+        sent = await ctx.replyWithHTML(
+          HTMLTemplates.message({ nickname, message: text })
+        );
       } else {
         sent = await ctx.replyWithHTML(
           HTMLTemplates.message({ nickname, message: text })
