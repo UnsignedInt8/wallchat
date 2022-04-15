@@ -104,7 +104,7 @@ export default async (self: Bot, msg: Message, ctx: Context) => {
         break;
       } else if (room && text.includes('#接龙')) {
         text = text.substring(text.length - 100, text.length);
-        text = text.length >= 99 ? `\n#接龙\n\n${text}` : text;
+        text = text.length >= 99 ? `#接龙\n\n${text}` : text;
 
         sent = await ctx.replyWithHTML(
           HTMLTemplates.message({ nickname, message: text })
