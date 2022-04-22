@@ -308,6 +308,7 @@ export default class Bot {
           }
 
           client.muteList = lastDump.muteList || [];
+          client.soundOnlyList = lastDump.soundOnly || [];
 
           this.recoverWechats.delete(chatid);
         });
