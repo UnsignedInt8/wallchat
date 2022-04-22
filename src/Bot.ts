@@ -19,6 +19,7 @@ import {
   handleForwardTo,
   handleLock,
   handleMute,
+  handleSoundOnly,
   handleTelegramMessage,
   handleUnlock,
   handleUnmute,
@@ -74,6 +75,7 @@ export interface Client {
   botId: string;
   firstMsgId?: any;
   muteList: string[];
+  soundOnlyList: string[];
 }
 
 export default class Bot {
@@ -192,6 +194,7 @@ export default class Bot {
     this.bot.command('forward', checkUser, this.handleForward);
     this.bot.command('forwardto', checkUser, this.handleForward);
     this.bot.command('mute', checkUser, this.handleMute);
+    this.bot.command('soundonly', checkUser, this.handleSoundOnly);
     this.bot.command('unmute', checkUser, this.handleUnmute);
     this.bot.command('quitroom', checkUser, this.handleQuitRoom);
     this.bot.command('logout', checkUser, this.handleLogout);
@@ -365,6 +368,7 @@ export default class Bot {
       receiveGroups: true,
       receiveOfficialAccount: true,
       muteList: [],
+      soundOnlyList: [],
       botId: this.id,
     };
 
@@ -588,6 +592,7 @@ export default class Bot {
   protected handleLock = (ctx: Context) => handleLock(ctx);
   protected handleUnlock = (ctx: Context) => handleUnlock(ctx);
   protected handleMute = (ctx: Context) => handleMute(ctx);
+  protected handleSoundOnly = (ctx: Context) => handleSoundOnly(ctx);
   protected handleUnmute = (ctx: Context) => handleUnmute(ctx);
   protected handleCurrent = handleCurrent;
   protected handleForward = handleForwardTo;

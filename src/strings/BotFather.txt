@@ -16,6 +16,7 @@ agree - Agree with current friendship request [/agree name]
 disagree - Disagree with current friendship request [/disagree name]
 acceptroom - Accept chatroom invitation
 logout - Logout Wechat
+soundonly - Only audio messages
 help - Show this help page
 version - Show bot version
 
@@ -28,6 +29,7 @@ lock - 锁定当前联系人
 unlock - 取消锁定当前联系人
 forwardto - 转发微信消息给联系人 [/forward (昵称｜备注。若不指定，则转发给当前联系人)]
 mute - 静音指定群
+soundonly - 仅语音消息
 unmute - 启用指定群消息 [/unmute 群名称。若不指定，则全部启用]
 selfon - 开启接收自己的消息
 selfoff - 关闭接收自己的消息

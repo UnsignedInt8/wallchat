@@ -6,6 +6,7 @@ import h2m from 'h2m';
 import marked from 'marked';
 
 function replaceMarkdownChars(txt: string | object) {
+  if (!txt) return '';
   let title = (typeof txt === 'string' ? txt : txt['#text']) || '';
   return title.replace(/\[/g, '').replace(/\]/g, '');
 }
@@ -14,7 +15,7 @@ const xml = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '' });
 export function parseOffical(rawXml: string): string {
   try {
     const msg = xml.parse(rawXml);
-    const items = msg['msg']['appmsg']['mmreader']['category'][
+    const items = msg['msg']?.['appmsg']?.['mmreader']?.['category']?.[
       'item'
     ] as Array<any>;
     return items.reduce((prev, curr) => {
@@ -31,9 +32,9 @@ export function parseOffical(rawXml: string): string {
 export function parseAttach(rawXml: string) {
   const msg = xml.parse(rawXml.replace(/\<br\/\>/g, '\n'));
   const appmsg = msg['msg']['appmsg'];
-  const title = h2m(replaceMarkdownChars(appmsg['title']));
-  const desc = h2m(replaceMarkdownChars(appmsg['des']));
-  const url = appmsg['url'];
+  const title = h2m(replaceMarkdownChars(appmsg?.['title']));
+  const desc = h2m(replaceMarkdownChars(appmsg?.['des']));
+  const url = appmsg?.['url'];
 
   return `[${title}](${url})\n${desc}`;
 }
@@ -72,7 +73,7 @@ export async function convertXmlToTelegraphMarkdown(
   token: string = '4a1c7c544a7f2e9c146240e92ad4dc9e2e14e3e8a0ec01665ddbc80fbba3'
 ) {
   const msg = xml.parse(rawXml);
-  const items = msg['msg']['appmsg']['mmreader']['category'][
+  const items = msg['msg']?.['appmsg']?.['mmreader']?.['category'][
     'item'
   ] as Array<any>;
   const urls = items.map(async (curr) => {
