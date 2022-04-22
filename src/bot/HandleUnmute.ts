@@ -17,19 +17,17 @@ export default async (ctx: Context) => {
   let name = contents.reduce((p, c) => `${p} ${c}`, '').trim();
 
   if (name) {
-    const index = user.muteList.indexOf(name);
+    user.muteList = user.muteList.filter((i) => i !== name);
+    user.soundOnlyList = user.soundOnlyList.filter((i) => i !== name);
 
-    if (index === -1) {
-      await ctx.reply(lang.message.contactNotFound);
-      return;
-    }
-
-    user.muteList.splice(index, 1);
     await ctx.reply(lang.message.unmuteRoom(name));
   } else {
     await ctx.reply(lang.message.unmuteRoom(user.muteList));
     user.muteList = [];
   }
 
-  await writeFile(`${user.botId}${id}`, { muteList: user.muteList });
+  await writeFile(`${user.botId}${id}`, {
+    muteList: user.muteList,
+    soundOnly: user.soundOnlyList,
+  });
 };
