@@ -47,9 +47,15 @@ export default async (self: Bot, msg: Message, ctx: Context) => {
   let from = msg.talker();
   let room = msg.room();
 
+  let isRoomSoundOnly = false;
+
   if (room) {
     const topic = await room.topic();
-    if (user.muteList.includes(topic)) return;
+    const isRoomMuted = user.muteList.includes(topic);
+
+    isRoomSoundOnly = user.soundOnlyList.includes(topic);
+
+    if (isRoomMuted) return;
   }
 
   let type = msg.type() as any;
@@ -91,6 +97,8 @@ export default async (self: Bot, msg: Message, ctx: Context) => {
     await handleFriendApplyingXml(text, ctx);
     return;
   }
+
+  if (room && isRoomSoundOnly && type !== MessageType.Audio) return;
 
   switch (type) {
     case MessageType.Text:
