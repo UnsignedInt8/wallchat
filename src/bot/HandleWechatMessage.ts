@@ -167,10 +167,15 @@ export default async (self: Bot, msg: Message, ctx: Context) => {
       if (image.mediaType === 'image/gif') {
         const buffer = await image.toBuffer();
         if (isGif(buffer)) {
-          sent = await ctx.replyWithAnimation(
+          sent = await ctx.replyWithVideo(
             { source: buffer },
-            { caption: `${nickname}` }
+            { caption: nickname }
           );
+          
+          // sent = await ctx.replyWithAnimation(
+          //   { source: buffer },
+          //   { caption: `${nickname}` }
+          // );
           break;
         }
       }
