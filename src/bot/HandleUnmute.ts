@@ -24,6 +24,7 @@ export default async (ctx: Context) => {
   } else {
     await ctx.reply(lang.message.unmuteRoom(user.muteList));
     user.muteList = [];
+    user.soundOnlyList = [];
   }
 
   await writeFile(`${user.botId}${id}`, {
