@@ -27,7 +27,7 @@ export default async (ctx: Context) => {
   const topic = await room.topic();
 
   const names = user.nameOnlyList[topic] || [];
-  const [onlyUser] = msg.text.split(' [');
+  const onlyUser = wxmsg.talker().name();
 
   if (names.includes(onlyUser)) {
     ctx.reply('OK');

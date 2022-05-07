@@ -50,11 +50,12 @@ export default async (self: Bot, msg: Message, ctx: Context) => {
 
   let from = msg.talker();
   let room = msg.room();
+  let topic = '';
 
   let isRoomSoundOnly = false;
 
   if (room) {
-    const topic = await room.topic();
+    topic = await room.topic();
     const isRoomMuted = user.muteList.includes(topic);
 
     isRoomSoundOnly = user.soundOnlyList.includes(topic);
@@ -74,14 +75,6 @@ export default async (self: Bot, msg: Message, ctx: Context) => {
   if (!user.receiveGroups && room) return;
 
   let alias = await from.alias();
-
-  // if (self.muteList.includes(from.name())) {
-  //   return;
-  // }
-
-  // if (alias && self.muteList.includes(alias)) {
-  //   return;
-  // }
 
   let nickname = from.name() + (alias ? ` (${alias})` : '');
   nickname = nickname + (room ? ` [${await room.topic()}]` : '');
@@ -103,6 +96,12 @@ export default async (self: Bot, msg: Message, ctx: Context) => {
   }
 
   if (room && isRoomSoundOnly && type !== MessageType.Audio) return;
+  if (
+    room &&
+    user.nameOnlyList[topic]?.length > 0 &&
+    !user.nameOnlyList[topic]?.includes(from.name())
+  )
+    return;
 
   switch (type) {
     case MessageType.Text:
