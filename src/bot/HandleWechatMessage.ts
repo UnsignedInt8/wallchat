@@ -169,7 +169,7 @@ export default async (self: Bot, msg: Message, ctx: Context) => {
 
       if (image.mediaType === 'image/gif') {
         if (ce.sync('ffmpeg')) {
-          const gifTmpPath = tempfile('.png');
+          const gifTmpPath = tempfile('.gif');
           const gifMp4TmpPath = tempfile('.mp4');
 
           await image.toFile(gifTmpPath, true);
