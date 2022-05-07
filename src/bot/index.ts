@@ -3,6 +3,7 @@ import handleFind from './HandleFindX';
 import handleForwardTo from './HandleForwardTo';
 import handleLock from './HandleLock';
 import handleMute from './HandleMute';
+import handleNameOnly from './HandleNameOnly';
 import handleSoundOnly from './HandleSoundOnly';
 import handleTelegramMessage from './HandleTelegramMessage';
 import handleUnlock from './HandleUnlock';
@@ -20,4 +21,5 @@ export {
   handleMute,
   handleUnmute,
   handleSoundOnly,
+  handleNameOnly,
 };

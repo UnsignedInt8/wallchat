@@ -25,10 +25,12 @@ export default async (ctx: Context) => {
     await ctx.reply(lang.message.unmuteRoom(user.muteList));
     user.muteList = [];
     user.soundOnlyList = [];
+    user.nameOnlyList = {};
   }
 
   await writeFile(`${user.botId}${id}`, {
     muteList: user.muteList,
     soundOnly: user.soundOnlyList,
+    namesOnly: user.nameOnlyList,
   });
 };

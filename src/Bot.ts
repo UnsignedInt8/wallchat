@@ -19,6 +19,7 @@ import {
   handleForwardTo,
   handleLock,
   handleMute,
+  handleNameOnly,
   handleSoundOnly,
   handleTelegramMessage,
   handleUnlock,
@@ -76,6 +77,7 @@ export interface Client {
   firstMsgId?: any;
   muteList: string[];
   soundOnlyList: string[];
+  nameOnlyList: { [group: string]: string[] };
 }
 
 export default class Bot {
@@ -195,6 +197,7 @@ export default class Bot {
     this.bot.command('forwardto', checkUser, this.handleForward);
     this.bot.command('mute', checkUser, this.handleMute);
     this.bot.command('soundonly', checkUser, this.handleSoundOnly);
+    this.bot.command('nameonly', checkUser, this.handleNameOnly);
     this.bot.command('unmute', checkUser, this.handleUnmute);
     this.bot.command('quitroom', checkUser, this.handleQuitRoom);
     this.bot.command('logout', checkUser, this.handleLogout);
@@ -309,6 +312,7 @@ export default class Bot {
 
           client.muteList = lastDump.muteList || [];
           client.soundOnlyList = lastDump.soundOnly || [];
+          client.nameOnlyList = lastDump.namesOnly || {};
 
           this.recoverWechats.delete(chatid);
         });
@@ -370,6 +374,7 @@ export default class Bot {
       receiveOfficialAccount: true,
       muteList: [],
       soundOnlyList: [],
+      nameOnlyList: {},
       botId: this.id,
     };
 
@@ -594,6 +599,7 @@ export default class Bot {
   protected handleUnlock = (ctx: Context) => handleUnlock(ctx);
   protected handleMute = (ctx: Context) => handleMute(ctx);
   protected handleSoundOnly = (ctx: Context) => handleSoundOnly(ctx);
+  protected handleNameOnly = (ctx: Context) => handleNameOnly(ctx);
   protected handleUnmute = (ctx: Context) => handleUnmute(ctx);
   protected handleCurrent = handleCurrent;
   protected handleForward = handleForwardTo;

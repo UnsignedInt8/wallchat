@@ -6,6 +6,7 @@ interface ITmpFile {
   recentContact?: { name: string; locked?: boolean };
   muteList?: string[];
   soundOnly?: string[];
+  namesOnly?: { [group: string]: string[] };
 }
 
 /**
