@@ -20,11 +20,11 @@ export default async (ctx: Context) => {
   const id = ctx.chat.id;
   const wxmsg = user.msgs.get(msg.reply_to_message?.message_id)?.wxmsg;
 
-  const room = wxmsg?.room();
+  const room = wxmsg?.room?.();
 
   if (!room) return;
 
-  const topic = await (room as Room)['topic']?.();
+  const topic = await room.topic();
 
   const names = user.nameOnlyList[topic] || [];
   const [onlyUser] = msg.text.split(' [');

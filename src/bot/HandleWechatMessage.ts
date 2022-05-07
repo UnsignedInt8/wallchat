@@ -12,10 +12,13 @@ import { CommonMessageBundle } from 'telegraf/typings/core/types/typegram';
 import { Context } from 'telegraf/typings/context';
 import HTMLTemplates from '../lib/HTMLTemplates';
 import Logger from '../lib/Logger';
+import ce from 'command-exists';
 import { decode } from 'html-entities';
 import download from 'download';
+import ffmpeg from 'fluent-ffmpeg';
 import isGif from 'is-gif';
 import lang from '../strings';
+import tempfile from 'tempfile';
 import { types } from 'wechaty-puppet';
 // import prism from 'prism-media';
 import { writeFile } from './UpdateTmpFile';
@@ -165,18 +168,39 @@ export default async (self: Bot, msg: Message, ctx: Context) => {
       let image = await msg.toFileBox();
 
       if (image.mediaType === 'image/gif') {
-        const buffer = await image.toBuffer();
-        if (isGif(buffer)) {
+        if (ce.sync('ffmpeg')) {
+          const gifTmpPath = tempfile('.png');
+          const gifMp4TmpPath = tempfile('.mp4');
+
+          await image.toFile(gifTmpPath, true);
+
+          await new Promise<void>((resolve) => {
+            ffmpeg(gifTmpPath)
+              .noAudio()
+              .output(gifMp4TmpPath)
+              .on('error', (e) => console.log(e))
+              .on('end', () => resolve())
+              .run();
+          });
+
           sent = await ctx.replyWithVideo(
-            { source: buffer },
+            { source: gifMp4TmpPath },
             { caption: nickname }
           );
-          
-          // sent = await ctx.replyWithAnimation(
-          //   { source: buffer },
-          //   { caption: `${nickname}` }
-          // );
-          break;
+        } else {
+          const buffer = await image.toBuffer();
+          if (isGif(buffer)) {
+            sent = await ctx.replyWithVideo(
+              { source: buffer },
+              { caption: nickname }
+            );
+
+            // sent = await ctx.replyWithAnimation(
+            //   { source: buffer },
+            //   { caption: `${nickname}` }
+            // );
+            break;
+          }
         }
       }
 
