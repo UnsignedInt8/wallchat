@@ -192,26 +192,13 @@ export default async (self: Bot, msg: Message, ctx: Context) => {
           fs.unlink(gifTmpPath);
           fs.unlink(gifMp4TmpPath);
         } else {
-          const buffer = await image.toBuffer();
-          if (isGif(buffer)) {
-            sent = await ctx.replyWithVideo(
-              { source: buffer },
-              { caption: nickname }
-            );
-
-            // sent = await ctx.replyWithAnimation(
-            //   { source: buffer },
-            //   { caption: `${nickname}` }
-            // );
-            break;
-          }
+          sent = await ctx.replyWithPhoto(
+            { source: await image.toStream() },
+            { caption: nickname }
+          );
         }
       }
 
-      sent = await ctx.replyWithPhoto(
-        { source: await image.toStream() },
-        { caption: nickname }
-      );
       break;
 
     case MessageType.Video:
