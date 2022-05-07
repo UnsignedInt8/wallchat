@@ -168,7 +168,9 @@ export default async (self: Bot, msg: Message, ctx: Context) => {
     case MessageType.Image:
       let image = await msg.toFileBox();
 
-      if (image.mediaType === 'image/gif') {
+      const buffer = await image.toBuffer();
+
+      if (isGif(buffer)) {
         if (ce.sync('ffmpeg')) {
           const gifTmpPath = tempfile('.gif');
           const gifMp4TmpPath = tempfile('.mp4');
@@ -191,14 +193,15 @@ export default async (self: Bot, msg: Message, ctx: Context) => {
 
           fs.unlink(gifTmpPath);
           fs.unlink(gifMp4TmpPath);
-        } else {
-          sent = await ctx.replyWithPhoto(
-            { source: await image.toStream() },
-            { caption: nickname }
-          );
         }
+
+        break;
       }
 
+      sent = await ctx.replyWithPhoto(
+        { source: await image.toStream() },
+        { caption: nickname }
+      );
       break;
 
     case MessageType.Video:
