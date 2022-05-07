@@ -1,5 +1,6 @@
 import * as TT from 'telegraf/typings/telegram-types';
 import * as XMLParser from '../lib/XmlParser';
+import * as fs from 'fs/promises';
 
 import { Contact, Message } from 'wechaty';
 import {
@@ -187,6 +188,9 @@ export default async (self: Bot, msg: Message, ctx: Context) => {
             { source: gifMp4TmpPath },
             { caption: nickname }
           );
+
+          fs.unlink(gifTmpPath);
+          fs.unlink(gifMp4TmpPath);
         } else {
           const buffer = await image.toBuffer();
           if (isGif(buffer)) {
