@@ -393,7 +393,7 @@ export default class Bot {
     if (this.clients.has(id) && this.clients.get(id)?.initialized) {
       let user = this.clients.get(id);
       if (user.wechatId) {
-        ctx.reply(lang.login.logined(user.wechat.ContactSelf.name));
+        ctx.reply(lang.login.logined(user.wechat.name?.() || ''));
         return;
       }
 
