@@ -96,9 +96,9 @@ export default async (
         if ((msg as Message.StickerMessage).sticker) {
           const pngfile = tempfile('.png');
           await sharp(distFile)
-            .resize(100, undefined, {
+            .resize(20, undefined, {
               fit: 'cover',
-              background: { r: 0, g: 0, b: 0, alpha: 0 },
+              background: { r: 255, g: 255, b: 255, alpha: 0 },
             })
             .toFormat('png')
             .toFile(pngfile);
