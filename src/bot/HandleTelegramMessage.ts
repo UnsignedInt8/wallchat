@@ -97,7 +97,7 @@ export default async (
           const pngfile = tempfile('.png');
           await sharp(distFile)
             .toFormat('png')
-            .resize(25, undefined, {
+            .resize(50, 50, {
               fit: 'cover',
               background: { r: 255, g: 255, b: 255, alpha: 0 },
             })
