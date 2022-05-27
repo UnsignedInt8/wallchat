@@ -15,7 +15,7 @@ export default async (ctx: Context) => {
 
   const alias = (await (user.currentContact as Contact)['alias']?.()) ?? '';
   name =
-    (user.currentContact as Contact)['name']?.() ||
+    (await (user.currentContact as Contact)['name']?.()) ||
     (await (user.currentContact as Room)['topic']?.()) ||
     '';
 
