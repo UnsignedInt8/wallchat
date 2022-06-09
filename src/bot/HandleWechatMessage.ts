@@ -45,7 +45,7 @@ const banNotifications = [
 ];
 
 export default async (self: Bot, msg: Message, ctx: Context) => {
-  let id = ctx.chat.id;
+  let id = ctx?.chat?.id;
   let user = self.clients.get(id);
 
   let from = msg.talker();

@@ -12,7 +12,7 @@ export default async (ctx: Context) => {
 
   const name = await MiscHelper.getFriendlyName(user.currentContact);
 
-  await writeFile(`${user.botId}${ctx.chat.id}`, {
+  await writeFile(`${user.botId}${ctx?.chat?.id}`, {
     recentContact: { name, locked: false },
   });
 

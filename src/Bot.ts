@@ -388,7 +388,7 @@ export default class Bot {
       if (!(await c(ctx))) return;
     }
 
-    const id = ctx.chat.id;
+    const id = ctx?.chat?.id;
     let qrcodeCache = '';
     if (this.clients.has(id) && this.clients.get(id)?.initialized) {
       let user = this.clients.get(id);
@@ -523,7 +523,7 @@ export default class Bot {
 
     if (!ctx) return next ? next() : undefined;
 
-    let id = ctx.chat.id;
+    let id = ctx?.chat?.id;
     let user = this.clients.get(id);
     if (!user) return;
 
@@ -536,7 +536,7 @@ export default class Bot {
     if (!user) return;
 
     try {
-      this.clients.delete(ctx.chat.id);
+      this.clients.delete(ctx?.chat?.id);
       user.wechat?.reset();
     } catch (error) {}
 

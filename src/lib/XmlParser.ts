@@ -31,10 +31,10 @@ export function parseOffical(rawXml: string): string {
 
 export function parseAttach(rawXml: string) {
   const msg = xml.parse(rawXml.replace(/\<br\/\>/g, '\n'));
-  const appmsg = msg['msg']['appmsg'];
+  const appmsg = msg['msg']?.['appmsg'] || '';
   const title = h2m(replaceMarkdownChars(appmsg?.['title']));
   const desc = h2m(replaceMarkdownChars(appmsg?.['des']));
-  const url = appmsg?.['url'];
+  const url = appmsg?.['url'] || '';
 
   return `[${title}](${url})\n${desc}`;
 }

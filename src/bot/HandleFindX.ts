@@ -41,7 +41,7 @@ export default async (self: Bot, ctx: Context, next: Function) => {
   const wname =
     (found as Contact)['name']?.() || (await (found as Room)['topic']?.());
 
-  await writeFile(`${self.id}${ctx.chat.id}`, {
+  await writeFile(`${self.id}${ctx?.chat?.id}`, {
     recentContact: { name: wname, locked: user.contactLocked },
   });
 

@@ -35,7 +35,7 @@ export default async (ctx: Context) => {
   save = alias || name;
   name = alias ? `${name} (${alias})` : name;
 
-  await writeFile(`${user.botId}${ctx.chat.id}`, {
+  await writeFile(`${user.botId}${ctx?.chat?.id}`, {
     recentContact: { name: save, locked: true },
   });
 

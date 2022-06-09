@@ -8,7 +8,7 @@ export default async (ctx: Context) => {
   const msg = ctx.message as Message.TextMessage;
   if (!msg) return;
 
-  const id = ctx.chat.id;
+  const id = ctx?.chat?.id;
   const user = ctx['user'] as Client;
 
   let contents = msg.text.split(' ');

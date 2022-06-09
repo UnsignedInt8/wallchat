@@ -17,7 +17,7 @@ export default async (ctx: Context) => {
     return;
   }
 
-  const id = ctx.chat.id;
+  const id = ctx?.chat?.id;
   const wxmsg = user.msgs.get(msg.reply_to_message?.message_id)?.wxmsg;
 
   const room = wxmsg?.room() ?? user.currentContact;
