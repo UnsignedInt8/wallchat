@@ -189,7 +189,7 @@ export default class Bot {
       this.handleFind,
       this.handleLock
     );
-    this.bot.command('current', checkUser, this.handleCurrent);
+    this.bot.command('current', this.handleCurrent);
     this.bot.command('agree', checkUser, this.handleAgreeFriendship);
     this.bot.command('disagree', checkUser, this.handleDisagreeFriendship);
     this.bot.command('acceptroom', checkUser);
@@ -524,7 +524,7 @@ export default class Bot {
     if (!ctx) return next ? next() : undefined;
 
     let id = ctx?.chat?.id;
-    let user = this.clients.get(id);
+    let user = this.clients?.get(id);
     if (!user) return;
 
     ctx['user'] = user;
