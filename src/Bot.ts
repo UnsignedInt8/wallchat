@@ -601,7 +601,7 @@ export default class Bot {
   protected handleSoundOnly = (ctx: Context) => handleSoundOnly(ctx);
   protected handleNameOnly = (ctx: Context) => handleNameOnly(ctx);
   protected handleUnmute = (ctx: Context) => handleUnmute(ctx);
-  protected handleCurrent = handleCurrent;
+  protected handleCurrent = (ctx: Context) => handleCurrent(ctx);
   protected handleForward = handleForwardTo;
   protected handleTelegramMessage = (ctx: Context) =>
     handleTelegramMessage(ctx, { ...this.options, bot: this.botSelf });
