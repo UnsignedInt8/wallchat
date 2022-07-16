@@ -6,7 +6,7 @@ import lang from '../strings';
 
 export default async (ctx: Context) => {
   let user = ctx['user'] as Client;
-  if (!user.currentContact) {
+  if (!user?.currentContact) {
     ctx.reply(lang.message.noCurrentContact);
     return;
   }
