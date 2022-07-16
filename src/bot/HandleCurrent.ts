@@ -13,11 +13,10 @@ export default async (ctx: Context) => {
 
   let name = '';
 
-  const alias = (await (user.currentContact as Contact)['alias']?.()) ?? '';
+  const alias = (await (user.currentContact as Contact)?.['alias']?.()) ?? '';
   name =
-    (await (user.currentContact as Contact)['name']?.()) ||
-    (await (user.currentContact as Room)['topic']?.()) ||
-    '';
+    (user.currentContact as Contact)?.['name']?.() ||
+    (await (user.currentContact as Room)?.['topic']?.());
 
   name = alias ? `${name} (${alias})` : name;
 

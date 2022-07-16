@@ -2495,6 +2495,11 @@ commander@^9.3.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-9.3.0.tgz#f619114a5a2d2054e0d9ff1b31d5ccf89255e26b"
   integrity sha512-hv95iU5uXPbK83mjrJKuZyFM/LBAoCV/XhVGkS5Je6tl7sxr6A0ITMw5WoRV46/UaJ46Nllm3Xt7IaJhXTIkzw==
 
+commander@^9.4.0:
+  version "9.4.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-9.4.0.tgz#bc4a40918fefe52e22450c111ecd6b7acce6f11c"
+  integrity sha512-sRPT+umqkz90UA8M1yqYfnHlZA7fF6nSphDtxeywPZ49ysjxDQybzk13CL+mXekDRG92skbcqCLVovuCusNmFw==
+
 comment-json@^4.2.2:
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/comment-json/-/comment-json-4.2.2.tgz#5fae70a94e0c8f84a077bd31df5aa5269252f293"
@@ -7791,11 +7796,6 @@ run-parallel@^1.1.9:
   dependencies:
     queue-microtask "^1.2.2"
 
-rx-queue@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/rx-queue/-/rx-queue-1.0.4.tgz#5d70413d31636b42aa2daafbfb3dc45aac0a5ae1"
-  integrity sha512-3fSKNCWEtOk+WFUKmt+rUWOQ+F6l6b+F+7vSTLyX49LN6bpqWIY89xzYAbdomJVYfKVPKoWEzRP0u8+HYcB2Ig==
-
 rx-queue@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/rx-queue/-/rx-queue-1.0.5.tgz#17711076923ec8d84f5bb76bc5e5d030ce797c0a"
@@ -8686,10 +8686,10 @@ ts-node@^10.4.0:
     make-error "^1.1.1"
     yn "3.1.1"
 
-ts-node@^10.8.2:
-  version "10.8.2"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-10.8.2.tgz#3185b75228cef116bf82ffe8762594f54b2a23f2"
-  integrity sha512-LYdGnoGddf1D6v8REPtIH+5iq/gTDuZqv2/UJUU7tKjuEU8xVZorBM+buCGNjj+pGEud+sOoM4CX3/YzINpENA==
+ts-node@^10.9.1:
+  version "10.9.1"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-10.9.1.tgz#e73de9102958af9e1f0b168a6ff320e25adcff4b"
+  integrity sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==
   dependencies:
     "@cspotcode/source-map-support" "^0.8.0"
     "@tsconfig/node10" "^1.0.7"
@@ -9079,10 +9079,10 @@ wechaty-puppet-wechat4u@^1.11.1:
     promise-retry "^2.0.1"
     wechat4u "^0.7.7"
 
-wechaty-puppet-wechat@^1.18.1:
-  version "1.18.1"
-  resolved "https://registry.yarnpkg.com/wechaty-puppet-wechat/-/wechaty-puppet-wechat-1.18.1.tgz#a83db2d4e9345037fde6cc3c41e59c43dbd3944c"
-  integrity sha512-xMzrPk1rUCZRFfAaUKp+d+DUGEed0u6G068GudjyKw85XPcy6c7a3/Jr1JzGZSyakY/YqHQrKyaHH3rxL+UhrQ==
+wechaty-puppet-wechat@^1.18.4:
+  version "1.18.4"
+  resolved "https://registry.yarnpkg.com/wechaty-puppet-wechat/-/wechaty-puppet-wechat-1.18.4.tgz#ab06660db36ad92910b0aa986944bc4863bfbaad"
+  integrity sha512-sgH+FCeQJ+Kd6NhYNWVqgvxkR5Sc0YSjhJhFu7HGIMhFh1S25k7LSHP0tsrOK2CZuWe3gOa5tTCUQo5d7IL/Xw==
   dependencies:
     cockatiel "^2.0.2"
     md5 "^2.3.0"
@@ -9092,7 +9092,7 @@ wechaty-puppet-wechat@^1.18.1:
     puppeteer-extra-plugin-stealth "^2.9.0"
     qr-image "^3.2.0"
     request "^2.88.2"
-    rx-queue "^1.0.4"
+    rx-queue "^1.0.5"
     rxjs "^7.5.5"
     state-switch "^1.6.3"
     watchdog "^0.8.17"
