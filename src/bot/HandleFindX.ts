@@ -31,9 +31,9 @@ export default async (self: Bot, ctx: Context, next: Function) => {
   let info = user.contactLocked
     ? ` [${lang.message.contactLocked('').trim()}]`
     : '';
-  let sent = await ctx
-    .reply(lang.message.contactFound(`${foundName}`) + info)
-    .catch();
+
+  let sent = await ctx.reply(lang.message.contactFound(`${foundName}`) + info);
+
   user.currentContact = found;
 
   user.msgs.set(sent.message_id, { contact: found, wxmsg: undefined });
