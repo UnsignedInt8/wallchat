@@ -42,6 +42,7 @@ const banNotifications = [
   '" 拍了拍自己',
   '确认了一笔转账，当前微信版本不支持展示该内容',
   '向他人发起了一笔转账，当前微信版本不支持展示该内容',
+  '与群里其他人都不是朋友关系，请注意隐私安全'
 ];
 
 export default async (self: Bot, msg: Message, ctx: Context) => {
