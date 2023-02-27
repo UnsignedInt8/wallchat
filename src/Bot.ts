@@ -48,6 +48,7 @@ dayjs.extend(relativeTime);
 export interface BotOptions {
   token: string;
   padplusToken?: string;
+  allows?: number[];
   socks5Proxy?: {
     host: string;
     port: number;
@@ -238,7 +239,7 @@ export default class Bot {
     if (this.options.silent) return;
 
     const alert = HTMLTemplates.message({
-      nickname: `[Bot Alert]`,
+      nickname: '[Bot Alert]',
       message: msg,
     });
 
@@ -256,7 +257,7 @@ export default class Bot {
 
     await this.bot.launch();
     this.botSelf = await this.bot.telegram.getMe();
-    Logger.info(`Bot is running`);
+    Logger.info('Bot is running');
 
     await this.recoverSessions();
   }
@@ -291,7 +292,7 @@ export default class Bot {
           });
 
           const lastDump = await readFile(`${this.id}${chatid}`);
-          if (lastDump.recentContact && lastDump.recentContact.name) {
+          if (lastDump.recentContact?.name) {
             const { found, foundName } = await findContact(
               lastDump.recentContact.name,
               wechat
@@ -324,7 +325,7 @@ export default class Bot {
           this.recoverWechats.delete(chatid);
 
           const alert = HTMLTemplates.message({
-            nickname: `[Bot Alert]`,
+            nickname: '[Bot Alert]',
             message: lang.login.sessionLost,
           });
 
@@ -386,6 +387,10 @@ export default class Bot {
   protected async handleLogin(ctx: Context) {
     for (let c of this.beforeCheckUserList) {
       if (!(await c(ctx))) return;
+    }
+
+    if (!this.options.allows?.includes(ctx.message.chat.id) ?? true) {
+      return ctx.reply(lang.nowelcome);
     }
 
     const id = ctx?.chat?.id;

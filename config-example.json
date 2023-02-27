@@ -1,6 +1,7 @@
 {
   "token": "", // required, telegram bot token
   "silent": false, // silent mode, bot alert
+  "allows": [], // telegram uid
   "httpProxy": {
     "host": "127.0.0.1",
     "port": 1081

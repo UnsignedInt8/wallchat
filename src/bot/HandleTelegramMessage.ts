@@ -32,10 +32,7 @@ export default async (
   let msg = ctx.message as Message;
   let user = ctx['user'] as Client;
 
-  if (
-    (msg as Message.TextMessage).text &&
-    (msg as Message.TextMessage).text.startsWith('/find')
-  ) {
+  if ((msg as Message.TextMessage).text?.startsWith('/find')) {
     return;
   }
 
@@ -54,8 +51,7 @@ export default async (
   let file =
     (msg as Message.AudioMessage).audio ||
     (msg as Message.VideoMessage).video ||
-    ((msg as Message.PhotoMessage).photo &&
-      (msg as Message.PhotoMessage).photo[0]) ||
+    (msg as Message.PhotoMessage).photo?.[0] ||
     (msg as Message.VoiceMessage).voice ||
     (msg as Message.DocumentMessage).document ||
     (msg as Message.StickerMessage).sticker;
